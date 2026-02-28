@@ -1,0 +1,34 @@
+# Build results
+bin/
+obj/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Rider / VS Code / Visual Studio
+.vs/
+.idea/
+.vscode/
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+
+# Publish output
+publish/
+
+# EF migrations snapshot temp
+*.db
+
+# NuGet
+*.nupkg
+packages/
