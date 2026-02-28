@@ -5,7 +5,7 @@ services:
     image: postgres:16
     container_name: postgres
     environment:
-      POSTGRES_DB: mydb
+      POSTGRES_DB: hoteldb
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: elephant16
     ports:
