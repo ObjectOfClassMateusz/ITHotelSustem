@@ -40,6 +40,8 @@ namespace HotelSystemIndustry.Models.Events
 
         public uint NumRequiredStaff { get; set; }
 
+        public uint NumGuests { get; set; }
+
 
         public ICollection<EventHall>? Halls { get; set; }
 
