@@ -1,12 +1,18 @@
 ﻿namespace HotelSystemIndustry.Models
 {
-    public class Guest
+    public enum EmployeeRole
+    {
+        Reception,
+        Manager,//Finance
+        Moderator
+    }
+    public class EmployeeProfile
     {
         public Guid Id { get; set; }
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
-        public string PhoneNumber { get; set; } = string.Empty;
-        public ICollection<Reservation> Reservations { get; set; } = new List<Reservation>();
+
+        public EmployeeRole Role { get; set; }
     }
 }

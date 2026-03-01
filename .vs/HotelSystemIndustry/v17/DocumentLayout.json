@@ -3,36 +3,36 @@
   "WorkspaceRootPath": "H:\\C#Projects\\HotelSystemIndustry\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{7E671131-2C44-4793-B889-37A65F5A8DEE}|HotelSystemIndustry\\HotelSystemIndustry.csproj|h:\\c#projects\\hotelsystemindustry\\hotelsystemindustry\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{7E671131-2C44-4793-B889-37A65F5A8DEE}|HotelSystemIndustry\\HotelSystemIndustry.csproj|solutionrelative:hotelsystemindustry\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{7E671131-2C44-4793-B889-37A65F5A8DEE}|HotelSystemIndustry\\HotelSystemIndustry.csproj|h:\\c#projects\\hotelsystemindustry\\hotelsystemindustry\\appsettings.development.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{7E671131-2C44-4793-B889-37A65F5A8DEE}|HotelSystemIndustry\\HotelSystemIndustry.csproj|solutionrelative:hotelsystemindustry\\appsettings.development.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{7E671131-2C44-4793-B889-37A65F5A8DEE}|HotelSystemIndustry\\HotelSystemIndustry.csproj|h:\\c#projects\\hotelsystemindustry\\hotelsystemindustry\\models\\hotel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{7E671131-2C44-4793-B889-37A65F5A8DEE}|HotelSystemIndustry\\HotelSystemIndustry.csproj|solutionrelative:hotelsystemindustry\\models\\hotel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{7E671131-2C44-4793-B889-37A65F5A8DEE}|HotelSystemIndustry\\HotelSystemIndustry.csproj|h:\\c#projects\\hotelsystemindustry\\hotelsystemindustry\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{7E671131-2C44-4793-B889-37A65F5A8DEE}|HotelSystemIndustry\\HotelSystemIndustry.csproj|solutionrelative:hotelsystemindustry\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{7E671131-2C44-4793-B889-37A65F5A8DEE}|HotelSystemIndustry\\HotelSystemIndustry.csproj|h:\\c#projects\\hotelsystemindustry\\hotelsystemindustry\\models\\reservation.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{7E671131-2C44-4793-B889-37A65F5A8DEE}|HotelSystemIndustry\\HotelSystemIndustry.csproj|solutionrelative:hotelsystemindustry\\models\\reservation.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{7E671131-2C44-4793-B889-37A65F5A8DEE}|HotelSystemIndustry\\HotelSystemIndustry.csproj|h:\\c#projects\\hotelsystemindustry\\hotelsystemindustry\\models\\guest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{7E671131-2C44-4793-B889-37A65F5A8DEE}|HotelSystemIndustry\\HotelSystemIndustry.csproj|solutionrelative:hotelsystemindustry\\models\\guest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{7E671131-2C44-4793-B889-37A65F5A8DEE}|HotelSystemIndustry\\HotelSystemIndustry.csproj|h:\\c#projects\\hotelsystemindustry\\hotelsystemindustry\\models\\room.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{7E671131-2C44-4793-B889-37A65F5A8DEE}|HotelSystemIndustry\\HotelSystemIndustry.csproj|solutionrelative:hotelsystemindustry\\models\\room.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{7E671131-2C44-4793-B889-37A65F5A8DEE}|HotelSystemIndustry\\HotelSystemIndustry.csproj|h:\\c#projects\\hotelsystemindustry\\hotelsystemindustry\\models\\address.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{7E671131-2C44-4793-B889-37A65F5A8DEE}|HotelSystemIndustry\\HotelSystemIndustry.csproj|solutionrelative:hotelsystemindustry\\models\\address.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7E671131-2C44-4793-B889-37A65F5A8DEE}|HotelSystemIndustry\\HotelSystemIndustry.csproj|h:\\c#projects\\hotelsystemindustry\\hotelsystemindustry\\models\\employeeprofile.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7E671131-2C44-4793-B889-37A65F5A8DEE}|HotelSystemIndustry\\HotelSystemIndustry.csproj|solutionrelative:hotelsystemindustry\\models\\employeeprofile.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7E671131-2C44-4793-B889-37A65F5A8DEE}|HotelSystemIndustry\\HotelSystemIndustry.csproj|h:\\c#projects\\hotelsystemindustry\\hotelsystemindustry\\models\\invoice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7E671131-2C44-4793-B889-37A65F5A8DEE}|HotelSystemIndustry\\HotelSystemIndustry.csproj|solutionrelative:hotelsystemindustry\\models\\invoice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7E671131-2C44-4793-B889-37A65F5A8DEE}|HotelSystemIndustry\\HotelSystemIndustry.csproj|h:\\c#projects\\hotelsystemindustry\\hotelsystemindustry\\models\\reservation.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7E671131-2C44-4793-B889-37A65F5A8DEE}|HotelSystemIndustry\\HotelSystemIndustry.csproj|solutionrelative:hotelsystemindustry\\models\\reservation.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7E671131-2C44-4793-B889-37A65F5A8DEE}|HotelSystemIndustry\\HotelSystemIndustry.csproj|h:\\c#projects\\hotelsystemindustry\\hotelsystemindustry\\models\\payment.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7E671131-2C44-4793-B889-37A65F5A8DEE}|HotelSystemIndustry\\HotelSystemIndustry.csproj|solutionrelative:hotelsystemindustry\\models\\payment.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7E671131-2C44-4793-B889-37A65F5A8DEE}|HotelSystemIndustry\\HotelSystemIndustry.csproj|h:\\c#projects\\hotelsystemindustry\\hotelsystemindustry\\models\\guest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7E671131-2C44-4793-B889-37A65F5A8DEE}|HotelSystemIndustry\\HotelSystemIndustry.csproj|solutionrelative:hotelsystemindustry\\models\\guest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7E671131-2C44-4793-B889-37A65F5A8DEE}|HotelSystemIndustry\\HotelSystemIndustry.csproj|h:\\c#projects\\hotelsystemindustry\\hotelsystemindustry\\models\\raport.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7E671131-2C44-4793-B889-37A65F5A8DEE}|HotelSystemIndustry\\HotelSystemIndustry.csproj|solutionrelative:hotelsystemindustry\\models\\raport.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -42,32 +42,58 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 6,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "appsettings.json",
-              "DocumentMoniker": "H:\\C#Projects\\HotelSystemIndustry\\HotelSystemIndustry\\appsettings.json",
-              "RelativeDocumentMoniker": "HotelSystemIndustry\\appsettings.json",
-              "ToolTip": "H:\\C#Projects\\HotelSystemIndustry\\HotelSystemIndustry\\appsettings.json",
-              "RelativeToolTip": "HotelSystemIndustry\\appsettings.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAABdAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2026-02-28T15:31:55.715Z",
+              "DocumentIndex": 5,
+              "Title": "Payment.cs",
+              "DocumentMoniker": "H:\\C#Projects\\HotelSystemIndustry\\HotelSystemIndustry\\Models\\Payment.cs",
+              "RelativeDocumentMoniker": "HotelSystemIndustry\\Models\\Payment.cs",
+              "ToolTip": "H:\\C#Projects\\HotelSystemIndustry\\HotelSystemIndustry\\Models\\Payment.cs",
+              "RelativeToolTip": "HotelSystemIndustry\\Models\\Payment.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAxAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-01T20:56:16.644Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "EmployeeProfile.cs",
+              "DocumentMoniker": "H:\\C#Projects\\HotelSystemIndustry\\HotelSystemIndustry\\Models\\EmployeeProfile.cs",
+              "RelativeDocumentMoniker": "HotelSystemIndustry\\Models\\EmployeeProfile.cs",
+              "ToolTip": "H:\\C#Projects\\HotelSystemIndustry\\HotelSystemIndustry\\Models\\EmployeeProfile.cs",
+              "RelativeToolTip": "HotelSystemIndustry\\Models\\EmployeeProfile.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAcAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-01T20:49:23.956Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "appsettings.Development.json",
-              "DocumentMoniker": "H:\\C#Projects\\HotelSystemIndustry\\HotelSystemIndustry\\appsettings.Development.json",
-              "RelativeDocumentMoniker": "HotelSystemIndustry\\appsettings.Development.json",
-              "ToolTip": "H:\\C#Projects\\HotelSystemIndustry\\HotelSystemIndustry\\appsettings.Development.json",
-              "RelativeToolTip": "HotelSystemIndustry\\appsettings.Development.json",
+              "Title": "Address.cs",
+              "DocumentMoniker": "H:\\C#Projects\\HotelSystemIndustry\\HotelSystemIndustry\\Models\\Address.cs",
+              "RelativeDocumentMoniker": "HotelSystemIndustry\\Models\\Address.cs",
+              "ToolTip": "H:\\C#Projects\\HotelSystemIndustry\\HotelSystemIndustry\\Models\\Address.cs",
+              "RelativeToolTip": "HotelSystemIndustry\\Models\\Address.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2026-02-28T15:31:50.27Z",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-01T20:39:51.243Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "Guest.cs",
+              "DocumentMoniker": "H:\\C#Projects\\HotelSystemIndustry\\HotelSystemIndustry\\Models\\Guest.cs",
+              "RelativeDocumentMoniker": "HotelSystemIndustry\\Models\\Guest.cs",
+              "ToolTip": "H:\\C#Projects\\HotelSystemIndustry\\HotelSystemIndustry\\Models\\Guest.cs",
+              "RelativeToolTip": "HotelSystemIndustry\\Models\\Guest.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAkAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-01T20:27:20.578Z",
               "EditorCaption": ""
             },
             {
@@ -78,70 +104,49 @@
               "RelativeDocumentMoniker": "HotelSystemIndustry\\Models\\Reservation.cs",
               "ToolTip": "H:\\C#Projects\\HotelSystemIndustry\\HotelSystemIndustry\\Models\\Reservation.cs",
               "RelativeToolTip": "HotelSystemIndustry\\Models\\Reservation.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABsAAAAKAAAAAAAAAA==",
+              "ViewState": "AgIAAAkAAAAAAAAAAAAAAB0AAAAxAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-28T13:58:05.266Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "Guest.cs",
-              "DocumentMoniker": "H:\\C#Projects\\HotelSystemIndustry\\HotelSystemIndustry\\Models\\Guest.cs",
-              "RelativeDocumentMoniker": "HotelSystemIndustry\\Models\\Guest.cs",
-              "ToolTip": "H:\\C#Projects\\HotelSystemIndustry\\HotelSystemIndustry\\Models\\Guest.cs",
-              "RelativeToolTip": "HotelSystemIndustry\\Models\\Guest.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAFAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-28T13:57:46.036Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "Room.cs",
-              "DocumentMoniker": "H:\\C#Projects\\HotelSystemIndustry\\HotelSystemIndustry\\Models\\Room.cs",
-              "RelativeDocumentMoniker": "HotelSystemIndustry\\Models\\Room.cs",
-              "ToolTip": "H:\\C#Projects\\HotelSystemIndustry\\HotelSystemIndustry\\Models\\Room.cs",
-              "RelativeToolTip": "HotelSystemIndustry\\Models\\Room.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-28T13:57:12.031Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "Address.cs",
-              "DocumentMoniker": "H:\\C#Projects\\HotelSystemIndustry\\HotelSystemIndustry\\Models\\Address.cs",
-              "RelativeDocumentMoniker": "HotelSystemIndustry\\Models\\Address.cs",
-              "ToolTip": "H:\\C#Projects\\HotelSystemIndustry\\HotelSystemIndustry\\Models\\Address.cs",
-              "RelativeToolTip": "HotelSystemIndustry\\Models\\Address.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAA+AAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-28T13:56:47.212Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "Hotel.cs",
-              "DocumentMoniker": "H:\\C#Projects\\HotelSystemIndustry\\HotelSystemIndustry\\Models\\Hotel.cs",
-              "RelativeDocumentMoniker": "HotelSystemIndustry\\Models\\Hotel.cs",
-              "ToolTip": "H:\\C#Projects\\HotelSystemIndustry\\HotelSystemIndustry\\Models\\Hotel.cs",
-              "RelativeToolTip": "HotelSystemIndustry\\Models\\Hotel.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-28T13:56:31.51Z",
+              "WhenOpened": "2026-03-01T20:26:55.499Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 3,
-              "Title": "Program.cs",
-              "DocumentMoniker": "H:\\C#Projects\\HotelSystemIndustry\\HotelSystemIndustry\\Program.cs",
-              "RelativeDocumentMoniker": "HotelSystemIndustry\\Program.cs",
-              "ToolTip": "H:\\C#Projects\\HotelSystemIndustry\\HotelSystemIndustry\\Program.cs",
-              "RelativeToolTip": "HotelSystemIndustry\\Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAAAAAAAAAAAA==",
+              "Title": "Invoice.cs",
+              "DocumentMoniker": "H:\\C#Projects\\HotelSystemIndustry\\HotelSystemIndustry\\Models\\Invoice.cs",
+              "RelativeDocumentMoniker": "HotelSystemIndustry\\Models\\Invoice.cs",
+              "ToolTip": "H:\\C#Projects\\HotelSystemIndustry\\HotelSystemIndustry\\Models\\Invoice.cs",
+              "RelativeToolTip": "HotelSystemIndustry\\Models\\Invoice.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAwAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-28T13:48:29.347Z"
+              "WhenOpened": "2026-03-01T20:25:29.763Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Room.cs",
+              "DocumentMoniker": "H:\\C#Projects\\HotelSystemIndustry\\HotelSystemIndustry\\Models\\Room.cs",
+              "RelativeDocumentMoniker": "HotelSystemIndustry\\Models\\Room.cs",
+              "ToolTip": "H:\\C#Projects\\HotelSystemIndustry\\HotelSystemIndustry\\Models\\Room.cs",
+              "RelativeToolTip": "HotelSystemIndustry\\Models\\Room.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAAuAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-01T20:25:03.408Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "Raport.cs",
+              "DocumentMoniker": "H:\\C#Projects\\HotelSystemIndustry\\HotelSystemIndustry\\Models\\Raport.cs",
+              "RelativeDocumentMoniker": "HotelSystemIndustry\\Models\\Raport.cs",
+              "ToolTip": "H:\\C#Projects\\HotelSystemIndustry\\HotelSystemIndustry\\Models\\Raport.cs",
+              "RelativeToolTip": "HotelSystemIndustry\\Models\\Raport.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAABCAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-01T20:20:40.446Z",
+              "EditorCaption": ""
             }
           ]
         }

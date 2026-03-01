@@ -2,6 +2,12 @@
 bin/
 obj/
 
+HotelSystemIndustry/bin/
+HotelSystemIndustry/obj/
+
+# VS Code docker container
+.devcontainer
+
 # User-specific files
 *.user
 *.suo
