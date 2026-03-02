@@ -1,4 +1,6 @@
-﻿namespace HotelSystemIndustry.Models
+﻿using HotelSystemIndustry.Models.HousekeepingMaintenance;
+
+namespace HotelSystemIndustry.Models
 {
     public enum RoomType
     {
@@ -22,5 +24,8 @@
         public Guid HotelId { get; set; }
         public Hotel Hotel { get; set; } = null!;
         public ICollection<Reservation> Reservations { get; set; } = new List<Reservation>();
+
+        public ICollection<RoomCleaning> Cleanings { get; set; } = new List<RoomCleaning>(); //zaplanowane sprzątania
+        public ICollection<MaintenanceRequest> MaintenanceRequests { get; set; } = new List<MaintenanceRequest>(); //zgłoszenia konserwacyjne
     }
 }
