@@ -8,5 +8,7 @@
         public string Email { get; set; } = string.Empty;
         public string PhoneNumber { get; set; } = string.Empty;
         public ICollection<Reservation> Reservations { get; set; } = new List<Reservation>();
+
+        public ICollection<Recreation.RecreationBooking> RecreationBookings { get; set; } = new List<Recreation.RecreationBooking>();
     }
 }
