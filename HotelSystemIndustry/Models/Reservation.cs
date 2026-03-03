@@ -12,8 +12,6 @@
     {
         public Guid Id { get; set; }
 
-        public Guid HotelId { get; set; }
-        public Hotel Hotel { get; set; } = null!;
         public Guid RoomId { get; set; }
         public Room Room { get; set; } = null!;
 

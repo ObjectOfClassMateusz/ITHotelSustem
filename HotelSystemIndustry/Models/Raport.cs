@@ -9,6 +9,5 @@
         public DateTime EndDate { get; set; }
 
         public IEnumerable<Dictionary<Guid, Payment>> SetOfActions { get; set; }
-
     }
 }

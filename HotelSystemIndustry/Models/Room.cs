@@ -16,7 +16,6 @@
         public int Capacity { get; set; }
         public decimal BasePricePerNight { get; set; }
         public bool Renovation { get; set; }
-
         public RoomType RoomType { get; set; }
 
         public Guid HotelId { get; set; }
