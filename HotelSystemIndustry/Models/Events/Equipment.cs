@@ -14,7 +14,7 @@ namespace HotelSystemIndustry.Models.Events
     {
         [Key]
         public Guid Id { get; set; }
-
+        [Required]
         public required string Name { get; set; }
 
         public EquipmentType Type { get; set; }

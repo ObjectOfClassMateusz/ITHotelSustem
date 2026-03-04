@@ -29,13 +29,13 @@ namespace HotelSystemIndustry.Models.Events
     {
         [Key]
         public Guid Id { get; set; }
-
+        [Required]
         public EventReservationStatus Status { get; set; }
 
         public EventType EventType { get; set; }
-
+        [DataType(DataType.DateTime)]
         public DateTime StartTime { get; set; }
-
+        [DataType(DataType.DateTime)]
         public DateTime EndTime { get; set; }
 
         public uint NumRequiredStaff { get; set; }

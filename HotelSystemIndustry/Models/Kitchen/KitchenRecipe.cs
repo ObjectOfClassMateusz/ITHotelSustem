@@ -23,7 +23,6 @@ namespace HotelSystemIndustry.Models.Kitchen
 
         public ICollection<Ingredient>? Ingredients { get; set; }
 
-
         public required string Content { get; set; }
     }
 

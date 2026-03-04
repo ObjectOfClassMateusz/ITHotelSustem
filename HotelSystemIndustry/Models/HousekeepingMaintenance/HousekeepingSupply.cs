@@ -26,9 +26,9 @@ namespace HotelSystemIndustry.Models.Housekeeping
         public SupplyCategory Category { get; set; }
 
         public SupplyUnit Unit { get; set; }
-
+        [Range(typeof(decimal), "0", "79228162514264337593543950335")]
         public decimal QuantityInStock { get; set; }
-
+        [Range(typeof(decimal), "0", "79228162514264337593543950335")]
         public decimal MinimumRequiredQuantity { get; set; }
     }
 }

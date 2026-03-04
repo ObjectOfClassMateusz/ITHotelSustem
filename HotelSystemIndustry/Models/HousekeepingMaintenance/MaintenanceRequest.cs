@@ -22,13 +22,13 @@ namespace HotelSystemIndustry.Models.HousekeepingMaintenance
         public Guid Id { get; set; }
 
         public required Room Room { get; set; }
-
+        [DataType(DataType.DateTime)]
         public DateTime ReportedDate { get; set; }
 
         public required string Description { get; set; }
-
+        [Required]
         public MaintenanceStatus Status { get; set; }
-
+        [Required]
         public MaintenancePriority Priority { get; set; }
     }
 }

@@ -15,14 +15,10 @@ namespace HotelSystemIndustry.Models.Kitchen
     {
         [Key]
         public Guid Id { get; set; }
-
+        [DataType(DataType.DateTime)]
         public DateTime SubmissionTime { get; set; }
-
         public OrderType Type { get; set; }
-
         public required string DeliveryDestination { get; set; }
-
-
         public ICollection<KitchenProduct>? Products { get; set; }
     }
 

@@ -16,6 +16,7 @@ namespace HotelSystemIndustry.Models.Kitchen
         * Ułamek może być przydatny dla artykułów sypkich (kg) i cieczy (l).
         * Dla artykułów dyskretnych można przechować po prostu liczbę całkowitą.
         */
+        [Range(typeof(decimal), "0", "79228162514264337593543950335")]
         public decimal Count { get; set; }
     }
 

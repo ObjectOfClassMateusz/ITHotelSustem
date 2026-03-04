@@ -13,9 +13,9 @@ namespace HotelSystemIndustry.Models.Trading
         public ShopMagazine? Magazine { get; set; }
 
         public required string Variant { get; set; }
-
+        [Required]
         public uint Count { get; set; }
-
+        [DataType(DataType.DateTime)]
         public DateTime? ExpireDate { get; set; } = null;
     }
 

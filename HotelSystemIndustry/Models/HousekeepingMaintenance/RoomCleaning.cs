@@ -14,13 +14,12 @@ namespace HotelSystemIndustry.Models.HousekeepingMaintenance
     {
         [Key]
         public Guid Id { get; set; }
-
+        [Required]
         public required Room Room { get; set; }
-
         public EmployeeProfile? AssignedEmployee { get; set; }
-
+        [DataType(DataType.DateTime)]
         public DateTime ScheduledDate { get; set; }
-
+        [Required]
         public CleaningStatus Status { get; set; }
     }
 }

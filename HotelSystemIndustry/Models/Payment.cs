@@ -1,12 +1,18 @@
-﻿namespace HotelSystemIndustry.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace HotelSystemIndustry.Models
 {
     public class Payment
     {
+        [Key]
         public Guid Id { get; set; }
-
+        [Range(typeof(decimal), "0", "79228162514264337593543950335")]
         public decimal Amount { get; set; }
+        [DataType(DataType.Date)]
         public DateTime PaymentDate { get; set; }
+        [Required]
         public PaymentMethod Method { get; set; }
+        [Required]
         public PaymentStatus Status { get; set; }
     }
 
