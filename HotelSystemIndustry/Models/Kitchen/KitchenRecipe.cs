@@ -1,28 +1,44 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 
 namespace HotelSystemIndustry.Models.Kitchen
 {
+
+    [PrimaryKey(nameof(RecipeId), nameof(ArticleId))]
+    public class KitchenRecipeIngredient
+    {
+        public Guid RecipeId { get; set; }
+
+        public Guid ArticleId { get; set; }
+
+
+        [Required]
+        public virtual required KitchenRecipe Recipe { get; set; }
+
+        [Required]
+        public virtual required KitchenArticle Article { get; set; }
+
+        /*
+        * Ułamek może być przydatny dla artykułów sypkich (kg) i cieczy (l).
+        * Dla artykułów dyskretnych można przechować po prostu liczbę całkowitą.
+        */
+        public decimal Count { get; set; }
+    }
+
 
     public class KitchenRecipe
     {
         [Key]
         public Guid Id { get; set; }
 
-        public required KitchenProduct OutcomeProduct { get; set; }
 
-        public struct Ingredient
-        {
-            public KitchenArticle article;
+        public virtual required KitchenProduct OutcomeProduct { get; set; }
 
-            /*
-            * Ułamek może być przydatny dla artykułów sypkich (kg) i cieczy (l).
-            * Dla artykułów dyskretnych można przechować po prostu liczbę całkowitą.
-            */
-            public decimal Count;
-        }
 
-        public ICollection<Ingredient>? Ingredients { get; set; }
+        public virtual ICollection<KitchenRecipeIngredient>? Ingredients { get; set; }
 
+
+        [Required, MaxLength(10000, ErrorMessage = "Opis przepisu jest zbyt długi")]
         public required string Content { get; set; }
     }
 

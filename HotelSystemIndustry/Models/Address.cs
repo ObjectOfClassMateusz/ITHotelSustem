@@ -1,14 +1,16 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 
 namespace HotelSystemIndustry.Models
 {
+    [PrimaryKey(nameof(Street), nameof(City), nameof(PostalCode))]
     public class Address
     {
-        [Key,Required]
+        [Required]
         public string Street { get; set; } = string.Empty;//PK
-        [Key,Required]
+        [Required]
         public string City { get; set; } = string.Empty;//PK
-        [Key,Required]
+        [Required]
         public string PostalCode { get; set; } = string.Empty;//PK
         [Required]
         public string Country { get; set; } = string.Empty;

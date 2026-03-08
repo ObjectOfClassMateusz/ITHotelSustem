@@ -3,21 +3,25 @@ using System.ComponentModel.DataAnnotations;
 namespace HotelSystemIndustry.Models.Events
 {
 
-    public enum EquipmentType
+    public class EquipmentType : DictionaryPrototype
     {
-        SLIDE_PROJECTOR,
-        HIFI_SPEAKER,
-        WIFI_ROUTER
+        /*
+        * np.:
+        * - SLIDE_PROJECTOR,
+        * - HIFI_SPEAKER,
+        * - WIFI_ROUTER
+        */
     }
     
     public class Equipment
     {
         [Key]
         public Guid Id { get; set; }
-        [Required]
+
+        [Required, MaxLength(30, ErrorMessage = "Nazwa jest zbyt długa")]
         public required string Name { get; set; }
 
-        public EquipmentType Type { get; set; }
+        public virtual required EquipmentType Type { get; set; }
     }
 
 }

@@ -3,21 +3,26 @@ using System.ComponentModel.DataAnnotations;
 namespace HotelSystemIndustry.Models.Trading
 {
 
-    public enum SaleItemType
+    public class SaleItemType : DictionaryPrototype
     {
-        TO_BUY,
-        FOR_DAY_LEASE,
-        FOR_MONTHLY_LEASE
+        /* np.:
+        * - TO_BUY,
+        * - FOR_DAY_LEASE,
+        * - FOR_MONTHLY_LEASE
+        */
     }
     
     public class SaleItem
     {
         [Key]
         public Guid Id { get; set; }
-        [Required]
+
+        [Required, MaxLength(30, ErrorMessage = "Nazwa jest zbyt długa")]
         public required string Name { get; set; }
+
         [Required]
-        public SaleItemType Type { get; set; }
+        public virtual required SaleItemType Type { get; set; }
+
         public bool ContainsAlcohol { get; set; }
     }
 

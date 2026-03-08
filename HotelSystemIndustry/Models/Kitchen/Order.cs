@@ -3,11 +3,13 @@ using System.ComponentModel.DataAnnotations;
 namespace HotelSystemIndustry.Models.Kitchen
 {
 
-    public enum OrderType
+    public class OrderType : DictionaryPrototype
     {
-        TABLE_ORDER,
-        ROOM_ORDER,
-        TAKEAWAY_ORDER
+        /* Wartościami mogą być np.:
+        * - TABLE_ORDER,
+        * - ROOM_ORDER,
+        * - TAKEAWAY_ORDER
+        */
     }
 
 
@@ -15,11 +17,16 @@ namespace HotelSystemIndustry.Models.Kitchen
     {
         [Key]
         public Guid Id { get; set; }
+
         [DataType(DataType.DateTime)]
         public DateTime SubmissionTime { get; set; }
-        public OrderType Type { get; set; }
+
+        public virtual required OrderType Type { get; set; }
+
+        [Required, MaxLength(100, ErrorMessage = "Opis miejsca docelowego dostawy jest zbyt długi")]
         public required string DeliveryDestination { get; set; }
-        public ICollection<KitchenProduct>? Products { get; set; }
+
+        public virtual ICollection<KitchenProduct>? Products { get; set; }
     }
 
 }

@@ -8,13 +8,16 @@ namespace HotelSystemIndustry.Models.Trading
         [Key]
         public Guid Id { get; set; }
 
-        public required SaleItem Item { get; set; }
+        public virtual required SaleItem Item { get; set; }
 
-        public ShopMagazine? Magazine { get; set; }
+        public virtual ShopMagazine? Magazine { get; set; }
 
+        [Required, MaxLength(50, ErrorMessage = "Opis wariantu produktu jest zbyt długi")]
         public required string Variant { get; set; }
-        [Required]
+
+        [Required, Range(typeof(uint), "0", "10000")]
         public uint Count { get; set; }
+
         [DataType(DataType.DateTime)]
         public DateTime? ExpireDate { get; set; } = null;
     }

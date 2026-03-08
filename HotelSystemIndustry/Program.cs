@@ -1,9 +1,13 @@
 using HotelSystemIndustry.Infrastructure;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+var connectionString = builder.Configuration.GetConnectionString("HotelConnection");
+builder.Services.AddDbContext<HotelDbContext>(options => options.UseNpgsql(connectionString));
 
 var app = builder.Build();
 
