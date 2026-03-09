@@ -66,6 +66,15 @@ namespace HotelSystemIndustry.Infrastructure
         public virtual DbSet<Purchase> Purchases { get; set; }
 
 
+        public virtual DbSet<EmployeeShift> EmployeeShifts { get; set; }
+        public virtual DbSet<HousekeepingSupply> HousekeepingSupplies { get; set; }
+        public virtual DbSet<LostAndFoundItem> LostAndFoundItems { get; set; }
+        public virtual DbSet<MaintenanceRequest> MaintenanceRequests { get; set; }
+        public virtual DbSet<RoomCleaning> RoomCleanings { get; set; }
+        public virtual DbSet<SupplyUsage> SupplyUsages { get; set; }
+
+        public virtual DbSet<RecreationBooking> RecreationBookings { get; set; }
+        public virtual DbSet<RecreationFacility> RecreationFacilities { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -85,6 +94,42 @@ namespace HotelSystemIndustry.Infrastructure
             modelBuilder.Entity<KitchenRecipeIngredient>().HasOne(a => a.Article).WithMany().HasForeignKey(x => x.ArticleId).OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<ShopMagazine>().HasMany(m => m.Items).WithOne(x => x.Magazine).OnDelete(DeleteBehavior.Restrict);
+
+
+            modelBuilder.Entity<RoomCleaning>()
+                .HasOne(r => r.Room)
+                .WithMany(r => r.Cleanings)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<MaintenanceRequest>()
+                .HasOne(m => m.Room)
+                .WithMany(r => r.MaintenanceRequests)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<LostAndFoundItem>()
+                .HasOne(l => l.Room)
+                .WithMany()
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<SupplyUsage>()
+                .HasOne(s => s.RoomCleaning)
+                .WithMany()
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<SupplyUsage>()
+                .HasOne(s => s.Supply)
+                .WithMany()
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<RecreationBooking>()
+                .HasOne(r => r.Facility)
+                .WithMany(f => f.Bookings)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<RecreationBooking>()
+                .HasOne(r => r.Guest)
+                .WithMany(g => g.RecreationBookings)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }
