@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 namespace HotelSystemIndustry.Models
 {
     
-    public class DictionaryPrototype
+    public abstract class DictionaryPrototype
     {
         [Key]
         public Guid Id { get; set; }
