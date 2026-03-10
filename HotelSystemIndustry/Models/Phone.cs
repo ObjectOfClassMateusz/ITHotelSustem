@@ -6,9 +6,10 @@ namespace HotelSystemIndustry.Models
     {
         [Key]
         public Guid Id { get; set; }
+        [Required, Phone]
+        public required string PhoneNumber { get; set; }
+
         public Guid HotelId { get; set; }
-        public Hotel Hotel { get; set; }
-        [Phone]
-        public string PhoneNumber { get; set; }
+        public Hotel? Hotel { get; set; }
     }
 }

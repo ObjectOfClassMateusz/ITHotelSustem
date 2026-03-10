@@ -14,6 +14,6 @@ namespace HotelSystemIndustry.Models
         [DataType(DataType.Date)]
         public DateTime EndDate { get; set; }
 
-        public IEnumerable<Dictionary<Guid, Payment>> SetOfActions { get; set; }
+        public ICollection<RaportPayment> RaportPayments { get; set; }
     }
 }

@@ -12,5 +12,8 @@ namespace HotelSystemIndustry.Models
         public string PostalCode { get; set; } = string.Empty;//PK
         [Required]
         public string Country { get; set; } = string.Empty;
+
+        public Guid HotelId { get; set; }
+        public Hotel? Hotel { get; set; }
     }
 }

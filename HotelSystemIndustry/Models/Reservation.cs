@@ -10,17 +10,15 @@ namespace HotelSystemIndustry.Models
         Completed = 3
     }
 
-    public class Reservation
+    public interface IService
+    {
+
+    }
+
+    public class Reservation : IService
     {
         [Key]
         public Guid Id { get; set; }
-
-        public Guid RoomId { get; set; }
-        [Required(ErrorMessage = "Wymagany pokój do rezerwacji")]
-        public Room Room { get; set; } = null!;
-
-        [Required(ErrorMessage = "Brak gości rezerwujących")]
-        public ICollection<Guest> Guests { get; set; } = new List<Guest>();
 
         [DataType(DataType.Date)]
         public DateTime CheckInDate { get; set; }
@@ -29,18 +27,23 @@ namespace HotelSystemIndustry.Models
 
         public ReservationStatus Status { get; set; }
 
+        [Required(ErrorMessage = "Brak dni rezerwacji")]
+        public int NumberOfOvernightStays { get; set; }
+        [Required, MaxLength(10)]
+        public required string NIP { get; set; }
+        public String? SpecialWishes { get; set; }
+
+
+        public Guid RoomId { get; set; }
+        [Required(ErrorMessage = "Wymagany pokój do rezerwacji")]
+        public Room Room { get; set; } = null!;
+
         [Required(ErrorMessage = "Wymagane opłacenie")]
         public required Payment Payment { get; set; }
 
-        [Required(ErrorMessage = "Brak dni rezerwacji")]
-        public int NumberOfOvernightStays { get; set; }
+        public Invoice? Invoice { get; set; }
 
-        [Required]
-        public required Address Address { get; set; }
-
-        [MaxLength(10)]
-        public string NIP {  get; set; }
-
-        public String? SpecialWishes { get; set; }
+        [Required(ErrorMessage = "Brak gości rezerwujących")]
+        public ICollection<Guest> Guests { get; set; } = new List<Guest>();
     }
 }

@@ -15,6 +15,9 @@ namespace HotelSystemIndustry.Models.Events
         public decimal ReservationPrice { get; set; }
 
         public ICollection<EquipmentInstance>? Equipment { get; set; }
+
+        public Guid EventReservationId {  get; set; }
+        public EventReservation? Reservation { get; set; }
     }
 
 }
