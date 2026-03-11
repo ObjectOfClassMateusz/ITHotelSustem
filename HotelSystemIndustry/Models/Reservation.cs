@@ -31,7 +31,7 @@ namespace HotelSystemIndustry.Models
         public int NumberOfOvernightStays { get; set; }
         [Required, MaxLength(10)]
         public required string NIP { get; set; }
-        public String? SpecialWishes { get; set; }
+        public string? SpecialWishes { get; set; }
 
 
         public Guid RoomId { get; set; }
