@@ -19,8 +19,9 @@ namespace HotelSystemIndustry.Models.HousekeepingMaintenance
         public DateTime FoundDate { get; set; }
         [Required]
         public LostAndFoundStatus Status { get; set; }
-        public required Room Room { get; set; }
 
+        public Guid RoomId { get; set; }
+        public required Room Room { get; set; }
         public required EmployeeProfile FoundByEmployee { get; set; }
     }
 }

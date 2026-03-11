@@ -14,6 +14,12 @@ namespace HotelSystemIndustry.Models
         public PaymentMethod Method { get; set; }
         [Required]
         public PaymentStatus Status { get; set; }
+
+
+        public Guid ServiceId { get; set; }
+        public IService? Service { get; set; }
+
+        public ICollection<RaportPayment> RaportPayments { get; set; }
     }
 
     public enum PaymentMethod
