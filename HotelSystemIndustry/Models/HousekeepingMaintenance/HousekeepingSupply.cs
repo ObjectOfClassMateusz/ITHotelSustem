@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace HotelSystemIndustry.Models.Housekeeping
+namespace HotelSystemIndustry.Models.HousekeepingMaintenance
 {
     public enum SupplyCategory
     {

@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using HotelSystemIndustry.Infrastructure;
 using HotelSystemIndustry.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,11 +8,15 @@ namespace HotelSystemIndustry.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly HotelDbContext _context;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger , HotelDbContext context)
         {
+            _context = context;
             _logger = logger;
         }
+
+        // kontroller/action
 
         public IActionResult Index()
         {

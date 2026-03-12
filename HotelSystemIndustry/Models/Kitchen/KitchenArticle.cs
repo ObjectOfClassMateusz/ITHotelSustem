@@ -3,11 +3,13 @@ using System.ComponentModel.DataAnnotations;
 namespace HotelSystemIndustry.Models.Kitchen
 {
     
-    public enum KitchenArticleType
+    public class KitchenArticleType : DictionaryPrototype
     {
-        DISCRETE,
-        LOOSE_ARTICLE,
-        LIQUID
+        /* Wartości takie jak np.:
+        * - DISCRETE,
+        * - LOOSE_ARTICLE,
+        * - LIQUID
+        */
     }
 
 
@@ -16,9 +18,11 @@ namespace HotelSystemIndustry.Models.Kitchen
         [Key]
         public Guid Id { get; set; }
 
+        [Required, MaxLength(30, ErrorMessage = "Nazwa jest zbyt długa")]
         public required string Name { get; set; }
 
-        public KitchenArticleType Type { get; set; }
+        [Required]
+        public virtual required KitchenArticleType Type { get; set; }
     }
 
 }

@@ -4,52 +4,65 @@ using HotelSystemIndustry.Models.Kitchen;
 namespace HotelSystemIndustry.Models.Events
 {
 
-    public enum EventReservationStatus
+    public class EventReservationStatus : DictionaryPrototype
     {
-        DURING_NEGOTIATION,
-        BOOKED,
-        PREPARING_EVENT,
-        HAPPENING_NOW,
-        FINISHED
+        /* np.:
+        * - DURING_NEGOTIATION,
+        * - BOOKED,
+        * - PREPARING_EVENT,
+        * - HAPPENING_NOW,
+        * - FINISHED
+        */
     }
 
-    public enum EventType
+    public class EventType : DictionaryPrototype
     {
-        CONFERENCE,
-        BANQUET,
-        WEDDING,
-        FUNERAL_WAKE,
-        BAPTISM,
-        BIRTHDAY,
-        NAME_DAY,
-        OTHER
+        /* np.:
+        * - CONFERENCE,
+        * - BANQUET,
+        * - WEDDING,
+        * - FUNERAL_WAKE,
+        * - BAPTISM,
+        * - BIRTHDAY,
+        * - NAME_DAY,
+        * - OTHER
+        */
     }
     
     public class EventReservation
     {
         [Key]
         public Guid Id { get; set; }
-        [Required]
-        public EventReservationStatus Status { get; set; }
 
-        public EventType EventType { get; set; }
+
+        [Required]
+        public virtual required EventReservationStatus Status { get; set; }
+
+        [Required]
+        public virtual required EventType EventType { get; set; }
+
+
         [DataType(DataType.DateTime)]
         public DateTime StartTime { get; set; }
+
         [DataType(DataType.DateTime)]
         public DateTime EndTime { get; set; }
+        
 
+        [Range(typeof(uint), "0", "500")]
         public uint NumRequiredStaff { get; set; }
 
+        [Range(typeof(uint), "0", "500")]
         public uint NumGuests { get; set; }
 
 
-        public ICollection<EventHall>? Halls { get; set; }
+        public virtual ICollection<EventHall>? Halls { get; set; }
 
-        public ICollection<EquipmentInstance>? Equipment { get; set; }
+        public virtual ICollection<EquipmentInstance>? Equipment { get; set; }
 
-        public ICollection<Room>? Rooms { get; set; }
+        public virtual ICollection<Room>? Rooms { get; set; }
 
-        public ICollection<KitchenProduct>? Food { get; set; }
+        public virtual ICollection<KitchenProduct>? Food { get; set; }
     }
 
 }

@@ -8,9 +8,10 @@ namespace HotelSystemIndustry.Models.Kitchen
         [Key]
         public Guid Id { get; set; }
 
-        public required Storage Storage { get; set; }
+        public Guid StorageId { get; set; }
+        public virtual required Storage Storage { get; set; }
 
-        public required KitchenArticle Article { get; set; }
+        public virtual required KitchenArticle Article { get; set; }
 
         /*
         * Ułamek może być przydatny dla artykułów sypkich (kg) i cieczy (l).

@@ -1,9 +1,13 @@
 using HotelSystemIndustry.Infrastructure;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+var connectionString = builder.Configuration.GetConnectionString("HotelConnection");
+builder.Services.AddDbContext<HotelDbContext>(options => options.UseNpgsql(connectionString));
 
 var app = builder.Build();
 
@@ -24,6 +28,6 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Reservations}/{action=Index}/{id?}");
 
 app.Run();
