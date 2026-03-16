@@ -2,7 +2,6 @@ using System.ComponentModel.DataAnnotations;
 
 namespace HotelSystemIndustry.Models.Kitchen
 {
-
     public class Storage
     {
         [Key]
@@ -17,5 +16,4 @@ namespace HotelSystemIndustry.Models.Kitchen
 
         public virtual ICollection<ArticleInstance>? Articles { get; set; }
     }
-
 }

@@ -8,6 +8,7 @@ namespace HotelSystemIndustry.Models.Kitchen
         [Key]
         public Guid Id { get; set; }
 
+        public Guid StorageId { get; set; }
         public virtual required Storage Storage { get; set; }
 
         public virtual required KitchenArticle Article { get; set; }

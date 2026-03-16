@@ -5,7 +5,6 @@ using HotelSystemIndustry.Models.Trading;
 using HotelSystemIndustry.Models.HousekeepingMaintenance;
 using HotelSystemIndustry.Models.Recreation;
 using Microsoft.EntityFrameworkCore;
-using HotelSystemIndustry.Models.Housekeeping;
 
 namespace HotelSystemIndustry.Infrastructure
 {
@@ -52,30 +51,17 @@ namespace HotelSystemIndustry.Infrastructure
 
 
         public virtual DbSet<EquipmentType> EquipmentTypes { get; set; }
-
         public virtual DbSet<Equipment> Equipment { get; set; }
-
         public virtual DbSet<EquipmentInstance> EquipmentInstances { get; set; }
-
         public virtual DbSet<EventHall> EventHalls { get; set; }
-
         public virtual DbSet<EventReservationStatus> EventReservationStatuses { get; set; }
-
         public virtual DbSet<EventType> EventTypes { get; set; }
-
         public virtual DbSet<EventReservation> EventReservations { get; set; }
-
-
         public virtual DbSet<Storage> KitchenStorages { get; set; }
-
         public virtual DbSet<KitchenArticleType> KitchenArticleTypes { get; set; }
-
         public virtual DbSet<KitchenArticle> KitchenArticles { get; set; }
-
         public virtual DbSet<ArticleInstance> KitchenArticleInstances { get; set; }
-
         public virtual DbSet<KitchenProduct> KitchenProducts { get; set; }
-
         public virtual DbSet<KitchenRecipeIngredient> KitchenRecipeIngredients { get; set; }
 
         public virtual DbSet<KitchenRecipe> KitchenRecipes { get; set; }
@@ -209,7 +195,7 @@ namespace HotelSystemIndustry.Infrastructure
                 .HasForeignKey<Payment>(p => p.ServiceId);
 
             modelBuilder.Entity<RaportPayment>()
-            .HasKey(rp => new { rp.RaportId, rp.PaymentId });
+                .HasKey(rp => new { rp.RaportId, rp.PaymentId });
             modelBuilder.Entity<RaportPayment>()
                 .HasOne(rp => rp.Raport)
                 .WithMany(r => r.RaportPayments)
@@ -225,11 +211,51 @@ namespace HotelSystemIndustry.Infrastructure
             modelBuilder.Entity<Guest>()
                 .HasMany(g => g.RecreationBookings)
                 .WithOne(rb => rb.Guest)
-                .HasForeignKey(rb => rb.GuestId);
+                .HasForeignKey(rb => rb.GuestId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             modelBuilder.Entity<RecreationFacility>()
                 .HasMany(rf => rf.Bookings)
                 .WithOne(rb => rb.Facility)
-                .HasForeignKey(rb => rb.FacilityId);
+                .HasForeignKey(rb => rb.FacilityId).OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Storage>()
+                .HasMany(s => s.Articles)
+                .WithOne(a => a.Storage)
+                .HasForeignKey(a => a.StorageId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<KitchenRecipe>()
+                .HasMany(i => i.Ingredients)
+                .WithOne(x => x.Recipe)
+                .HasForeignKey(x => x.RecipeId)
+                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<KitchenRecipeIngredient>()
+                .HasOne(a => a.Article)
+                .WithMany()
+                .HasForeignKey(x => x.ArticleId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<ShopMagazine>()
+                .HasMany(m => m.Items)
+                .WithOne(x => x.Magazine)
+                .HasForeignKey(x => x.MagazineId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<RoomCleaning>()
+                .HasOne(r => r.Room)
+                .WithMany(r => r.Cleanings)
+                .HasForeignKey(r => r.RoomId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<MaintenanceRequest>()
+                .HasOne(m => m.Room)
+                .WithMany(r => r.MaintenanceRequests)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Purchase>()
+                .HasOne(p => p.ShopPoint)
+                .WithMany()
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Purchase>()
+                .HasMany(p => p.Items)
+                .WithOne()
+                .OnDelete(DeleteBehavior.Restrict);
+
         }
     }
 }
