@@ -8,6 +8,9 @@ namespace HotelSystemIndustry.Models.Trading
         [Key]
         public Guid Id { get; set; }
 
+
+        public required Guid ItemId { get; set; }
+
         public virtual required SaleItem Item { get; set; }
 
         public Guid? MagazineId { get; set; }

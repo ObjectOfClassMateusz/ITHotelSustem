@@ -21,6 +21,9 @@ namespace HotelSystemIndustry.Models.Kitchen
         [Required, MaxLength(30, ErrorMessage = "Nazwa jest zbyt długa")]
         public required string Name { get; set; }
 
+
+        public required Guid TypeId { get; set; }
+
         [Required]
         public virtual required KitchenArticleType Type { get; set; }
     }

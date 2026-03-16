@@ -21,6 +21,8 @@ namespace HotelSystemIndustry.Models.Events
         [Required, MaxLength(30, ErrorMessage = "Nazwa jest zbyt długa")]
         public required string Name { get; set; }
 
+
+        public required Guid TypeId { get; set; }
         public virtual required EquipmentType Type { get; set; }
     }
 
