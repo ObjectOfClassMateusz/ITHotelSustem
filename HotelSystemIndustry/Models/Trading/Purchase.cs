@@ -11,7 +11,7 @@ namespace HotelSystemIndustry.Models.Trading
         [DataType(DataType.DateTime)]
         public DateTime TransactionDate { get; set; }
 
-        public Guid ShopPointId { get; set; }
+        public Guid? ShopPointId { get; set; }
         [Required]
         public virtual ShopPoint? ShopPoint { get; set; }
 

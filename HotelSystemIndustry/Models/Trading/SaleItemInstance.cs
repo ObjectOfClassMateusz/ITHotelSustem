@@ -10,11 +10,9 @@ namespace HotelSystemIndustry.Models.Trading
 
         public virtual required SaleItem Item { get; set; }
 
-        public Guid PurchaseId { get; set; }
-        public virtual Purchase? Purchase { get; set; }
-
-        public Guid MagazineId { get; set; }
+        public Guid? MagazineId { get; set; }
         public virtual ShopMagazine? Magazine { get; set; }
+
 
         [Required, MaxLength(50, ErrorMessage = "Opis wariantu produktu jest zbyt długi")]
         public required string Variant { get; set; }
