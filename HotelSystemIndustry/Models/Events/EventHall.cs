@@ -19,8 +19,7 @@ namespace HotelSystemIndustry.Models.Events
 
         public virtual ICollection<EquipmentInstance>? Equipment { get; set; }
 
-        public Guid EventReservationId {  get; set; }
-        public EventReservation? Reservation { get; set; }
+        public virtual ICollection<EventReservation>? EventReservations { get; set; }
     }
 
 }

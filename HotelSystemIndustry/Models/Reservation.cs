@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace HotelSystemIndustry.Models
 {
@@ -10,10 +11,7 @@ namespace HotelSystemIndustry.Models
         Completed = 3
     }
 
-    public interface IService
-    {
-
-    }
+    public interface IService {  }
 
     public class Reservation : IService
     {
@@ -28,11 +26,12 @@ namespace HotelSystemIndustry.Models
         public ReservationStatus Status { get; set; }
 
         [Required(ErrorMessage = "Brak dni rezerwacji")]
+        [DisplayName("Liczba nocy")]
         public int NumberOfOvernightStays { get; set; }
+
         [Required, MaxLength(10)]
         public required string NIP { get; set; }
-        public String? SpecialWishes { get; set; }
-
+        public string? SpecialWishes { get; set; }
 
         public Guid RoomId { get; set; }
         [Required(ErrorMessage = "Wymagany pokój do rezerwacji")]

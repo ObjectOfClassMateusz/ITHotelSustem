@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HotelSystemIndustry.Migrations
 {
     [DbContext(typeof(HotelDbContext))]
-    [Migration("20260310152042_InitialCreate")]
+    [Migration("20260316155457_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -24,6 +24,36 @@ namespace HotelSystemIndustry.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("EventHallEventReservation", b =>
+                {
+                    b.Property<Guid>("EventHallsId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("EventReservationsId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("EventHallsId", "EventReservationsId");
+
+                    b.HasIndex("EventReservationsId");
+
+                    b.ToTable("EventHallEventReservation");
+                });
+
+            modelBuilder.Entity("EventReservationRoom", b =>
+                {
+                    b.Property<Guid>("EventReservationsId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("RoomsId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("EventReservationsId", "RoomsId");
+
+                    b.HasIndex("RoomsId");
+
+                    b.ToTable("EventReservationRoom");
+                });
 
             modelBuilder.Entity("GuestReservation", b =>
                 {
@@ -63,7 +93,7 @@ namespace HotelSystemIndustry.Migrations
                     b.HasIndex("HotelId")
                         .IsUnique();
 
-                    b.ToTable("Address");
+                    b.ToTable("Addresses");
                 });
 
             modelBuilder.Entity("HotelSystemIndustry.Models.EmployeeProfile", b =>
@@ -89,7 +119,7 @@ namespace HotelSystemIndustry.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("EmployeeProfile");
+                    b.ToTable("EmployeeProfiles");
                 });
 
             modelBuilder.Entity("HotelSystemIndustry.Models.Events.Equipment", b =>
@@ -177,9 +207,6 @@ namespace HotelSystemIndustry.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("EventReservationId")
-                        .HasColumnType("uuid");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(30)
@@ -192,8 +219,6 @@ namespace HotelSystemIndustry.Migrations
                         .HasColumnType("numeric");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("EventReservationId");
 
                     b.ToTable("EventHalls");
                 });
@@ -313,7 +338,7 @@ namespace HotelSystemIndustry.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Guest");
+                    b.ToTable("Guests");
                 });
 
             modelBuilder.Entity("HotelSystemIndustry.Models.Hotel", b =>
@@ -417,8 +442,7 @@ namespace HotelSystemIndustry.Migrations
 
                     b.HasIndex("FoundByEmployeeId");
 
-                    b.HasIndex("RoomId")
-                        .IsUnique();
+                    b.HasIndex("RoomId");
 
                     b.ToTable("LostAndFoundItems");
                 });
@@ -503,7 +527,7 @@ namespace HotelSystemIndustry.Migrations
                     b.HasIndex("ReservationId")
                         .IsUnique();
 
-                    b.ToTable("Invoice");
+                    b.ToTable("Invoices");
                 });
 
             modelBuilder.Entity("HotelSystemIndustry.Models.Kitchen.ArticleInstance", b =>
@@ -751,7 +775,7 @@ namespace HotelSystemIndustry.Migrations
                     b.HasIndex("ServiceId")
                         .IsUnique();
 
-                    b.ToTable("Payment");
+                    b.ToTable("Payments");
                 });
 
             modelBuilder.Entity("HotelSystemIndustry.Models.Phone", b =>
@@ -771,7 +795,7 @@ namespace HotelSystemIndustry.Migrations
 
                     b.HasIndex("HotelId");
 
-                    b.ToTable("Phone");
+                    b.ToTable("Phones");
                 });
 
             modelBuilder.Entity("HotelSystemIndustry.Models.Raport", b =>
@@ -792,7 +816,7 @@ namespace HotelSystemIndustry.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Raport");
+                    b.ToTable("Raports");
                 });
 
             modelBuilder.Entity("HotelSystemIndustry.Models.RaportPayment", b =>
@@ -807,7 +831,7 @@ namespace HotelSystemIndustry.Migrations
 
                     b.HasIndex("PaymentId");
 
-                    b.ToTable("RaportPayment");
+                    b.ToTable("RaportPayments");
                 });
 
             modelBuilder.Entity("HotelSystemIndustry.Models.Recreation.RecreationBooking", b =>
@@ -897,7 +921,7 @@ namespace HotelSystemIndustry.Migrations
 
                     b.HasIndex("RoomId");
 
-                    b.ToTable("Reservation");
+                    b.ToTable("Reservations");
                 });
 
             modelBuilder.Entity("HotelSystemIndustry.Models.Room", b =>
@@ -911,9 +935,6 @@ namespace HotelSystemIndustry.Migrations
 
                     b.Property<int>("Capacity")
                         .HasColumnType("integer");
-
-                    b.Property<Guid>("EventReservationId")
-                        .HasColumnType("uuid");
 
                     b.Property<int>("Floor")
                         .HasColumnType("integer");
@@ -933,11 +954,9 @@ namespace HotelSystemIndustry.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("EventReservationId");
-
                     b.HasIndex("HotelId");
 
-                    b.ToTable("Room");
+                    b.ToTable("Rooms");
                 });
 
             modelBuilder.Entity("HotelSystemIndustry.Models.Trading.Purchase", b =>
@@ -1106,6 +1125,36 @@ namespace HotelSystemIndustry.Migrations
                     b.ToTable("SupplyUsages");
                 });
 
+            modelBuilder.Entity("EventHallEventReservation", b =>
+                {
+                    b.HasOne("HotelSystemIndustry.Models.Events.EventHall", null)
+                        .WithMany()
+                        .HasForeignKey("EventHallsId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("HotelSystemIndustry.Models.Events.EventReservation", null)
+                        .WithMany()
+                        .HasForeignKey("EventReservationsId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("EventReservationRoom", b =>
+                {
+                    b.HasOne("HotelSystemIndustry.Models.Events.EventReservation", null)
+                        .WithMany()
+                        .HasForeignKey("EventReservationsId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("HotelSystemIndustry.Models.Room", null)
+                        .WithMany()
+                        .HasForeignKey("RoomsId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("GuestReservation", b =>
                 {
                     b.HasOne("HotelSystemIndustry.Models.Guest", null)
@@ -1162,17 +1211,6 @@ namespace HotelSystemIndustry.Migrations
                     b.Navigation("Equipment");
                 });
 
-            modelBuilder.Entity("HotelSystemIndustry.Models.Events.EventHall", b =>
-                {
-                    b.HasOne("HotelSystemIndustry.Models.Events.EventReservation", "Reservation")
-                        .WithMany("Halls")
-                        .HasForeignKey("EventReservationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Reservation");
-                });
-
             modelBuilder.Entity("HotelSystemIndustry.Models.Events.EventReservation", b =>
                 {
                     b.HasOne("HotelSystemIndustry.Models.Events.EventType", "EventType")
@@ -1212,8 +1250,8 @@ namespace HotelSystemIndustry.Migrations
                         .IsRequired();
 
                     b.HasOne("HotelSystemIndustry.Models.Room", "Room")
-                        .WithOne("foundItem")
-                        .HasForeignKey("HotelSystemIndustry.Models.HousekeepingMaintenance.LostAndFoundItem", "RoomId")
+                        .WithMany("FoundItems")
+                        .HasForeignKey("RoomId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -1416,12 +1454,6 @@ namespace HotelSystemIndustry.Migrations
 
             modelBuilder.Entity("HotelSystemIndustry.Models.Room", b =>
                 {
-                    b.HasOne("HotelSystemIndustry.Models.Events.EventReservation", "eventReservation")
-                        .WithMany("Rooms")
-                        .HasForeignKey("EventReservationId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("HotelSystemIndustry.Models.Hotel", "Hotel")
                         .WithMany("Rooms")
                         .HasForeignKey("HotelId")
@@ -1429,8 +1461,6 @@ namespace HotelSystemIndustry.Migrations
                         .IsRequired();
 
                     b.Navigation("Hotel");
-
-                    b.Navigation("eventReservation");
                 });
 
             modelBuilder.Entity("HotelSystemIndustry.Models.Trading.Purchase", b =>
@@ -1511,10 +1541,6 @@ namespace HotelSystemIndustry.Migrations
                     b.Navigation("Equipment");
 
                     b.Navigation("Food");
-
-                    b.Navigation("Halls");
-
-                    b.Navigation("Rooms");
                 });
 
             modelBuilder.Entity("HotelSystemIndustry.Models.Guest", b =>
@@ -1574,12 +1600,11 @@ namespace HotelSystemIndustry.Migrations
                 {
                     b.Navigation("Cleanings");
 
+                    b.Navigation("FoundItems");
+
                     b.Navigation("MaintenanceRequests");
 
                     b.Navigation("Reservations");
-
-                    b.Navigation("foundItem")
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("HotelSystemIndustry.Models.Trading.Purchase", b =>

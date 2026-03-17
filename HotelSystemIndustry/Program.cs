@@ -5,9 +5,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-
-var connectionString = builder.Configuration.GetConnectionString("HotelConnection");
-builder.Services.AddDbContext<HotelDbContext>(options => options.UseNpgsql(connectionString));
+builder.Services.AddDbContext<HotelDbContext>();
 
 var app = builder.Build();
 
@@ -28,6 +26,6 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Reservations}/{action=Index}/{id?}");
+    pattern: "{controller=Hotels}/{action=Index}/{id?}");
 
 app.Run();
