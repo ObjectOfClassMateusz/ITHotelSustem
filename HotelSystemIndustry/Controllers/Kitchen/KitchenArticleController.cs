@@ -61,6 +61,8 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         {
             if (ModelState.IsValid)
             {
+                kitchenArticle.Type = _context.KitchenArticleTypes.Where(ka => ka.Id == kitchenArticle.TypeId).Single();
+
                 kitchenArticle.Id = Guid.NewGuid();
                 _context.Add(kitchenArticle);
                 await _context.SaveChangesAsync();
@@ -101,6 +103,8 @@ namespace HotelSystemIndustry.Controllers.Kitchen
 
             if (ModelState.IsValid)
             {
+                kitchenArticle.Type = _context.KitchenArticleTypes.Where(ka => ka.Id == kitchenArticle.TypeId).Single();
+                
                 try
                 {
                     _context.Update(kitchenArticle);

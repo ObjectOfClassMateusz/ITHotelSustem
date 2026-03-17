@@ -61,6 +61,9 @@ namespace HotelSystemIndustry.Controllers.Trading
         {
             if (ModelState.IsValid)
             {
+                purchase.ShopPoint = _context.ShopPoints.Where(sp => sp.Id == purchase.ShopPointId).Single();
+                purchase.TransactionDate = purchase.TransactionDate.ToUniversalTime();
+
                 purchase.Id = Guid.NewGuid();
                 _context.Add(purchase);
                 await _context.SaveChangesAsync();
@@ -101,6 +104,9 @@ namespace HotelSystemIndustry.Controllers.Trading
 
             if (ModelState.IsValid)
             {
+                purchase.ShopPoint = _context.ShopPoints.Where(sp => sp.Id == purchase.ShopPointId).Single();
+                purchase.TransactionDate = purchase.TransactionDate.ToUniversalTime();
+
                 try
                 {
                     _context.Update(purchase);

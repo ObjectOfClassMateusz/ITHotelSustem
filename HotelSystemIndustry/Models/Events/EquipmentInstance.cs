@@ -9,10 +9,16 @@ namespace HotelSystemIndustry.Models.Events
         public Guid Id { get; set; }
 
 
-        public required Guid EquipmentId { get; set; }
+        [Required]
+        public Guid EquipmentId { get; set; }
+
+        public virtual Equipment? Equipment { get; set; }
+
 
         [Required]
-        public required Equipment Equipment { get; set; }
+        public Guid EventHallId { get; set; }
+
+        public virtual EventHall? EventHall { get; set; }
 
         
         [Range(typeof(decimal), "0", "79228162514264337593543950335")]

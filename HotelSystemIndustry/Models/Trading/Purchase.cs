@@ -12,7 +12,7 @@ namespace HotelSystemIndustry.Models.Trading
         public DateTime TransactionDate { get; set; }
 
         public Guid? ShopPointId { get; set; }
-        [Required]
+        
         public virtual ShopPoint? ShopPoint { get; set; }
 
         public virtual ICollection<SaleItemInstance>? Items { get; set; }

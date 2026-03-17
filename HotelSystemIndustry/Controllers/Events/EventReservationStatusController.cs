@@ -10,23 +10,22 @@ using HotelSystemIndustry.Models.Events;
 
 namespace HotelSystemIndustry.Controllers.Events
 {
-    public class EquipmentController : Controller
+    public class EventReservationStatusController : Controller
     {
         private readonly HotelDbContext _context;
 
-        public EquipmentController(HotelDbContext context)
+        public EventReservationStatusController(HotelDbContext context)
         {
             _context = context;
         }
 
-        // GET: Equipment
+        // GET: EventReservationStatus
         public async Task<IActionResult> Index()
         {
-            var hotelDbContext = _context.Equipment.Include(e => e.Type);
-            return View(await hotelDbContext.ToListAsync());
+            return View(await _context.EventReservationStatuses.ToListAsync());
         }
 
-        // GET: Equipment/Details/5
+        // GET: EventReservationStatus/Details/5
         public async Task<IActionResult> Details(Guid? id)
         {
             if (id == null)
@@ -34,45 +33,40 @@ namespace HotelSystemIndustry.Controllers.Events
                 return NotFound();
             }
 
-            var equipment = await _context.Equipment
-                .Include(e => e.Type)
+            var eventReservationStatus = await _context.EventReservationStatuses
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (equipment == null)
+            if (eventReservationStatus == null)
             {
                 return NotFound();
             }
 
-            return View(equipment);
+            return View(eventReservationStatus);
         }
 
-        // GET: Equipment/Create
+        // GET: EventReservationStatus/Create
         public IActionResult Create()
         {
-            ViewData["TypeId"] = new SelectList(_context.EquipmentTypes, "Id", "Name");
             return View();
         }
 
-        // POST: Equipment/Create
+        // POST: EventReservationStatus/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,TypeId")] Equipment equipment)
+        public async Task<IActionResult> Create([Bind("Id,Name,Value,IsActive,Description")] EventReservationStatus eventReservationStatus)
         {
             if (ModelState.IsValid)
             {
-                equipment.Type = _context.EquipmentTypes.Where(et => et.Id == equipment.TypeId).Single();
-
-                equipment.Id = Guid.NewGuid();
-                _context.Add(equipment);
+                eventReservationStatus.Id = Guid.NewGuid();
+                _context.Add(eventReservationStatus);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["TypeId"] = new SelectList(_context.EquipmentTypes, "Id", "Name", equipment.TypeId);
-            return View(equipment);
+            return View(eventReservationStatus);
         }
 
-        // GET: Equipment/Edit/5
+        // GET: EventReservationStatus/Edit/5
         public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null)
@@ -80,39 +74,36 @@ namespace HotelSystemIndustry.Controllers.Events
                 return NotFound();
             }
 
-            var equipment = await _context.Equipment.FindAsync(id);
-            if (equipment == null)
+            var eventReservationStatus = await _context.EventReservationStatuses.FindAsync(id);
+            if (eventReservationStatus == null)
             {
                 return NotFound();
             }
-            ViewData["TypeId"] = new SelectList(_context.EquipmentTypes, "Id", "Name", equipment.TypeId);
-            return View(equipment);
+            return View(eventReservationStatus);
         }
 
-        // POST: Equipment/Edit/5
+        // POST: EventReservationStatus/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Id,Name,TypeId")] Equipment equipment)
+        public async Task<IActionResult> Edit(Guid id, [Bind("Id,Name,Value,IsActive,Description")] EventReservationStatus eventReservationStatus)
         {
-            if (id != equipment.Id)
+            if (id != eventReservationStatus.Id)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
-                equipment.Type = _context.EquipmentTypes.Where(et => et.Id == equipment.TypeId).Single();
-
                 try
                 {
-                    _context.Update(equipment);
+                    _context.Update(eventReservationStatus);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!EquipmentExists(equipment.Id))
+                    if (!EventReservationStatusExists(eventReservationStatus.Id))
                     {
                         return NotFound();
                     }
@@ -123,11 +114,10 @@ namespace HotelSystemIndustry.Controllers.Events
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["TypeId"] = new SelectList(_context.EquipmentTypes, "Id", "Name", equipment.TypeId);
-            return View(equipment);
+            return View(eventReservationStatus);
         }
 
-        // GET: Equipment/Delete/5
+        // GET: EventReservationStatus/Delete/5
         public async Task<IActionResult> Delete(Guid? id)
         {
             if (id == null)
@@ -135,35 +125,34 @@ namespace HotelSystemIndustry.Controllers.Events
                 return NotFound();
             }
 
-            var equipment = await _context.Equipment
-                .Include(e => e.Type)
+            var eventReservationStatus = await _context.EventReservationStatuses
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (equipment == null)
+            if (eventReservationStatus == null)
             {
                 return NotFound();
             }
 
-            return View(equipment);
+            return View(eventReservationStatus);
         }
 
-        // POST: Equipment/Delete/5
+        // POST: EventReservationStatus/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var equipment = await _context.Equipment.FindAsync(id);
-            if (equipment != null)
+            var eventReservationStatus = await _context.EventReservationStatuses.FindAsync(id);
+            if (eventReservationStatus != null)
             {
-                _context.Equipment.Remove(equipment);
+                _context.EventReservationStatuses.Remove(eventReservationStatus);
             }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool EquipmentExists(Guid id)
+        private bool EventReservationStatusExists(Guid id)
         {
-            return _context.Equipment.Any(e => e.Id == id);
+            return _context.EventReservationStatuses.Any(e => e.Id == id);
         }
     }
 }

@@ -63,6 +63,11 @@ namespace HotelSystemIndustry.Controllers.Trading
         {
             if (ModelState.IsValid)
             {
+                saleItemInstance.Item = _context.SaleItems.Where(si => si.Id == saleItemInstance.ItemId).Single();
+                saleItemInstance.Magazine = _context.ShopMagazines.Where(sm => sm.Id == saleItemInstance.MagazineId).Single();
+
+                saleItemInstance.ExpireDate = saleItemInstance.ExpireDate?.ToUniversalTime();
+
                 saleItemInstance.Id = Guid.NewGuid();
                 _context.Add(saleItemInstance);
                 await _context.SaveChangesAsync();
@@ -105,6 +110,11 @@ namespace HotelSystemIndustry.Controllers.Trading
 
             if (ModelState.IsValid)
             {
+                saleItemInstance.Item = _context.SaleItems.Where(si => si.Id == saleItemInstance.ItemId).Single();
+                saleItemInstance.Magazine = _context.ShopMagazines.Where(sm => sm.Id == saleItemInstance.MagazineId).Single();
+
+                saleItemInstance.ExpireDate = saleItemInstance.ExpireDate?.ToUniversalTime();
+
                 try
                 {
                     _context.Update(saleItemInstance);

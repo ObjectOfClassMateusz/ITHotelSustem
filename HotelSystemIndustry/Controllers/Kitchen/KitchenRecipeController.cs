@@ -61,6 +61,8 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         {
             if (ModelState.IsValid)
             {
+                kitchenRecipe.OutcomeProduct = _context.KitchenProducts.Where(kp => kp.Id == kitchenRecipe.OutcomeProductId).Single();
+
                 kitchenRecipe.Id = Guid.NewGuid();
                 _context.Add(kitchenRecipe);
                 await _context.SaveChangesAsync();
@@ -101,6 +103,8 @@ namespace HotelSystemIndustry.Controllers.Kitchen
 
             if (ModelState.IsValid)
             {
+                kitchenRecipe.OutcomeProduct = _context.KitchenProducts.Where(kp => kp.Id == kitchenRecipe.OutcomeProductId).Single();
+                
                 try
                 {
                     _context.Update(kitchenRecipe);

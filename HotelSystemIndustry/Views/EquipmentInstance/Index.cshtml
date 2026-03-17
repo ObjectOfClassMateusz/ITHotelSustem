@@ -16,6 +16,9 @@
                 @Html.DisplayNameFor(model => model.Equipment)
             </th>
             <th>
+                @Html.DisplayNameFor(model => model.EventHall)
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.ReservationPrice)
             </th>
             <th></th>
@@ -26,6 +29,9 @@
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.Equipment.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EventHall.Name)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.ReservationPrice)

@@ -63,6 +63,12 @@ namespace HotelSystemIndustry.Controllers.Events
         {
             if (ModelState.IsValid)
             {
+                eventReservation.EventType = _context.EventTypes.Where(et => et.Id == eventReservation.EventTypeId).Single();
+                eventReservation.Status = _context.EventReservationStatuses.Where(s => s.Id == eventReservation.StatusId).Single();
+
+                eventReservation.StartTime = eventReservation.StartTime.ToUniversalTime();
+                eventReservation.EndTime = eventReservation.EndTime.ToUniversalTime();
+
                 eventReservation.Id = Guid.NewGuid();
                 _context.Add(eventReservation);
                 await _context.SaveChangesAsync();
@@ -105,6 +111,12 @@ namespace HotelSystemIndustry.Controllers.Events
 
             if (ModelState.IsValid)
             {
+                eventReservation.EventType = _context.EventTypes.Where(et => et.Id == eventReservation.EventTypeId).Single();
+                eventReservation.Status = _context.EventReservationStatuses.Where(s => s.Id == eventReservation.StatusId).Single();
+
+                eventReservation.StartTime = eventReservation.StartTime.ToUniversalTime();
+                eventReservation.EndTime = eventReservation.EndTime.ToUniversalTime();
+
                 try
                 {
                     _context.Update(eventReservation);

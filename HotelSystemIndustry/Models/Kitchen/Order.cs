@@ -21,10 +21,14 @@ namespace HotelSystemIndustry.Models.Kitchen
         [DataType(DataType.DateTime)]
         public DateTime SubmissionTime { get; set; }
 
+        [DataType(DataType.DateTime)]
+        public DateTime? RealisedTime { get; set; } = null;
 
-        public required Guid TypeId { get; set; }
 
-        public virtual required OrderType Type { get; set; }
+        [Required]
+        public Guid TypeId { get; set; }
+
+        public virtual OrderType? Type { get; set; }
 
 
         [Required, MaxLength(100, ErrorMessage = "Opis miejsca docelowego dostawy jest zbyt długi")]

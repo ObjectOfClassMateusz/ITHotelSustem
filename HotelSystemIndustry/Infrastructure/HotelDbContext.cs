@@ -139,6 +139,10 @@ namespace HotelSystemIndustry.Infrastructure
                 .HasOne(ei => ei.Equipment)
                 .WithMany()
                 .HasForeignKey(ei => ei.EquipmentId);
+            modelBuilder.Entity<EquipmentInstance>()
+                .HasOne(ei => ei.EventHall)
+                .WithMany(eh => eh.Equipment)
+                .HasForeignKey(ei => ei.EventHallId);
             modelBuilder.Entity<EventReservation>()
                 .HasOne(er => er.EventType)
                 .WithMany()
@@ -147,6 +151,14 @@ namespace HotelSystemIndustry.Infrastructure
                 .HasOne(ka => ka.Type)
                 .WithMany()
                 .HasForeignKey(ka => ka.TypeId);
+            modelBuilder.Entity<ArticleInstance>()
+                .HasOne(ai => ai.Article)
+                .WithMany()
+                .HasForeignKey(ai => ai.ArticleId);
+            modelBuilder.Entity<ArticleInstance>()
+                .HasOne(ai => ai.Storage)
+                .WithMany(s => s.Articles)
+                .HasForeignKey(ai => ai.StorageId);
             modelBuilder.Entity<KitchenRecipe>()
                 .HasOne(kr => kr.OutcomeProduct)
                 .WithMany()

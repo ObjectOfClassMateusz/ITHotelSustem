@@ -57,10 +57,15 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,SubmissionTime,TypeId,DeliveryDestination")] Order order)
+        public async Task<IActionResult> Create([Bind("Id,SubmissionTime,RealisedTime,TypeId,DeliveryDestination")] Order order)
         {
             if (ModelState.IsValid)
             {
+                order.Type = _context.KitchenOrderTypes.Where(t => t.Id == order.TypeId).Single();
+
+                order.SubmissionTime = order.SubmissionTime.ToUniversalTime();
+                order.RealisedTime = order.RealisedTime?.ToUniversalTime();
+
                 order.Id = Guid.NewGuid();
                 _context.Add(order);
                 await _context.SaveChangesAsync();
@@ -92,7 +97,7 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Id,SubmissionTime,TypeId,DeliveryDestination")] Order order)
+        public async Task<IActionResult> Edit(Guid id, [Bind("Id,SubmissionTime,RealisedTime,TypeId,DeliveryDestination")] Order order)
         {
             if (id != order.Id)
             {
@@ -101,6 +106,11 @@ namespace HotelSystemIndustry.Controllers.Kitchen
 
             if (ModelState.IsValid)
             {
+                order.Type = _context.KitchenOrderTypes.Where(t => t.Id == order.TypeId).Single();
+
+                order.SubmissionTime = order.SubmissionTime.ToUniversalTime();
+                order.RealisedTime = order.RealisedTime?.ToUniversalTime();
+
                 try
                 {
                     _context.Update(order);

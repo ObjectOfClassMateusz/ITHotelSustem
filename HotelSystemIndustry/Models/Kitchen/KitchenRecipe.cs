@@ -32,9 +32,10 @@ namespace HotelSystemIndustry.Models.Kitchen
         public Guid Id { get; set; }
 
 
-        public required Guid OutcomeProductId { get; set; }
+        [Required]
+        public Guid OutcomeProductId { get; set; }
 
-        public virtual required KitchenProduct OutcomeProduct { get; set; }
+        public virtual KitchenProduct? OutcomeProduct { get; set; }
 
 
         public virtual ICollection<KitchenRecipeIngredient>? Ingredients { get; set; }
