@@ -61,7 +61,9 @@ namespace HotelSystemIndustry.Controllers.Trading
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,ItemId,MagazineId,Variant,Count,ExpireDate")] SaleItemInstance saleItemInstance)
         {
-            if (ModelState.IsValid)
+            if (ModelState.IsValid &&
+                saleItemInstance.ItemId != Guid.Empty &&
+                saleItemInstance.MagazineId != Guid.Empty)
             {
                 saleItemInstance.Item = _context.SaleItems.Where(si => si.Id == saleItemInstance.ItemId).Single();
                 saleItemInstance.Magazine = _context.ShopMagazines.Where(sm => sm.Id == saleItemInstance.MagazineId).Single();

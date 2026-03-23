@@ -59,7 +59,7 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,OutcomeProductId,Content")] KitchenRecipe kitchenRecipe)
         {
-            if (ModelState.IsValid)
+            if (ModelState.IsValid && kitchenRecipe.OutcomeProductId != Guid.Empty)
             {
                 kitchenRecipe.OutcomeProduct = _context.KitchenProducts.Where(kp => kp.Id == kitchenRecipe.OutcomeProductId).Single();
 

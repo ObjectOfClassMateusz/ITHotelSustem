@@ -61,7 +61,9 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,ArticleId,StorageId,Count,Unit")] ArticleInstance articleInstance)
         {
-            if (ModelState.IsValid)
+            if (ModelState.IsValid &&
+                articleInstance.ArticleId != Guid.Empty &&
+                articleInstance.StorageId != Guid.Empty)
             {
                 articleInstance.Article = _context.KitchenArticles.Where(a => a.Id == articleInstance.ArticleId).Single();
                 articleInstance.Storage = _context.KitchenStorages.Where(s => s.Id == articleInstance.StorageId).Single();

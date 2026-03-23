@@ -61,7 +61,9 @@ namespace HotelSystemIndustry.Controllers.Events
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,StatusId,EventTypeId,StartTime,EndTime,NumRequiredStaff,NumGuests")] EventReservation eventReservation)
         {
-            if (ModelState.IsValid)
+            if (ModelState.IsValid &&
+                eventReservation.EventTypeId != Guid.Empty &&
+                eventReservation.StatusId != Guid.Empty)
             {
                 eventReservation.EventType = _context.EventTypes.Where(et => et.Id == eventReservation.EventTypeId).Single();
                 eventReservation.Status = _context.EventReservationStatuses.Where(s => s.Id == eventReservation.StatusId).Single();

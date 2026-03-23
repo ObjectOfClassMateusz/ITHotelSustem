@@ -59,7 +59,7 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,SubmissionTime,RealisedTime,TypeId,DeliveryDestination")] Order order)
         {
-            if (ModelState.IsValid)
+            if (ModelState.IsValid && order.TypeId != Guid.Empty)
             {
                 order.Type = _context.KitchenOrderTypes.Where(t => t.Id == order.TypeId).Single();
 

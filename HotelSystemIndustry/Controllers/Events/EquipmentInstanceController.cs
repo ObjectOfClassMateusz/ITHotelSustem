@@ -61,7 +61,9 @@ namespace HotelSystemIndustry.Controllers.Events
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,EquipmentId,EventHallId,ReservationPrice")] EquipmentInstance equipmentInstance)
         {
-            if (ModelState.IsValid)
+            if (ModelState.IsValid &&
+                equipmentInstance.EquipmentId != Guid.Empty &&
+                equipmentInstance.EventHallId != Guid.Empty)
             {
                 equipmentInstance.Equipment = _context.Equipment.Where(e => e.Id == equipmentInstance.EquipmentId).Single();
                 equipmentInstance.EventHall = _context.EventHalls.Where(eh => eh.Id == equipmentInstance.EventHallId).Single();

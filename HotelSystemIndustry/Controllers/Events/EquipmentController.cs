@@ -59,7 +59,7 @@ namespace HotelSystemIndustry.Controllers.Events
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name,TypeId")] Equipment equipment)
         {
-            if (ModelState.IsValid)
+            if (ModelState.IsValid && equipment.TypeId != Guid.Empty)
             {
                 equipment.Type = _context.EquipmentTypes.Where(et => et.Id == equipment.TypeId).Single();
 
