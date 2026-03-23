@@ -16,6 +16,9 @@
                 @Html.DisplayNameFor(model => model.SubmissionTime)
             </th>
             <th>
+                @Html.DisplayNameFor(model => model.RealisedTime)
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.Type)
             </th>
             <th>
@@ -29,6 +32,9 @@
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.SubmissionTime)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RealisedTime)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Type.Name)

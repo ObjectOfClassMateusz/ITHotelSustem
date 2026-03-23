@@ -9,9 +9,10 @@ namespace HotelSystemIndustry.Models.Trading
         public Guid Id { get; set; }
 
 
-        public required Guid ItemId { get; set; }
+        [Required]
+        public Guid ItemId { get; set; }
 
-        public virtual required SaleItem Item { get; set; }
+        public virtual SaleItem? Item { get; set; }
 
         public Guid? MagazineId { get; set; }
         public virtual ShopMagazine? Magazine { get; set; }
@@ -23,7 +24,7 @@ namespace HotelSystemIndustry.Models.Trading
         [Required, Range(typeof(uint), "0", "10000")]
         public uint Count { get; set; }
 
-        [DataType(DataType.DateTime)]
+        [DataType(DataType.Date)]
         public DateTime? ExpireDate { get; set; } = null;
     }
 

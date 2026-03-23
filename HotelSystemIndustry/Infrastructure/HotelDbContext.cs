@@ -85,12 +85,20 @@ namespace HotelSystemIndustry.Infrastructure
         public virtual DbSet<EmployeeShift> EmployeeShifts { get; set; }
 
         public virtual DbSet<HousekeepingSupply> HousekeepingSupplies { get; set; }
+
         public virtual DbSet<LostAndFoundItem> LostAndFoundItems { get; set; }
+
         public virtual DbSet<MaintenanceRequest> MaintenanceRequests { get; set; }
+
         public virtual DbSet<RoomCleaning> RoomCleanings { get; set; }
+
         public virtual DbSet<SupplyUsage> SupplyUsages { get; set; }
+
+
         public virtual DbSet<RecreationBooking> RecreationBookings { get; set; }
+
         public virtual DbSet<RecreationFacility> RecreationFacilities { get; set; }
+
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -124,19 +132,42 @@ namespace HotelSystemIndustry.Infrastructure
             modelBuilder.Entity<Equipment>()
                 .HasOne(e => e.Type)
                 .WithMany()
-                .HasForeignKey(e => e.TypeId);
+                .HasForeignKey(e => e.TypeId)
+                .OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<EquipmentInstance>()
                 .HasOne(ei => ei.Equipment)
                 .WithMany()
-                .HasForeignKey(ei => ei.EquipmentId);
+                .HasForeignKey(ei => ei.EquipmentId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<EquipmentInstance>()
+                .HasOne(ei => ei.EventHall)
+                .WithMany(eh => eh.Equipment)
+                .HasForeignKey(ei => ei.EventHallId);
             modelBuilder.Entity<EventReservation>()
                 .HasOne(er => er.EventType)
                 .WithMany()
-                .HasForeignKey(er => er.EventTypeId);
+                .HasForeignKey(er => er.EventTypeId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<EventReservation>()
+                .HasOne(er => er.Status)
+                .WithMany()
+                .HasForeignKey(er => er.StatusId)
+                .OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<KitchenArticle>()
                 .HasOne(ka => ka.Type)
                 .WithMany()
-                .HasForeignKey(ka => ka.TypeId);
+                .HasForeignKey(ka => ka.TypeId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<ArticleInstance>()
+                .HasOne(ai => ai.Article)
+                .WithMany()
+                .HasForeignKey(ai => ai.ArticleId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<ArticleInstance>()
+                .HasOne(ai => ai.Storage)
+                .WithMany(s => s.Articles)
+                .HasForeignKey(ai => ai.StorageId)
+                .OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<KitchenRecipe>()
                 .HasOne(kr => kr.OutcomeProduct)
                 .WithMany()
@@ -144,15 +175,18 @@ namespace HotelSystemIndustry.Infrastructure
             modelBuilder.Entity<Order>()
                 .HasOne(o => o.Type)
                 .WithMany()
-                .HasForeignKey(o => o.TypeId);
+                .HasForeignKey(o => o.TypeId)
+                .OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<SaleItem>()
                 .HasOne(si => si.Type)
                 .WithMany()
-                .HasForeignKey(si => si.TypeId);
+                .HasForeignKey(si => si.TypeId)
+                .OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<SaleItemInstance>()
                 .HasOne(sii => sii.Item)
                 .WithMany()
-                .HasForeignKey(sii => sii.ItemId);
+                .HasForeignKey(sii => sii.ItemId)
+                .OnDelete(DeleteBehavior.Restrict);
 
 
             modelBuilder.Entity<EventReservation>()
@@ -238,8 +272,9 @@ namespace HotelSystemIndustry.Infrastructure
             modelBuilder.Entity<RecreationFacility>()
                 .HasMany(rf => rf.Bookings)
                 .WithOne(rb => rb.Facility)
-                .HasForeignKey(rb => rb.FacilityId).OnDelete(DeleteBehavior.Restrict);
-
+                .HasForeignKey(rb => rb.FacilityId)
+                .OnDelete(DeleteBehavior.Restrict);
+                
             modelBuilder.Entity<Storage>()
                 .HasMany(s => s.Articles)
                 .WithOne(a => a.Storage)
@@ -272,6 +307,8 @@ namespace HotelSystemIndustry.Infrastructure
             modelBuilder.Entity<Purchase>()
                 .HasOne(p => p.ShopPoint)
                 .WithMany()
+                .HasForeignKey(p => p.ShopPointId)
+                .IsRequired(false)
                 .OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<Purchase>()
                 .HasMany(p => p.Items)

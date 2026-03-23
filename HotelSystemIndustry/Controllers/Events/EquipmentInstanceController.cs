@@ -22,7 +22,7 @@ namespace HotelSystemIndustry.Controllers.Events
         // GET: EquipmentInstance
         public async Task<IActionResult> Index()
         {
-            var hotelDbContext = _context.EquipmentInstances.Include(e => e.Equipment);
+            var hotelDbContext = _context.EquipmentInstances.Include(e => e.Equipment).Include(e => e.EventHall);
             return View(await hotelDbContext.ToListAsync());
         }
 
@@ -36,6 +36,7 @@ namespace HotelSystemIndustry.Controllers.Events
 
             var equipmentInstance = await _context.EquipmentInstances
                 .Include(e => e.Equipment)
+                .Include(e => e.EventHall)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (equipmentInstance == null)
             {
@@ -49,6 +50,7 @@ namespace HotelSystemIndustry.Controllers.Events
         public IActionResult Create()
         {
             ViewData["EquipmentId"] = new SelectList(_context.Equipment, "Id", "Name");
+            ViewData["EventHallId"] = new SelectList(_context.EventHalls, "Id", "Name");
             return View();
         }
 
@@ -57,16 +59,22 @@ namespace HotelSystemIndustry.Controllers.Events
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,EquipmentId,ReservationPrice")] EquipmentInstance equipmentInstance)
+        public async Task<IActionResult> Create([Bind("Id,EquipmentId,EventHallId,ReservationPrice")] EquipmentInstance equipmentInstance)
         {
-            if (ModelState.IsValid)
+            if (ModelState.IsValid &&
+                equipmentInstance.EquipmentId != Guid.Empty &&
+                equipmentInstance.EventHallId != Guid.Empty)
             {
+                equipmentInstance.Equipment = _context.Equipment.Where(e => e.Id == equipmentInstance.EquipmentId).Single();
+                equipmentInstance.EventHall = _context.EventHalls.Where(eh => eh.Id == equipmentInstance.EventHallId).Single();
+
                 equipmentInstance.Id = Guid.NewGuid();
                 _context.Add(equipmentInstance);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             ViewData["EquipmentId"] = new SelectList(_context.Equipment, "Id", "Name", equipmentInstance.EquipmentId);
+            ViewData["EventHallId"] = new SelectList(_context.EventHalls, "Id", "Name", equipmentInstance.EventHallId);
             return View(equipmentInstance);
         }
 
@@ -84,6 +92,7 @@ namespace HotelSystemIndustry.Controllers.Events
                 return NotFound();
             }
             ViewData["EquipmentId"] = new SelectList(_context.Equipment, "Id", "Name", equipmentInstance.EquipmentId);
+            ViewData["EventHallId"] = new SelectList(_context.EventHalls, "Id", "Name", equipmentInstance.EventHallId);
             return View(equipmentInstance);
         }
 
@@ -92,7 +101,7 @@ namespace HotelSystemIndustry.Controllers.Events
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Id,EquipmentId,ReservationPrice")] EquipmentInstance equipmentInstance)
+        public async Task<IActionResult> Edit(Guid id, [Bind("Id,EquipmentId,EventHallId,ReservationPrice")] EquipmentInstance equipmentInstance)
         {
             if (id != equipmentInstance.Id)
             {
@@ -101,6 +110,9 @@ namespace HotelSystemIndustry.Controllers.Events
 
             if (ModelState.IsValid)
             {
+                equipmentInstance.Equipment = _context.Equipment.Where(e => e.Id == equipmentInstance.EquipmentId).Single();
+                equipmentInstance.EventHall = _context.EventHalls.Where(eh => eh.Id == equipmentInstance.EventHallId).Single();
+
                 try
                 {
                     _context.Update(equipmentInstance);
@@ -120,6 +132,7 @@ namespace HotelSystemIndustry.Controllers.Events
                 return RedirectToAction(nameof(Index));
             }
             ViewData["EquipmentId"] = new SelectList(_context.Equipment, "Id", "Name", equipmentInstance.EquipmentId);
+            ViewData["EventHallId"] = new SelectList(_context.EventHalls, "Id", "Name", equipmentInstance.EventHallId);
             return View(equipmentInstance);
         }
 
@@ -133,6 +146,7 @@ namespace HotelSystemIndustry.Controllers.Events
 
             var equipmentInstance = await _context.EquipmentInstances
                 .Include(e => e.Equipment)
+                .Include(e => e.EventHall)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (equipmentInstance == null)
             {

@@ -59,8 +59,10 @@ namespace HotelSystemIndustry.Controllers.Events
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name,TypeId")] Equipment equipment)
         {
-            if (ModelState.IsValid)
+            if (ModelState.IsValid && equipment.TypeId != Guid.Empty)
             {
+                equipment.Type = _context.EquipmentTypes.Where(et => et.Id == equipment.TypeId).Single();
+
                 equipment.Id = Guid.NewGuid();
                 _context.Add(equipment);
                 await _context.SaveChangesAsync();
@@ -101,6 +103,8 @@ namespace HotelSystemIndustry.Controllers.Events
 
             if (ModelState.IsValid)
             {
+                equipment.Type = _context.EquipmentTypes.Where(et => et.Id == equipment.TypeId).Single();
+
                 try
                 {
                     _context.Update(equipment);

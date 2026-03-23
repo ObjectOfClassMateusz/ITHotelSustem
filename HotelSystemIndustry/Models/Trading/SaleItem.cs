@@ -21,10 +21,11 @@ namespace HotelSystemIndustry.Models.Trading
         public required string Name { get; set; }
 
 
-        public required Guid TypeId { get; set; }
-
         [Required]
-        public virtual required SaleItemType Type { get; set; }
+        public Guid TypeId { get; set; }
+
+        public virtual SaleItemType? Type { get; set; }
+
 
 
         public bool ContainsAlcohol { get; set; }

@@ -22,10 +22,10 @@ namespace HotelSystemIndustry.Models.Kitchen
         public required string Name { get; set; }
 
 
-        public required Guid TypeId { get; set; }
-
         [Required]
-        public virtual required KitchenArticleType Type { get; set; }
+        public Guid TypeId { get; set; }
+
+        public virtual KitchenArticleType? Type { get; set; }
     }
 
 }

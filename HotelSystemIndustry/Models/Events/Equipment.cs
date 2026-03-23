@@ -22,7 +22,9 @@ namespace HotelSystemIndustry.Models.Events
         public required string Name { get; set; }
 
 
-        public required Guid TypeId { get; set; }
-        public virtual required EquipmentType Type { get; set; }
+        [Required]
+        public Guid TypeId { get; set; }
+
+        public virtual EquipmentType? Type { get; set; }
     }
 }

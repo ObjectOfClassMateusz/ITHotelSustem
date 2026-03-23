@@ -6,27 +6,26 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using HotelSystemIndustry.Infrastructure;
-using HotelSystemIndustry.Models.Kitchen;
+using HotelSystemIndustry.Models.Events;
 
-namespace HotelSystemIndustry.Controllers.Kitchen
+namespace HotelSystemIndustry.Controllers.Events
 {
-    public class KitchenRecipeController : Controller
+    public class EventReservationStatusController : Controller
     {
         private readonly HotelDbContext _context;
 
-        public KitchenRecipeController(HotelDbContext context)
+        public EventReservationStatusController(HotelDbContext context)
         {
             _context = context;
         }
 
-        // GET: KitchenRecipe
+        // GET: EventReservationStatus
         public async Task<IActionResult> Index()
         {
-            var hotelDbContext = _context.KitchenRecipes.Include(k => k.OutcomeProduct);
-            return View(await hotelDbContext.ToListAsync());
+            return View(await _context.EventReservationStatuses.ToListAsync());
         }
 
-        // GET: KitchenRecipe/Details/5
+        // GET: EventReservationStatus/Details/5
         public async Task<IActionResult> Details(Guid? id)
         {
             if (id == null)
@@ -34,45 +33,40 @@ namespace HotelSystemIndustry.Controllers.Kitchen
                 return NotFound();
             }
 
-            var kitchenRecipe = await _context.KitchenRecipes
-                .Include(k => k.OutcomeProduct)
+            var eventReservationStatus = await _context.EventReservationStatuses
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (kitchenRecipe == null)
+            if (eventReservationStatus == null)
             {
                 return NotFound();
             }
 
-            return View(kitchenRecipe);
+            return View(eventReservationStatus);
         }
 
-        // GET: KitchenRecipe/Create
+        // GET: EventReservationStatus/Create
         public IActionResult Create()
         {
-            ViewData["OutcomeProductId"] = new SelectList(_context.KitchenProducts, "Id", "Name");
             return View();
         }
 
-        // POST: KitchenRecipe/Create
+        // POST: EventReservationStatus/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,OutcomeProductId,Content")] KitchenRecipe kitchenRecipe)
+        public async Task<IActionResult> Create([Bind("Id,Name,Value,IsActive,Description")] EventReservationStatus eventReservationStatus)
         {
-            if (ModelState.IsValid && kitchenRecipe.OutcomeProductId != Guid.Empty)
+            if (ModelState.IsValid)
             {
-                kitchenRecipe.OutcomeProduct = _context.KitchenProducts.Where(kp => kp.Id == kitchenRecipe.OutcomeProductId).Single();
-
-                kitchenRecipe.Id = Guid.NewGuid();
-                _context.Add(kitchenRecipe);
+                eventReservationStatus.Id = Guid.NewGuid();
+                _context.Add(eventReservationStatus);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["OutcomeProductId"] = new SelectList(_context.KitchenProducts, "Id", "Name", kitchenRecipe.OutcomeProductId);
-            return View(kitchenRecipe);
+            return View(eventReservationStatus);
         }
 
-        // GET: KitchenRecipe/Edit/5
+        // GET: EventReservationStatus/Edit/5
         public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null)
@@ -80,39 +74,36 @@ namespace HotelSystemIndustry.Controllers.Kitchen
                 return NotFound();
             }
 
-            var kitchenRecipe = await _context.KitchenRecipes.FindAsync(id);
-            if (kitchenRecipe == null)
+            var eventReservationStatus = await _context.EventReservationStatuses.FindAsync(id);
+            if (eventReservationStatus == null)
             {
                 return NotFound();
             }
-            ViewData["OutcomeProductId"] = new SelectList(_context.KitchenProducts, "Id", "Name", kitchenRecipe.OutcomeProductId);
-            return View(kitchenRecipe);
+            return View(eventReservationStatus);
         }
 
-        // POST: KitchenRecipe/Edit/5
+        // POST: EventReservationStatus/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Id,OutcomeProductId,Content")] KitchenRecipe kitchenRecipe)
+        public async Task<IActionResult> Edit(Guid id, [Bind("Id,Name,Value,IsActive,Description")] EventReservationStatus eventReservationStatus)
         {
-            if (id != kitchenRecipe.Id)
+            if (id != eventReservationStatus.Id)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
-                kitchenRecipe.OutcomeProduct = _context.KitchenProducts.Where(kp => kp.Id == kitchenRecipe.OutcomeProductId).Single();
-                
                 try
                 {
-                    _context.Update(kitchenRecipe);
+                    _context.Update(eventReservationStatus);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!KitchenRecipeExists(kitchenRecipe.Id))
+                    if (!EventReservationStatusExists(eventReservationStatus.Id))
                     {
                         return NotFound();
                     }
@@ -123,11 +114,10 @@ namespace HotelSystemIndustry.Controllers.Kitchen
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["OutcomeProductId"] = new SelectList(_context.KitchenProducts, "Id", "Name", kitchenRecipe.OutcomeProductId);
-            return View(kitchenRecipe);
+            return View(eventReservationStatus);
         }
 
-        // GET: KitchenRecipe/Delete/5
+        // GET: EventReservationStatus/Delete/5
         public async Task<IActionResult> Delete(Guid? id)
         {
             if (id == null)
@@ -135,35 +125,34 @@ namespace HotelSystemIndustry.Controllers.Kitchen
                 return NotFound();
             }
 
-            var kitchenRecipe = await _context.KitchenRecipes
-                .Include(k => k.OutcomeProduct)
+            var eventReservationStatus = await _context.EventReservationStatuses
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (kitchenRecipe == null)
+            if (eventReservationStatus == null)
             {
                 return NotFound();
             }
 
-            return View(kitchenRecipe);
+            return View(eventReservationStatus);
         }
 
-        // POST: KitchenRecipe/Delete/5
+        // POST: EventReservationStatus/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var kitchenRecipe = await _context.KitchenRecipes.FindAsync(id);
-            if (kitchenRecipe != null)
+            var eventReservationStatus = await _context.EventReservationStatuses.FindAsync(id);
+            if (eventReservationStatus != null)
             {
-                _context.KitchenRecipes.Remove(kitchenRecipe);
+                _context.EventReservationStatuses.Remove(eventReservationStatus);
             }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool KitchenRecipeExists(Guid id)
+        private bool EventReservationStatusExists(Guid id)
         {
-            return _context.KitchenRecipes.Any(e => e.Id == id);
+            return _context.EventReservationStatuses.Any(e => e.Id == id);
         }
     }
 }

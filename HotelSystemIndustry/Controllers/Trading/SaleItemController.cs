@@ -59,8 +59,10 @@ namespace HotelSystemIndustry.Controllers.Trading
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name,TypeId,ContainsAlcohol")] SaleItem saleItem)
         {
-            if (ModelState.IsValid)
+            if (ModelState.IsValid && saleItem.TypeId != Guid.Empty)
             {
+                saleItem.Type = _context.SaleItemTypes.Where(t => t.Id == saleItem.TypeId).Single();
+
                 saleItem.Id = Guid.NewGuid();
                 _context.Add(saleItem);
                 await _context.SaveChangesAsync();
@@ -101,6 +103,8 @@ namespace HotelSystemIndustry.Controllers.Trading
 
             if (ModelState.IsValid)
             {
+                saleItem.Type = _context.SaleItemTypes.Where(t => t.Id == saleItem.TypeId).Single();
+                
                 try
                 {
                     _context.Update(saleItem);

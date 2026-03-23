@@ -19,6 +19,32 @@ namespace HotelSystemIndustry.Controllers.Trading
             _context = context;
         }
 
+
+        private SelectList CreateSelectList(Guid? guid)
+        {
+            List<SelectListItem> items = _context.ShopPoints.Select(sp => new SelectListItem()
+            {
+                Value = sp.Id.ToString(),
+                Text = sp.Location
+            }).ToList();
+
+            items.Insert(0, new SelectListItem()
+            {
+                Value = "",
+                Text = "-- Brak --"
+            });
+
+            SelectList selectList;
+
+            if (guid != null)
+                selectList = new SelectList(items, nameof(SelectListItem.Value), nameof(SelectListItem.Text), guid);
+            else
+                selectList = new SelectList(items, nameof(SelectListItem.Value), nameof(SelectListItem.Text));
+
+            return selectList;
+        }
+
+
         // GET: Purchase
         public async Task<IActionResult> Index()
         {
@@ -48,7 +74,7 @@ namespace HotelSystemIndustry.Controllers.Trading
         // GET: Purchase/Create
         public IActionResult Create()
         {
-            ViewData["ShopPointId"] = new SelectList(_context.ShopPoints, "Id", "Location");
+            ViewData["ShopPointId"] = CreateSelectList(null);
             return View();
         }
 
@@ -61,12 +87,19 @@ namespace HotelSystemIndustry.Controllers.Trading
         {
             if (ModelState.IsValid)
             {
+                if (purchase.ShopPointId != null && purchase.ShopPointId != Guid.Empty)
+                    purchase.ShopPoint = _context.ShopPoints.Where(sp => sp.Id == purchase.ShopPointId).Single();
+                else
+                    purchase.ShopPoint = null;
+                
+                purchase.TransactionDate = purchase.TransactionDate.ToUniversalTime();
+
                 purchase.Id = Guid.NewGuid();
                 _context.Add(purchase);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ShopPointId"] = new SelectList(_context.ShopPoints, "Id", "Location", purchase.ShopPointId);
+            ViewData["ShopPointId"] = CreateSelectList(purchase.ShopPointId);
             return View(purchase);
         }
 
@@ -83,7 +116,7 @@ namespace HotelSystemIndustry.Controllers.Trading
             {
                 return NotFound();
             }
-            ViewData["ShopPointId"] = new SelectList(_context.ShopPoints, "Id", "Location", purchase.ShopPointId);
+            ViewData["ShopPointId"] = CreateSelectList(purchase.ShopPointId);
             return View(purchase);
         }
 
@@ -101,6 +134,13 @@ namespace HotelSystemIndustry.Controllers.Trading
 
             if (ModelState.IsValid)
             {
+                if (purchase.ShopPointId != null && purchase.ShopPointId != Guid.Empty)
+                    purchase.ShopPoint = _context.ShopPoints.Where(sp => sp.Id == purchase.ShopPointId).Single();
+                else
+                    purchase.ShopPoint = null;
+                
+                purchase.TransactionDate = purchase.TransactionDate.ToUniversalTime();
+
                 try
                 {
                     _context.Update(purchase);
@@ -119,7 +159,7 @@ namespace HotelSystemIndustry.Controllers.Trading
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ShopPointId"] = new SelectList(_context.ShopPoints, "Id", "Location", purchase.ShopPointId);
+            ViewData["ShopPointId"] = CreateSelectList(purchase.ShopPointId);
             return View(purchase);
         }
 
