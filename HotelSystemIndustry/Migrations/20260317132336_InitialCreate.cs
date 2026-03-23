@@ -34,7 +34,7 @@ namespace HotelSystemIndustry.Migrations
                     Name = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
                     Value = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false),
-                    Description = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
+                    Description = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -63,7 +63,7 @@ namespace HotelSystemIndustry.Migrations
                     Name = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
                     Value = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false),
-                    Description = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
+                    Description = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -78,7 +78,7 @@ namespace HotelSystemIndustry.Migrations
                     Name = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
                     Value = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false),
-                    Description = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
+                    Description = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -138,7 +138,7 @@ namespace HotelSystemIndustry.Migrations
                     Name = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
                     Value = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false),
-                    Description = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
+                    Description = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -153,7 +153,7 @@ namespace HotelSystemIndustry.Migrations
                     Name = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
                     Value = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false),
-                    Description = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
+                    Description = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -210,7 +210,7 @@ namespace HotelSystemIndustry.Migrations
                     Name = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
                     Value = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false),
-                    Description = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
+                    Description = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -717,11 +717,11 @@ namespace HotelSystemIndustry.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     ItemId = table.Column<Guid>(type: "uuid", nullable: false),
-                    PurchaseId = table.Column<Guid>(type: "uuid", nullable: false),
-                    MagazineId = table.Column<Guid>(type: "uuid", nullable: false),
+                    MagazineId = table.Column<Guid>(type: "uuid", nullable: true),
                     Variant = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     Count = table.Column<long>(type: "bigint", nullable: false),
-                    ExpireDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                    ExpireDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    PurchaseId = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -1038,8 +1038,7 @@ namespace HotelSystemIndustry.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Purchases_ShopPointId",
                 table: "Purchases",
-                column: "ShopPointId",
-                unique: true);
+                column: "ShopPointId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_RaportPayments_PaymentId",

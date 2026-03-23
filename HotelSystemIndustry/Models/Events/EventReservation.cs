@@ -35,9 +35,14 @@ namespace HotelSystemIndustry.Models.Events
         public Guid Id { get; set; }
 
 
+        public required Guid StatusId { get; set; }
+
         [Required]
         public virtual required EventReservationStatus Status { get; set; }
 
+
+        public required Guid EventTypeId { get; set; }
+        
         [Required]
         public virtual required EventType EventType { get; set; }
 

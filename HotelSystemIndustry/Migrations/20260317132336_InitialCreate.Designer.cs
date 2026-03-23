@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HotelSystemIndustry.Migrations
 {
     [DbContext(typeof(HotelDbContext))]
-    [Migration("20260316155457_InitialCreate")]
+    [Migration("20260317132336_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -179,7 +179,6 @@ namespace HotelSystemIndustry.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
@@ -263,7 +262,6 @@ namespace HotelSystemIndustry.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
@@ -292,7 +290,6 @@ namespace HotelSystemIndustry.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
@@ -582,7 +579,6 @@ namespace HotelSystemIndustry.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
@@ -706,7 +702,6 @@ namespace HotelSystemIndustry.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
@@ -965,7 +960,8 @@ namespace HotelSystemIndustry.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("ShopPointId")
+                    b.Property<Guid?>("ShopPointId")
+                        .IsRequired()
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("TransactionDate")
@@ -973,8 +969,7 @@ namespace HotelSystemIndustry.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ShopPointId")
-                        .IsUnique();
+                    b.HasIndex("ShopPointId");
 
                     b.ToTable("Purchases");
                 });
@@ -1018,10 +1013,10 @@ namespace HotelSystemIndustry.Migrations
                     b.Property<Guid>("ItemId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("MagazineId")
+                    b.Property<Guid?>("MagazineId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("PurchaseId")
+                    b.Property<Guid?>("PurchaseId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Variant")
@@ -1047,7 +1042,6 @@ namespace HotelSystemIndustry.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
@@ -1466,8 +1460,8 @@ namespace HotelSystemIndustry.Migrations
             modelBuilder.Entity("HotelSystemIndustry.Models.Trading.Purchase", b =>
                 {
                     b.HasOne("HotelSystemIndustry.Models.Trading.ShopPoint", "ShopPoint")
-                        .WithOne("Purchase")
-                        .HasForeignKey("HotelSystemIndustry.Models.Trading.Purchase", "ShopPointId")
+                        .WithMany()
+                        .HasForeignKey("ShopPointId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -1496,20 +1490,16 @@ namespace HotelSystemIndustry.Migrations
                     b.HasOne("HotelSystemIndustry.Models.Trading.ShopMagazine", "Magazine")
                         .WithMany("Items")
                         .HasForeignKey("MagazineId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("HotelSystemIndustry.Models.Trading.Purchase", "Purchase")
+                    b.HasOne("HotelSystemIndustry.Models.Trading.Purchase", null)
                         .WithMany("Items")
                         .HasForeignKey("PurchaseId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Item");
 
                     b.Navigation("Magazine");
-
-                    b.Navigation("Purchase");
                 });
 
             modelBuilder.Entity("SupplyUsage", b =>
@@ -1615,11 +1605,6 @@ namespace HotelSystemIndustry.Migrations
             modelBuilder.Entity("HotelSystemIndustry.Models.Trading.ShopMagazine", b =>
                 {
                     b.Navigation("Items");
-                });
-
-            modelBuilder.Entity("HotelSystemIndustry.Models.Trading.ShopPoint", b =>
-                {
-                    b.Navigation("Purchase");
                 });
 #pragma warning restore 612, 618
         }

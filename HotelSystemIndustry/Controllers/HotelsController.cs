@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using HotelSystemIndustry.Infrastructure;
 using HotelSystemIndustry.Models;
@@ -13,15 +8,12 @@ namespace HotelSystemIndustry.Controllers
     public class HotelsController : Controller
     {
         private readonly HotelDbContext _context;
-
-        public HotelsController(HotelDbContext context)
-        {
+        public HotelsController(HotelDbContext context){
             _context = context;
         }
 
         // GET: Hotels
-        public async Task<IActionResult> Index()
-        {
+        public async Task<IActionResult> Index(){
             return View(await _context.Hotels.ToListAsync());
         }
 
@@ -56,9 +48,12 @@ namespace HotelSystemIndustry.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name,Description,Email")] Hotel hotel)
         {
+            var errors = ModelState.Values.SelectMany(v => v.Errors);
+            Console.WriteLine(errors.FirstOrDefault().ErrorMessage);
             if (ModelState.IsValid)
             {
                 hotel.Id = Guid.NewGuid();
+                //hotel.Address = new Address() { City = "uwu" };
                 _context.Add(hotel);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -150,9 +145,7 @@ namespace HotelSystemIndustry.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool HotelExists(Guid id)
-        {
-            return _context.Hotels.Any(e => e.Id == id);
-        }
+        private bool HotelExists(Guid id) 
+            =>_context.Hotels.Any(e => e.Id == id);
     }
 }

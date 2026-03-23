@@ -20,8 +20,12 @@ namespace HotelSystemIndustry.Models.Trading
         [Required, MaxLength(30, ErrorMessage = "Nazwa jest zbyt długa")]
         public required string Name { get; set; }
 
+
+        public required Guid TypeId { get; set; }
+
         [Required]
         public virtual required SaleItemType Type { get; set; }
+
 
         public bool ContainsAlcohol { get; set; }
     }
