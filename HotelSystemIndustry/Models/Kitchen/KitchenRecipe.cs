@@ -7,22 +7,24 @@ namespace HotelSystemIndustry.Models.Kitchen
     [PrimaryKey(nameof(RecipeId), nameof(ArticleId))]
     public class KitchenRecipeIngredient
     {
+        [Required]
         public Guid RecipeId { get; set; }
 
+        [Required]
         public Guid ArticleId { get; set; }
 
 
-        [Required]
-        public virtual required KitchenRecipe Recipe { get; set; }
+        public virtual KitchenRecipe? Recipe { get; set; }
 
-        [Required]
-        public virtual required KitchenArticle Article { get; set; }
+        public virtual KitchenArticle? Article { get; set; }
 
         /*
         * Ułamek może być przydatny dla artykułów sypkich (kg) i cieczy (l).
         * Dla artykułów dyskretnych można przechować po prostu liczbę całkowitą.
         */
         public decimal Count { get; set; }
+
+        public ArticleUnit Unit { get; set; }
     }
 
 
