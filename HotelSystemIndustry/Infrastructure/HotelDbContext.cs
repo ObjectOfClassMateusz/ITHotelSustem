@@ -5,10 +5,11 @@ using HotelSystemIndustry.Models.Recreation;
 using HotelSystemIndustry.Models.Kitchen;
 using HotelSystemIndustry.Models.Trading;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace HotelSystemIndustry.Infrastructure
 {
-    public class HotelDbContext : DbContext//Singleton
+    public class HotelDbContext : IdentityDbContext//Singleton
     {
         protected readonly IConfiguration _configuration;
         public HotelDbContext(IConfiguration conf , DbContextOptions options) : base(options)
