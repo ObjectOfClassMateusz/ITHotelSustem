@@ -23,7 +23,9 @@
             @Html.DisplayFor(model => model.Content)
         </dd>
     </dl>
-</div>
+
+    <h3>Ingredients</h3>
+    @Html.DisplayFor(model => model.Ingredients)
 <div>
     <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
     <a asp-action="Index">Back to List</a>

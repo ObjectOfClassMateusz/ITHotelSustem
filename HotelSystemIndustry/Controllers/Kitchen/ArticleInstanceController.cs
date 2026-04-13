@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using HotelSystemIndustry.Infrastructure;
 using HotelSystemIndustry.Models.Kitchen;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HotelSystemIndustry.Controllers.Kitchen
 {
@@ -47,6 +48,7 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         }
 
         // GET: ArticleInstance/Create
+        [Authorize(Roles = "Admin,KitchenEmployee,MaintainanceEmployee")]
         public IActionResult Create()
         {
             ViewData["ArticleId"] = new SelectList(_context.KitchenArticles, "Id", "Name");
@@ -59,6 +61,7 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,KitchenEmployee,MaintainanceEmployee")]
         public async Task<IActionResult> Create([Bind("Id,ArticleId,StorageId,Count,Unit")] ArticleInstance articleInstance)
         {
             if (ModelState.IsValid &&
@@ -79,6 +82,7 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         }
 
         // GET: ArticleInstance/Edit/5
+        [Authorize(Roles = "Admin,KitchenEmployee,MaintainanceEmployee")]
         public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null)
@@ -101,6 +105,7 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,KitchenEmployee,MaintainanceEmployee")]
         public async Task<IActionResult> Edit(Guid id, [Bind("Id,ArticleId,StorageId,Count,Unit")] ArticleInstance articleInstance)
         {
             if (id != articleInstance.Id)
@@ -137,6 +142,7 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         }
 
         // GET: ArticleInstance/Delete/5
+        [Authorize(Roles = "Admin,KitchenEmployee,MaintainanceEmployee")]
         public async Task<IActionResult> Delete(Guid? id)
         {
             if (id == null)
@@ -159,6 +165,7 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         // POST: ArticleInstance/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,KitchenEmployee,MaintainanceEmployee")]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
             var articleInstance = await _context.KitchenArticleInstances.FindAsync(id);

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using HotelSystemIndustry.Infrastructure;
 using HotelSystemIndustry.Models.Events;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HotelSystemIndustry.Controllers.Events
 {
@@ -44,6 +45,7 @@ namespace HotelSystemIndustry.Controllers.Events
         }
 
         // GET: EventHall/Create
+        [Authorize(Roles = "Admin,HotelEmployee")]
         public IActionResult Create()
         {
             return View();
@@ -54,6 +56,7 @@ namespace HotelSystemIndustry.Controllers.Events
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,HotelEmployee")]
         public async Task<IActionResult> Create([Bind("Id,Name,NumMaxGuests,ReservationPrice")] EventHall eventHall)
         {
             if (ModelState.IsValid)
@@ -67,6 +70,7 @@ namespace HotelSystemIndustry.Controllers.Events
         }
 
         // GET: EventHall/Edit/5
+        [Authorize(Roles = "Admin,HotelEmployee")]
         public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null)
@@ -87,6 +91,7 @@ namespace HotelSystemIndustry.Controllers.Events
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,HotelEmployee")]
         public async Task<IActionResult> Edit(Guid id, [Bind("Id,Name,NumMaxGuests,ReservationPrice")] EventHall eventHall)
         {
             if (id != eventHall.Id)
@@ -118,6 +123,7 @@ namespace HotelSystemIndustry.Controllers.Events
         }
 
         // GET: EventHall/Delete/5
+        [Authorize(Roles = "Admin,HotelEmployee")]
         public async Task<IActionResult> Delete(Guid? id)
         {
             if (id == null)
@@ -138,6 +144,7 @@ namespace HotelSystemIndustry.Controllers.Events
         // POST: EventHall/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,HotelEmployee")]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
             var eventHall = await _context.EventHalls.FindAsync(id);
