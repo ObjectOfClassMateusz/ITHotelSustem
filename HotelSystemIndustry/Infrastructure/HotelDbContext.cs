@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace HotelSystemIndustry.Infrastructure
 {
-    public class HotelDbContext : IdentityDbContext//Singleton
+    public class HotelDbContext : IdentityDbContext<User>//Singleton
     {
         protected readonly IConfiguration _configuration;
         public HotelDbContext(IConfiguration conf , DbContextOptions options) : base(options)
