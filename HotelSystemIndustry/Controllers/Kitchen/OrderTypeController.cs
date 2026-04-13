@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using HotelSystemIndustry.Infrastructure;
 using HotelSystemIndustry.Models.Kitchen;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HotelSystemIndustry.Controllers.Kitchen
 {
@@ -44,6 +45,7 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         }
 
         // GET: OrderType/Create
+        [Authorize(Roles = "Admin,KitchenEmployee")]
         public IActionResult Create()
         {
             return View();
@@ -54,6 +56,7 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,KitchenEmployee")]
         public async Task<IActionResult> Create([Bind("Id,Name,Value,IsActive,Description")] OrderType orderType)
         {
             if (ModelState.IsValid)
@@ -67,6 +70,7 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         }
 
         // GET: OrderType/Edit/5
+        [Authorize(Roles = "Admin,KitchenEmployee")]
         public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null)
@@ -87,6 +91,7 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,KitchenEmployee")]
         public async Task<IActionResult> Edit(Guid id, [Bind("Id,Name,Value,IsActive,Description")] OrderType orderType)
         {
             if (id != orderType.Id)
@@ -118,6 +123,7 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         }
 
         // GET: OrderType/Delete/5
+        [Authorize(Roles = "Admin,KitchenEmployee")]
         public async Task<IActionResult> Delete(Guid? id)
         {
             if (id == null)
@@ -138,6 +144,7 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         // POST: OrderType/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,KitchenEmployee")]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
             var orderType = await _context.KitchenOrderTypes.FindAsync(id);

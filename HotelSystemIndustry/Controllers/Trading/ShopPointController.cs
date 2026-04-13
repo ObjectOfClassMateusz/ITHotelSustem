@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using HotelSystemIndustry.Infrastructure;
 using HotelSystemIndustry.Models.Trading;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HotelSystemIndustry.Controllers.Trading
 {
@@ -44,6 +45,7 @@ namespace HotelSystemIndustry.Controllers.Trading
         }
 
         // GET: ShopPoint/Create
+        [Authorize(Roles = "Admin,TradingEmployee,MaintainanceEmployee")]
         public IActionResult Create()
         {
             return View();
@@ -54,6 +56,7 @@ namespace HotelSystemIndustry.Controllers.Trading
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,TradingEmployee,MaintainanceEmployee")]
         public async Task<IActionResult> Create([Bind("Id,Location")] ShopPoint shopPoint)
         {
             if (ModelState.IsValid)
@@ -67,6 +70,7 @@ namespace HotelSystemIndustry.Controllers.Trading
         }
 
         // GET: ShopPoint/Edit/5
+        [Authorize(Roles = "Admin,TradingEmployee,MaintainanceEmployee")]
         public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null)
@@ -87,6 +91,7 @@ namespace HotelSystemIndustry.Controllers.Trading
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,TradingEmployee,MaintainanceEmployee")]
         public async Task<IActionResult> Edit(Guid id, [Bind("Id,Location")] ShopPoint shopPoint)
         {
             if (id != shopPoint.Id)
@@ -118,6 +123,7 @@ namespace HotelSystemIndustry.Controllers.Trading
         }
 
         // GET: ShopPoint/Delete/5
+        [Authorize(Roles = "Admin,TradingEmployee,MaintainanceEmployee")]
         public async Task<IActionResult> Delete(Guid? id)
         {
             if (id == null)
@@ -138,6 +144,7 @@ namespace HotelSystemIndustry.Controllers.Trading
         // POST: ShopPoint/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,TradingEmployee,MaintainanceEmployee")]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
             var shopPoint = await _context.ShopPoints.FindAsync(id);

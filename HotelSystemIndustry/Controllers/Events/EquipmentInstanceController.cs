@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using HotelSystemIndustry.Infrastructure;
 using HotelSystemIndustry.Models.Events;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HotelSystemIndustry.Controllers.Events
 {
@@ -47,6 +48,7 @@ namespace HotelSystemIndustry.Controllers.Events
         }
 
         // GET: EquipmentInstance/Create
+        [Authorize(Roles = "Admin,HotelEmployee")]
         public IActionResult Create()
         {
             ViewData["EquipmentId"] = new SelectList(_context.Equipment, "Id", "Name");
@@ -59,6 +61,7 @@ namespace HotelSystemIndustry.Controllers.Events
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,HotelEmployee")]
         public async Task<IActionResult> Create([Bind("Id,EquipmentId,EventHallId,ReservationPrice")] EquipmentInstance equipmentInstance)
         {
             if (ModelState.IsValid &&
@@ -79,6 +82,7 @@ namespace HotelSystemIndustry.Controllers.Events
         }
 
         // GET: EquipmentInstance/Edit/5
+        [Authorize(Roles = "Admin,HotelEmployee")]
         public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null)
@@ -101,6 +105,7 @@ namespace HotelSystemIndustry.Controllers.Events
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,HotelEmployee")]
         public async Task<IActionResult> Edit(Guid id, [Bind("Id,EquipmentId,EventHallId,ReservationPrice")] EquipmentInstance equipmentInstance)
         {
             if (id != equipmentInstance.Id)
@@ -137,6 +142,7 @@ namespace HotelSystemIndustry.Controllers.Events
         }
 
         // GET: EquipmentInstance/Delete/5
+        [Authorize(Roles = "Admin,HotelEmployee")]
         public async Task<IActionResult> Delete(Guid? id)
         {
             if (id == null)
@@ -159,6 +165,7 @@ namespace HotelSystemIndustry.Controllers.Events
         // POST: EquipmentInstance/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,HotelEmployee")]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
             var equipmentInstance = await _context.EquipmentInstances.FindAsync(id);
