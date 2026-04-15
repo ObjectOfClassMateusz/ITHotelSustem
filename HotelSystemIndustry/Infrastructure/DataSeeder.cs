@@ -26,170 +26,43 @@ public class DataSeeder
             await AddRoleAsync(roleManager, "TradingEmployee");
             await AddRoleAsync(roleManager, "RecreationEmployee");
 
-            string adminEmail = "admin@admin.com";
-            if (await userManager.FindByEmailAsync(adminEmail) == null)
-            {
-                var adminUser = new User
-                {
-                    FullName = "Właściciel Hotelu",
-                    UserName = adminEmail,
-                    NormalizedUserName = adminEmail.ToUpper(),
-                    Email = adminEmail,
-                    NormalizedEmail = adminEmail.ToUpper(),
-                    EmailConfirmed = true,
-                    SecurityStamp = Guid.NewGuid().ToString()
-                };
-
-                var result = await userManager.CreateAsync(adminUser, "admin123$N");
-                if (result.Succeeded)
-                {
-                    logger.LogInformation("Nadawanie roli Admin administratorowi");
-                    await userManager.AddToRoleAsync(adminUser, "Admin");
-                }
-                else
-                {
-                    logger.LogError("Błąd przy tworzeniu użytkownika administratora {Errors}", string.Join(", ", result.Errors.Select(e => e.Description)));
-                }
-            }
-
-
-            string hotelEmail = "hotellady@hotel.com";
-            if (await userManager.FindByEmailAsync(hotelEmail) == null)
-            {
-                var hotelUser = new User
-                {
-                    FullName = "Anna Machelska",
-                    UserName = hotelEmail,
-                    NormalizedUserName = hotelEmail.ToUpper(),
-                    Email = hotelEmail,
-                    NormalizedEmail = hotelEmail.ToUpper(),
-                    EmailConfirmed = true,
-                    SecurityStamp = Guid.NewGuid().ToString()
-                };
-
-                var result = await userManager.CreateAsync(hotelUser, "admin123$N");
-                if (result.Succeeded)
-                {
-                    logger.LogInformation("Nadawanie roli użytkownika");
-                    await userManager.AddToRoleAsync(hotelUser, "HotelEmployee");
-                }
-                else
-                {
-                    logger.LogError("Błąd przy tworzeniu użytkownika {Errors}", string.Join(", ", result.Errors.Select(e => e.Description)));
-                }
-            }
-
-
-            string kitchenEmail = "kitchenlady@kitchen.com";
-            if (await userManager.FindByEmailAsync(kitchenEmail) == null)
-            {
-                var kitchenUser = new User
-                {
-                    FullName = "Anna Niedzielska",
-                    UserName = kitchenEmail,
-                    NormalizedUserName = kitchenEmail.ToUpper(),
-                    Email = kitchenEmail,
-                    NormalizedEmail = kitchenEmail.ToUpper(),
-                    EmailConfirmed = true,
-                    SecurityStamp = Guid.NewGuid().ToString()
-                };
-
-                var result = await userManager.CreateAsync(kitchenUser, "admin123$N");
-                if (result.Succeeded)
-                {
-                    logger.LogInformation("Nadawanie roli użytkownika");
-                    await userManager.AddToRoleAsync(kitchenUser, "KitchenEmployee");
-                }
-                else
-                {
-                    logger.LogError("Błąd przy tworzeniu użytkownika {Errors}", string.Join(", ", result.Errors.Select(e => e.Description)));
-                }
-            }
-
-
-            string maintainanceEmail = "maintainanceguy@maintainance.com";
-            if (await userManager.FindByEmailAsync(maintainanceEmail) == null)
-            {
-                var maintainanceUser = new User
-                {
-                    FullName = "Marek Niedzielski",
-                    UserName = maintainanceEmail,
-                    NormalizedUserName = maintainanceEmail.ToUpper(),
-                    Email = maintainanceEmail,
-                    NormalizedEmail = maintainanceEmail.ToUpper(),
-                    EmailConfirmed = true,
-                    SecurityStamp = Guid.NewGuid().ToString()
-                };
-
-                var result = await userManager.CreateAsync(maintainanceUser, "admin123$N");
-                if (result.Succeeded)
-                {
-                    logger.LogInformation("Nadawanie roli użytkownika");
-                    await userManager.AddToRoleAsync(maintainanceUser, "MaintainanceEmployee");
-                }
-                else
-                {
-                    logger.LogError("Błąd przy tworzeniu użytkownika {Errors}", string.Join(", ", result.Errors.Select(e => e.Description)));
-                }
-            }
-
-
-            string tradingEmail = "tradingperson@trading.com";
-            if (await userManager.FindByEmailAsync(tradingEmail) == null)
-            {
-                var tradingUser = new User
-                {
-                    FullName = "Orestes Niedzielski",
-                    UserName = tradingEmail,
-                    NormalizedUserName = tradingEmail.ToUpper(),
-                    Email = tradingEmail,
-                    NormalizedEmail = tradingEmail.ToUpper(),
-                    EmailConfirmed = true,
-                    SecurityStamp = Guid.NewGuid().ToString()
-                };
-
-                var result = await userManager.CreateAsync(tradingUser, "admin123$N");
-                if (result.Succeeded)
-                {
-                    logger.LogInformation("Nadawanie roli użytkownika");
-                    await userManager.AddToRoleAsync(tradingUser, "TradingEmployee");
-                }
-                else
-                {
-                    logger.LogError("Błąd przy tworzeniu użytkownika {Errors}", string.Join(", ", result.Errors.Select(e => e.Description)));
-                }
-            }
-
-
-            string recreationEmail = "recreationguy@recreation.com";
-            if (await userManager.FindByEmailAsync(recreationEmail) == null)
-            {
-                var recreationUser = new User
-                {
-                    FullName = "Sławomir Niedzielski",
-                    UserName = recreationEmail,
-                    NormalizedUserName = recreationEmail.ToUpper(),
-                    Email = recreationEmail,
-                    NormalizedEmail = recreationEmail.ToUpper(),
-                    EmailConfirmed = true,
-                    SecurityStamp = Guid.NewGuid().ToString()
-                };
-
-                var result = await userManager.CreateAsync(recreationUser, "admin123$N");
-                if (result.Succeeded)
-                {
-                    logger.LogInformation("Nadawanie roli użytkownika");
-                    await userManager.AddToRoleAsync(recreationUser, "RecreationEmployee");
-                }
-                else
-                {
-                    logger.LogError("Błąd przy tworzeniu użytkownika {Errors}", string.Join(", ", result.Errors.Select(e => e.Description)));
-                }
-            }
+            await AddUserAsync(userManager, "admin@admin.com", "Właściciel Hotelu", "admin123$N", "Admin");
+            await AddUserAsync(userManager, "hotellady@hotel.com", "Anna Machelska", "admin123$N", "HotelEmployee");
+            await AddUserAsync(userManager, "kitchenlady@kitchen.com", "Anna Niedzielska", "admin123$N", "KitchenEmployee");
+            await AddUserAsync(userManager, "maintainanceguy@maintainance.com", "Marek Niedzielski", "admin123$N", "MaintainanceEmployee");
+            await AddUserAsync(userManager, "tradingperson@trading.com", "Orestes Niedzielski", "admin123$N", "TradingEmployee");
+            await AddUserAsync(userManager, "recreationguy@recreation.com", "Sławomir Niedzielski", "admin123$N", "RecreationEmployee");
         }
         catch (Exception e)
         {
             logger.LogError(e, "Wystąpił błąd przy seedowaniu bazy danych");
+        }
+    }
+
+    private static async Task AddUserAsync(UserManager<User> userManager, string email, string fullname, string password, string role)
+    {
+        if (await userManager.FindByEmailAsync(email) == null)
+        {
+            var newUser = new User
+            {
+                FullName = fullname,
+                UserName = email,
+                NormalizedUserName = email.ToUpper(),
+                Email = email,
+                NormalizedEmail = email.ToUpper(),
+                EmailConfirmed = true,
+                SecurityStamp = Guid.NewGuid().ToString()
+            };
+
+            var result = await userManager.CreateAsync(newUser, password);
+            if (result.Succeeded)
+            {
+                await userManager.AddToRoleAsync(newUser, role);
+            }
+            else
+            {
+                throw new Exception($"Błąd przy tworzeniu użytkownika o roli: {role}");
+            }
         }
     }
 

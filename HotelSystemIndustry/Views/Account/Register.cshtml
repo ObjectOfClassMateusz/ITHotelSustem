@@ -1,0 +1,47 @@
+@using HotelSystemIndustry.ViewModels
+
+@model RegistrationViewModel
+
+@{
+    ViewData["Title"] = "Register account";
+}
+
+<div class="row">
+    <div class="col-md-4">
+        <section>
+            <h2 class="text-center mb-4">Register account</h2>
+            <form asp-action="Register" method="post">
+                @Html.AntiForgeryToken()
+                <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+                <div class="form-floating mb-3">
+                    <input asp-for="FullName" class="form-control" aria-required="true" placeholder="Firstname Lastname"/>
+                    <label asp-for="FullName" class="form-label"></label>
+                    <span asp-validation-for="FullName" class="text-danger"></span>
+                </div>
+                <div class="form-floating mb-3">
+                    <input asp-for="Email" class="form-control" aria-required="true" placeholder="name@example.com"/>
+                    <label asp-for="Email" class="form-label"></label>
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+                <div class="form-floating mb-3">
+                    <input asp-for="Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="password"/>
+                    <label asp-for="Password" class="form-label"></label>
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+                <div class="form-floating mb-3">
+                    <input asp-for="ConfirmedPassword" class="form-control" autocomplete="current-password" aria-required="true" placeholder="password"/>
+                    <label asp-for="ConfirmedPassword" class="form-label"></label>
+                    <span asp-validation-for="ConfirmedPassword" class="text-danger"></span>
+                </div>
+                
+                <input type="submit" value="Register" class="btn btn-success"/>
+            </form>
+        </section>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial.cshtml");
+    }
+}
