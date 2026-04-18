@@ -14,6 +14,13 @@
         }
         <a id="account-info" class="nav-link text-dark" asp-controller="Account" asp-action="AccountInfo">Hello @fullName!</a>
     </li>
+
+    @if (User.IsInRole("Admin")) {
+        <li class="nav-item">
+            <a id="manage-roles" class="nav-link text-dark" asp-controller="Account" asp-action="ManageUsers">Manage users</a>
+        </li>
+    }
+
     <li class="nav-item">
         <form id="logoutForm" class="form-inline" asp-controller="Account" asp-action="Logout">
             <button id="logout" type="submit" class="nav-link btn btn-link text-dark border-0">Logout</button>
