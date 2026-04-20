@@ -1,0 +1,74 @@
+@using HotelSystemIndustry.Infrastructure
+@using HotelSystemIndustry.ViewModels
+@using Microsoft.AspNetCore.Identity
+
+@model UserRolesEditViewModel
+
+@inject UserManager<User> UserManager
+
+
+@{
+    ViewData["Title"] = "Manage user roles";
+
+    var user = await UserManager.FindByIdAsync(Model.Id);
+}
+
+<div>
+    <h2>Manage user roles</h2>
+    <hr />
+
+
+    <dl>
+        <div class="row">
+            <dt class="col-md-2">
+                Full name:
+            </dt>
+            <dd class="col-md-4">
+                @Html.DisplayFor(m => user!.FullName)
+            </dd>
+        </div>
+
+        <div class="row">
+            <dt class="col-md-2">
+                Email: 
+            </dt>
+            <dd class="col-md-4">
+                @Html.DisplayFor(m => user!.Email)
+            </dd>
+        </div>
+            
+        <div class="row">
+            <dt class="col-md-2">
+                Email verified:
+            </dt>
+            <dd class="col-md-4">
+                @Html.DisplayFor(m => user!.EmailConfirmed)
+            </dd>
+        </div>
+    </dl>
+
+    <hr />
+
+    <h3>Roles</h3>
+
+    <form method="post" asp-controller="Account" asp-action="ChangeUserRoles">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="@Model.Id" />
+
+        <ul>
+            @for (var i = 0; i < Model.Roles.Count; i++) {
+                <li>
+                    <input type="hidden" asp-for="@Model.Roles[i].Name" value="@Model.Roles[i].Name" />
+                    <input type="checkbox" asp-for="@Model.Roles[i].HasRole" class="control-label" />
+                    <label asp-for="@Model.Roles[i].HasRole" class="form-label">@Model.Roles[i].Name</label>
+                </li>
+            }
+        </ul>
+
+        <button type="submit" class="btn btn-success">Save</button>
+
+        <a asp-controller="Account" asp-action="ManageUsers">Back</a>
+
+    </form>
+
+</div>

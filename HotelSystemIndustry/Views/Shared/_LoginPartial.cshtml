@@ -4,7 +4,7 @@
 @inject SignInManager<User> SignInManager
 @inject UserManager<User> UserManager
 
-<ul class="navbar-nav">
+<ul class="navbar-nav ms-auto" >
 @if (SignInManager.IsSignedIn(User))
 {
     <li class="nav-item">
@@ -12,10 +12,17 @@
             var user = await UserManager.GetUserAsync(User);
             var fullName = user != null ? user.FullName : "";
         }
-        <a id="manage" class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @fullName!</a>
+        <a id="account-info" class="nav-link text-dark" asp-controller="Account" asp-action="AccountInfo">Hello @fullName!</a>
     </li>
+
+    @if (User.IsInRole("Admin")) {
+        <li class="nav-item">
+            <a id="manage-roles" class="nav-link text-dark" asp-controller="Account" asp-action="ManageUsers">Manage users</a>
+        </li>
+    }
+
     <li class="nav-item">
-        <form id="logoutForm" class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+        <form id="logoutForm" class="form-inline" asp-controller="Account" asp-action="Logout">
             <button id="logout" type="submit" class="nav-link btn btn-link text-dark border-0">Logout</button>
         </form>
     </li>
@@ -23,10 +30,10 @@
 else
 {
     <li class="nav-item">
-        <a class="nav-link text-dark" id="register" asp-area="Identity" asp-page="/Account/Register">Register</a>
+        <a class="nav-link text-dark" id="register" asp-controller="Account" asp-action="Register">Register</a>
     </li>
     <li class="nav-item">
-        <a class="nav-link text-dark" id="login" asp-area="Identity" asp-page="/Account/Login">Login</a>
+        <a class="nav-link text-dark" id="login" asp-controller="Account" asp-action="Login">Login</a>
     </li>
 }
 </ul>

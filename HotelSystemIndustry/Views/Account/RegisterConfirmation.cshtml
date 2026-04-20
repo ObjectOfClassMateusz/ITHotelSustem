@@ -1,0 +1,16 @@
+@using HotelSystemIndustry.ViewModels
+
+@model RegisterConfirmationModel
+
+@{
+    ViewData["Title"] = "Email confirmation";
+}
+
+
+<h1>Email confirmation</h1>
+
+<p>
+    This app does not currently have a real email sender registered.
+    Normally this link would be emailed: <a id="confirm-link" href="@Model.ConfirmationUrl">Click here to confirm your account</a>
+</p>
+
