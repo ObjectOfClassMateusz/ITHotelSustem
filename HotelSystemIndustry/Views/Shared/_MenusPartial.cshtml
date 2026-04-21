@@ -1,0 +1,55 @@
+@using HotelSystemIndustry.Infrastructure
+@using Microsoft.AspNetCore.Identity
+
+@inject SignInManager<User> SignInManager
+
+
+<ul class="navbar-nav flex-grow-1">
+
+    <li class="nav-item">
+        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+    </li>
+    
+
+    @if (SignInManager.IsSignedIn(User)) {
+
+        <li class="nav-item">
+            <a id="customer-button" class="nav-link text-dark" asp-controller="Customer" asp-action="Index">Customer</a>
+        </li>
+
+        @if (User.IsInRole("HotelEmployee")) {
+            <li class="nav-item">
+                <a id="reception-button" class="nav-link text-dark" asp-controller="Reception" asp-action="Index">Reception</a>
+            </li>
+        }
+        @if (User.IsInRole("KitchenEmployee")) {
+            <li class="nav-item">
+                <a id="kitchen-button" class="nav-link text-dark" asp-controller="Kitchen" asp-action="Index">Kitchen</a>
+            </li>
+        }
+        @if (User.IsInRole("MaintainanceEmployee")) {
+            <li class="nav-item">
+                <a id="maintainance-button" class="nav-link text-dark" asp-controller="Maintainance" asp-action="Index">Maintainance</a>
+            </li>
+        }
+        @if (User.IsInRole("TradingEmployee")) {
+            <li class="nav-item">
+                <a id="trading-button" class="nav-link text-dark" asp-controller="Trading" asp-action="Index">Trading</a>
+            </li>
+        }
+        @if (User.IsInRole("RecreationEmployee")) {
+            <li class="nav-item">
+                <a id="recreation-button" class="nav-link text-dark" asp-controller="Recreation" asp-action="Index">Recreation</a>
+            </li>
+        }
+
+
+
+        @if (User.IsInRole("Admin")) {
+            <li class="nav-item">
+                <a id="manage-roles" class="nav-link text-dark" asp-controller="Account" asp-action="ManageUsers">Manage users</a>
+            </li>
+        }
+    }
+
+</ul>
