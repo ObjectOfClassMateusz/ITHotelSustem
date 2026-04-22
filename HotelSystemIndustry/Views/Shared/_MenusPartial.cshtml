@@ -47,6 +47,10 @@
 
         @if (User.IsInRole("Admin")) {
             <li class="nav-item">
+                <a id="hotel-management-button" class="nav-link text-dark" asp-controller="HotelManagement" asp-action="Index">Hotel Management</a>
+            </li>
+
+            <li class="nav-item">
                 <a id="manage-roles" class="nav-link text-dark" asp-controller="Account" asp-action="ManageUsers">Manage users</a>
             </li>
         }
