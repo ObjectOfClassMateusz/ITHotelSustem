@@ -204,6 +204,19 @@ namespace HotelSystemIndustry.Infrastructure
                     r => r.HasOne(typeof(Room)).WithMany().HasForeignKey("RoomsId").OnDelete(DeleteBehavior.Restrict),
                     l => l.HasOne(typeof(EventReservation)).WithMany().HasForeignKey("EventReservationsId").OnDelete(DeleteBehavior.Restrict));
 
+
+            modelBuilder.Entity<Order>()
+                .HasMany(o => o.Products)
+                .WithOne(x => x.Order)
+                .HasForeignKey(x => x.OrderId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<OrderProduct>()
+                .HasOne(o => o.Product)
+                .WithMany()
+                .HasForeignKey(o => o.ProductId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             modelBuilder.Entity<Hotel>()
                 .HasMany(h => h.Rooms)
                 .WithOne(r => r.Hotel)

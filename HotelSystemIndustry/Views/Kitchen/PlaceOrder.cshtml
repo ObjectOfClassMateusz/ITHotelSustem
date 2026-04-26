@@ -1,0 +1,53 @@
+@using HotelSystemIndustry.ViewModels.Kitchen
+@model NewOrderViewModel
+
+@{
+    ViewData["Title"] = "Place an Order";
+    @if (User.IsInRole("KitchenEmployee"))
+    {
+        ViewBag.LowerNavPartial = "_KitchenNavPartial";
+    }
+}
+
+
+<h1>Place an order</h1>
+<hr />
+
+
+<form class="row" method="post" asp-action="ChooseOrderProducts">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+    
+    <div class="form-group row my-2">
+        <div class="col-md-4">
+            @Html.LabelFor(m => m.Type, "Type of the order: ", new {@class = "control-label"})
+        </div>
+        <div class="col-md-6">
+            @Html.DropDownListFor(m => m.Type, (IEnumerable<SelectListItem>)ViewBag.OrderTypes, new {@class = "form-control"})
+        </div>
+        <span asp-validation-for="Type" class="text-danger"></span>
+    </div>
+
+    <div class="form-group row my-2">
+        <div class="col-md-4">
+            @Html.LabelFor(m => m.Destination, "Destination: ", new {@class = "control-label"})
+        </div>
+        <div class="col-md-6">
+            @Html.TextBoxFor(m => m.Destination, new {@class = "form-control", @placeholder = "Enter a table number / a room number / an address to deliver to"})
+        </div>
+        <span asp-validation-for="Destination" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <input type="submit" class="btn btn-primary" value="Choose products" />
+    </div>
+
+</form>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial.cshtml");
+    }
+}
+

@@ -20,3 +20,29 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+
+.radiobutton-box {
+  display: none;
+}
+
+.radiobutton-box + label {
+  display: flex;
+  text-decoration: none;
+  background-color: #fff;
+  border: 1px solid #dee2e6;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  padding: 20px;
+  border-radius: 20px;
+}
+
+.radiobutton-box:hover + label {
+  background-color: #e9ecef;
+  border-color: #dee2e6;
+}
+
+.radiobutton-box:checked + label {
+  background-color: #d8ebff;
+  border-color: #add8e6;
+
+}

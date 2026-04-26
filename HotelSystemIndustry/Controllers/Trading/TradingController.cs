@@ -1,8 +1,9 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HotelSystemIndustry.Controllers.Trading
 {
-    
+    [Authorize(Roles="TradingEmployee")]
     public class TradingController : Controller
     {
         

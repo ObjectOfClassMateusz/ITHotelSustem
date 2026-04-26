@@ -223,6 +223,38 @@ public class DataSeeder
                 Id = Guid.NewGuid(), Name = "Takeaway order", Value = "takeaway-order", IsActive = true
             });
         }
+
+        if (context.KitchenProducts.Count() == 0)
+        {
+            context.KitchenProducts.Add(new KitchenProduct
+            {
+                Id = Guid.NewGuid(), Name = "Chicken Soup", ContainsAlcohol = false, Price = 9.0m
+            });
+            context.KitchenProducts.Add(new KitchenProduct
+            {
+                Id = Guid.NewGuid(), Name = "Pork chop", ContainsAlcohol = false, Price = 23.0m
+            });
+            context.KitchenProducts.Add(new KitchenProduct
+            {
+                Id = Guid.NewGuid(), Name = "Chickpea Salad", ContainsAlcohol = false, Price = 14.0m
+            });
+            context.KitchenProducts.Add(new KitchenProduct
+            {
+                Id = Guid.NewGuid(), Name = "Burger", ContainsAlcohol = false, Price = 19.99m
+            });
+            context.KitchenProducts.Add(new KitchenProduct
+            {
+                Id = Guid.NewGuid(), Name = "Fries", ContainsAlcohol = false, Price = 9.99m
+            });
+            context.KitchenProducts.Add(new KitchenProduct
+            {
+                Id = Guid.NewGuid(), Name = "Water", ContainsAlcohol = false, Price = 5.99m
+            });
+            context.KitchenProducts.Add(new KitchenProduct
+            {
+                Id = Guid.NewGuid(), Name = "Wine", ContainsAlcohol = true, Price = 22.99m
+            });
+        }
     }
 
     private static async Task SeedTrading(HotelDbContext context)

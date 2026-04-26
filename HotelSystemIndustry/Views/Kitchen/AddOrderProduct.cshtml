@@ -1,0 +1,95 @@
+@using HotelSystemIndustry.Models.Kitchen
+@using HotelSystemIndustry.ViewModels.Kitchen
+@model NewOrderNewProductViewModel
+
+@{
+    ViewData["Title"] = "Place an Order - Add products";
+    @if (User.IsInRole("KitchenEmployee"))
+    {
+        ViewBag.LowerNavPartial = "_KitchenNavPartial";
+    }
+
+    var Products = (IList<KitchenProduct>)ViewBag.Products;
+}
+
+
+<h1>Add products to order</h1>
+<hr />
+
+
+<form class="row" method="post">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+
+    @Html.HiddenFor(m => m.Order.Type)
+    @Html.HiddenFor(m => m.Order.Destination)
+
+    <div class="col-md-8">
+        <div class="form-group row justify-content-center my-4">
+            @foreach (var prod in Products) {
+                <div class="col-md-4 my-2">
+                    <input type="radio" asp-for="NewProductId" value="@prod.Id" id="Prod(@prod.Id)" class="radiobutton-box" />
+                    <label for="Prod(@prod.Id)" class="row mx-0"><div class="col-md-8 text-start">@prod.Name</div> <div class="text-end col-md-2">@prod.Price</div></label>
+                    <span asp-validation-for="NewProductId" class="text-danger"></span>
+                </div>
+            }
+        </div>
+
+        <div class="form-group row my-4">
+            <div class="col-md-2">
+                <input min="1" max="5" step="1" value="1" asp-for="NewProductCount" class="form-control" />
+            </div>
+
+            <div class="col-md-1">
+                <input type="submit" asp-action="AddOrderProduct" class="btn btn-primary" value="Add product" />
+            </div>
+
+            <span asp-validation-for="NewProductCount" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <input type="submit" asp-action="VerifyOrder" class="btn btn-success" value="Finish" />
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        @if (Model.Order.Products.Count > 0) {
+            decimal totalPrice = 0;
+
+            <ul>
+                @for (var i = 0; i < Model.Order.Products.Count; i++) {
+                    <li>
+                        @Html.HiddenFor(m => m.Order.Products[i].ProductId)
+                        @Html.HiddenFor(m => m.Order.Products[i].Count)
+                        @{
+                            var id = Model.Order.Products[i].ProductId;
+                            var count = Model.Order.Products[i].Count;
+                            var product = Products.Single(p => p.Id == id);
+
+                            var productPrice = product.Price*count;
+                            totalPrice += productPrice;
+
+                            <div class="row">
+                                <div class="col-md-8 text-start">@product.Name x @count</div> <div class="col-md-2 text-end">@productPrice</div>
+                            </div>
+                        }
+                    </li>
+                }
+            </ul>
+
+            <hr />
+            <div class="row mx-2">
+                <div class="col-md-8 text-start">Total: </div> <div class="col-md-3 text-end">$ @totalPrice</div>
+            </div>
+        }
+    </div>
+
+</form>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial.cshtml");
+    }
+}
+

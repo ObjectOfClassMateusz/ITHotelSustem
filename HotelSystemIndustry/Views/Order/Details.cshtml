@@ -35,6 +35,10 @@
             @Html.DisplayFor(model => model.DeliveryDestination)
         </dd>
     </dl>
+
+    <h5>Products</h5>
+    <hr />
+    @Html.DisplayFor(model => model.Products)
 </div>
 <div>
     <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |

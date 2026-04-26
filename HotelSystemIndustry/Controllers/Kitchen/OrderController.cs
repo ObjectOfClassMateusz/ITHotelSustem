@@ -36,6 +36,8 @@ namespace HotelSystemIndustry.Controllers.Kitchen
 
             var order = await _context.KitchenOrders
                 .Include(o => o.Type)
+                .Include(o => o.Products)
+                    !.ThenInclude(p => p.Product)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (order == null)
             {
