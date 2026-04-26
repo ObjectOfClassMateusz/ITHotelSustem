@@ -45,6 +45,10 @@ builder.Services.AddSession();
 builder.Services.AddRazorPages();
 
 
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+
 var app = builder.Build();
 
 await DataSeeder.SeedDatabase(app.Services);
@@ -79,6 +83,13 @@ app.MapGet("users/me", async (ClaimsPrincipal claims, HotelDbContext context) =>
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Hotels}/{action=Index}/{id?}");
+
+app.UseSwagger();
+app.UseCors(options => options
+    .AllowAnyOrigin()
+    .AllowAnyMethod()
+    .AllowAnyHeader());
+app.UseSwaggerUI();
 
 app.MapRazorPages();
 
