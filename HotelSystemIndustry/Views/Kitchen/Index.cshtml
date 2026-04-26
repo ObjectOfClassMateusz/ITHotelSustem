@@ -3,3 +3,53 @@
     ViewData["Title"] = "Kitchen";
     ViewBag.LowerNavPartial = "_KitchenNavPartial";
 }
+
+
+<h1>Orders</h1>
+
+
+<div class="row justify-content-center my-4">
+
+    <div class="col-md-4 text-center my-2">
+        <a asp-action="TakeOrder" class="page-link text-dark">Take Order</a>
+    </div>
+
+    <div class="col-md-4 text-center my-2">
+        <a asp-action="RealiseOrder" class="page-link text-dark">Realise Order</a>
+    </div>
+
+    <div class="col-md-4 text-center my-2">
+        <a asp-action="CancelOrder" class="page-link text-dark">Cancel Order</a>
+    </div>
+
+</div>
+
+
+<h2>
+    Management
+</h2>
+
+<hr />
+
+<ul>
+    <li>
+        <a asp-controller="KitchenArticleType" asp-action="Index">Types of articles</a>
+    </li>
+
+    <li>
+        <a asp-controller="KitchenArticle" asp-action="Index">Articles</a>
+    </li>
+
+    <li>
+        <a asp-controller="KitchenProduct" asp-action="Index">Kitchen products</a>
+    </li>
+
+    <li>
+        <a asp-controller="KitchenRecipe" asp-action="Index">Recipes</a>
+    </li>
+
+    <li>
+        <a asp-controller="Order" asp-action="Index">Orders</a>
+    </li>
+</ul>
+
