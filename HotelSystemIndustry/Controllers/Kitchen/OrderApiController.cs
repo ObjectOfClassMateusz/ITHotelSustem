@@ -1,6 +1,7 @@
 using HotelSystemIndustry.Infrastructure;
 using HotelSystemIndustry.Models.Kitchen;
 using HotelSystemIndustry.ViewModels.Kitchen;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,10 +19,29 @@ namespace HotelSystemIndustry.Controllers.Kitchen
             _context = context;
         }
 
+
+        [HttpGet("[action]")]
+        public async Task<List<OrderType>> GetOrderTypes()
+        {
+            var types = await _context.KitchenOrderTypes
+                .ToListAsync();
+
+            return types;
+        }
+
+
+        [HttpGet("[action]")]
+        public async Task<List<KitchenProduct>> GetAvailableProducts()
+        {
+            var products = await _context.KitchenProducts
+                .ToListAsync();
+
+            return products;
+        }
+
         
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> RegisterOrder([FromForm] NewOrderViewModel model)
+        [HttpPost("[action]")]
+        public async Task<bool> SubmitOrder(NewOrderViewModel model)
         {
             Order order = new Order
             {
@@ -35,9 +55,9 @@ namespace HotelSystemIndustry.Controllers.Kitchen
 
             var type = await _context.KitchenOrderTypes
                 .Where(t => t.Id == model.Type)
-                .SingleAsync();
+                .FirstOrDefaultAsync();
             if (type == null)
-                return BadRequest("Invalid order type!");
+                return false;
 
             order.Type = type;
 
@@ -47,9 +67,9 @@ namespace HotelSystemIndustry.Controllers.Kitchen
             {
                 var product = await _context.KitchenProducts
                     .Where(p => p.Id == prodAndNumber.ProductId)
-                    .SingleAsync();
+                    .FirstOrDefaultAsync();
                 if (product == null)
-                    return BadRequest("Invalid product in order!");
+                    return false;
 
                 OrderProduct orderProduct = new OrderProduct
                 {
@@ -65,9 +85,69 @@ namespace HotelSystemIndustry.Controllers.Kitchen
 
             await _context.SaveChangesAsync();
 
-            return RedirectToAction("Index", "Home");
+            return true;
         }
 
+
+        [HttpGet("[action]")]
+        [Authorize(Roles="KitchenEmployee")]
+        public async Task<List<Order>> GetOrdersToRealise()
+        {
+            var unrealisedOrders = await _context.KitchenOrders
+                .AsNoTracking()
+                .Where(p => p.RealisedTime == null)
+                .Include(p => p.Type)
+                .Include(p => p.Products)
+                    !.ThenInclude(op => op.Product)
+                .ToListAsync();
+
+            return unrealisedOrders;
+        }
+
+        
+        [HttpPost("[action]/{id}")]
+        [Authorize(Roles="KitchenEmployee")]
+        public async Task<bool> MarkOrderRealised(Guid id)
+        {
+            var order = await _context.KitchenOrders
+                .Where(o => o.Id == id && o.RealisedTime == null)
+                .FirstOrDefaultAsync();
+
+            if (order == null)
+                return false;
+
+            order.RealisedTime = DateTime.Now.ToUniversalTime();
+
+            try
+            {
+                _context.Update(order);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                throw;
+            }
+
+            return true;
+        }
+
+
+        [HttpPost("[action]/{id}")]
+        [Authorize(Roles="KitchenEmployee")]
+        public async Task<bool> CancelOrder(Guid id)
+        {
+            var order = await _context.KitchenOrders
+                .Where(o => o.Id == id && o.RealisedTime == null)
+                .FirstOrDefaultAsync();
+
+            if (order == null)
+                return false;
+
+            _context.Remove(order);
+            await _context.SaveChangesAsync();
+            
+            return true;
+        }
     }
 
 }

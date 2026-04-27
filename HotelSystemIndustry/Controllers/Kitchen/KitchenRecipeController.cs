@@ -37,6 +37,8 @@ namespace HotelSystemIndustry.Controllers.Kitchen
 
             var kitchenRecipe = await _context.KitchenRecipes
                 .Include(k => k.OutcomeProduct)
+                .Include(k => k.Ingredients)
+                    !.ThenInclude(kri => kri.Article)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (kitchenRecipe == null)
             {

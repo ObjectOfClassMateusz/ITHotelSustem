@@ -1,0 +1,55 @@
+@using HotelSystemIndustry.Models.Kitchen
+@using HotelSystemIndustry.ViewModels.Kitchen
+@model Order
+
+@{
+    ViewData["Title"] = "Cancel Order";
+    ViewBag.LowerNavPartial = "_KitchenNavPartial";
+}
+
+
+<h1>Confirm Order Cancelation</h1>
+<hr />
+
+
+<form method="post" asp-action="CancelOrder">
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.Id)
+
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.LabelFor(m => m.SubmissionTime, "Submission Time: ")
+        </dt>
+        <dd class="col-sm-10">
+            @Model.SubmissionTime.ToLocalTime()
+        </dd>
+
+        <dt class="col-sm-2">
+            @Html.LabelFor(m => m.Type, "Order type: ")
+        </dt>
+        <dd class="col-sm-10">
+            @Model.Type!.Name
+        </dd>
+
+        <dt class="col-sm-2">
+            @Html.LabelFor(m => m.DeliveryDestination, "Delivery destination: ")
+        </dt>
+        <dd class="col-sm-10">
+            @Model.DeliveryDestination
+        </dd>
+    </dl>
+
+    <ul>
+        @foreach (var prod in Model.Products!) {
+            <li>
+                @prod.Product!.Name x @prod.Count
+            </li>
+        }
+    </ul>
+    
+    <input type="submit" value="Cancel Order" class="btn btn-danger" />
+
+    <a asp-action="CancelOrderView" class="btn btn-primary">Do not cancel</a>
+
+</form>
+

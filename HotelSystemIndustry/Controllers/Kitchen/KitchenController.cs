@@ -4,6 +4,7 @@ using HotelSystemIndustry.ViewModels.Kitchen;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.DotNet.Scaffolding.Shared.ProjectModel;
 using Microsoft.EntityFrameworkCore;
 
 namespace HotelSystemIndustry.Controllers.Kitchen
@@ -86,6 +87,110 @@ namespace HotelSystemIndustry.Controllers.Kitchen
             ViewBag.Products = products;
 
             return View(model.Order);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SubmitOrder([FromForm] NewOrderViewModel model)
+        {
+            var orderApi = new OrderApiController(_context)
+            {
+                ControllerContext = this.ControllerContext
+            };
+
+            var result = await orderApi.SubmitOrder(model);
+
+            if (!result)
+                return BadRequest("Invalid order type or invalid products!");
+
+            return View("OrderSubmitSuccess");
+        }
+
+
+        [HttpGet]
+        [Authorize(Roles="KitchenEmployee")]
+        public async Task<IActionResult> RealiseOrderView()
+        {
+            var unrealisedOrders = await _context.KitchenOrders
+                .AsNoTracking()
+                .Where(p => p.RealisedTime == null)
+                .Include(p => p.Type)
+                .Include(p => p.Products)
+                    !.ThenInclude(op => op.Product)
+                .ToListAsync();
+
+            return View(unrealisedOrders);
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles="KitchenEmployee")]
+        public async Task<IActionResult> MarkOrderRealised(Guid id)
+        {
+            var orderApi = new OrderApiController(_context)
+            {
+                ControllerContext = this.ControllerContext
+            };
+
+            var result = await orderApi.MarkOrderRealised(id);
+
+            if (!result)
+                return NotFound();
+
+            return RedirectToAction("RealiseOrderView", "Kitchen");
+        }
+
+
+        [HttpGet]
+        [Authorize(Roles="KitchenEmployee")]
+        public async Task<IActionResult> CancelOrderView()
+        {
+            var unrealisedOrders = await _context.KitchenOrders
+                .AsNoTracking()
+                .Where(p => p.RealisedTime == null)
+                .Include(p => p.Type)
+                .Include(p => p.Products)
+                    !.ThenInclude(op => op.Product)
+                .ToListAsync();
+
+            return View(unrealisedOrders);
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles="KitchenEmployee")]
+        public async Task<IActionResult> CancelOrderConfirmation(Guid id)
+        {
+            var order = await _context.KitchenOrders
+                .AsNoTracking()
+                .Where(o => o.Id == id)
+                .Include(o => o.Type)
+                .Include(o => o.Products)
+                    !.ThenInclude(op => op.Product)
+                .SingleAsync();
+
+            return View(order);
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles="KitchenEmployee")]
+        public async Task<IActionResult> CancelOrder(Guid id)
+        {
+            var orderApi = new OrderApiController(_context)
+            {
+                ControllerContext = this.ControllerContext
+            };
+
+            var result = await orderApi.CancelOrder(id);
+
+            if (!result)
+                return NotFound();
+
+            return RedirectToAction("CancelOrderView");
         }
     }
 

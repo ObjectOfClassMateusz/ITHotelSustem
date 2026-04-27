@@ -206,6 +206,8 @@ public class DataSeeder
             {
                 Id = Guid.NewGuid(), Name = "Mushroom", Value = "mushroom", IsActive = true
             });
+
+            await context.SaveChangesAsync();
         }
 
         if (context.KitchenOrderTypes.Count() == 0)
@@ -224,36 +226,287 @@ public class DataSeeder
             });
         }
 
-        if (context.KitchenProducts.Count() == 0)
+        if (context.KitchenArticles.Count() == 0)
         {
+            context.KitchenArticles.Add(new KitchenArticle
+            {
+                Id = Guid.NewGuid(), Name = "Chicken meat", TypeId = context.KitchenArticleTypes.FirstOrDefault(t => t.Value == "meat")!.Id
+            });
+            context.KitchenArticles.Add(new KitchenArticle
+            {
+                Id = Guid.NewGuid(), Name = "Beef", TypeId = context.KitchenArticleTypes.FirstOrDefault(t => t.Value == "meat")!.Id
+            });
+            context.KitchenArticles.Add(new KitchenArticle
+            {
+                Id = Guid.NewGuid(), Name = "Pork", TypeId = context.KitchenArticleTypes.FirstOrDefault(t => t.Value == "meat")!.Id
+            });
+            context.KitchenArticles.Add(new KitchenArticle
+            {
+                Id = Guid.NewGuid(), Name = "Chickpea", TypeId = context.KitchenArticleTypes.FirstOrDefault(t => t.Value == "loose")!.Id
+            });
+            context.KitchenArticles.Add(new KitchenArticle
+            {
+                Id = Guid.NewGuid(), Name = "Italian wine", TypeId = context.KitchenArticleTypes.FirstOrDefault(t => t.Value == "liquid")!.Id
+            });
+            context.KitchenArticles.Add(new KitchenArticle
+            {
+                Id = Guid.NewGuid(), Name = "Olive oil", TypeId = context.KitchenArticleTypes.FirstOrDefault(t => t.Value == "liquid")!.Id
+            });
+            context.KitchenArticles.Add(new KitchenArticle
+            {
+                Id = Guid.NewGuid(), Name = "Beer", TypeId = context.KitchenArticleTypes.FirstOrDefault(t => t.Value == "liquid")!.Id
+            });
+            context.KitchenArticles.Add(new KitchenArticle
+            {
+                Id = Guid.NewGuid(), Name = "Powder of beer flavour", TypeId = context.KitchenArticleTypes.FirstOrDefault(t => t.Value == "loose")!.Id
+            });
+            context.KitchenArticles.Add(new KitchenArticle
+            {
+                Id = Guid.NewGuid(), Name = "Egg", TypeId = context.KitchenArticleTypes.FirstOrDefault(t => t.Value == "packed")!.Id
+            });
+            context.KitchenArticles.Add(new KitchenArticle
+            {
+                Id = Guid.NewGuid(), Name = "Salad", TypeId = context.KitchenArticleTypes.FirstOrDefault(t => t.Value == "vegetable")!.Id
+            });
+            context.KitchenArticles.Add(new KitchenArticle
+            {
+                Id = Guid.NewGuid(), Name = "Apple", TypeId = context.KitchenArticleTypes.FirstOrDefault(t => t.Value == "fruit")!.Id
+            });
+            context.KitchenArticles.Add(new KitchenArticle
+            {
+                Id = Guid.NewGuid(), Name = "Wheat", TypeId = context.KitchenArticleTypes.FirstOrDefault(t => t.Value == "loose")!.Id
+            });
+            context.KitchenArticles.Add(new KitchenArticle
+            {
+                Id = Guid.NewGuid(), Name = "Potato", TypeId = context.KitchenArticleTypes.FirstOrDefault(t => t.Value == "vegetable")!.Id
+            });
+            context.KitchenArticles.Add(new KitchenArticle
+            {
+                Id = Guid.NewGuid(), Name = "Pack of nuddles", TypeId = context.KitchenArticleTypes.FirstOrDefault(t => t.Value == "packed")!.Id
+            });
+
+            await context.SaveChangesAsync();
+        }
+
+        if (context.KitchenProducts.Count() == 0 &&
+            context.KitchenRecipes.Count() == 0)
+        {
+            Guid chickenSoupId = Guid.NewGuid();
+            Guid porkchopId = Guid.NewGuid();
+            Guid chickpeaSaladId = Guid.NewGuid();
+            Guid burgerId = Guid.NewGuid();
+            Guid friesId = Guid.NewGuid();
+            Guid waterId = Guid.NewGuid();
+            Guid wineId = Guid.NewGuid();
+            Guid pancakesId = Guid.NewGuid();
+            Guid pancakes0RecipeId = Guid.NewGuid();
+            Guid pancakes1RecipeId = Guid.NewGuid();
+
             context.KitchenProducts.Add(new KitchenProduct
             {
-                Id = Guid.NewGuid(), Name = "Chicken Soup", ContainsAlcohol = false, Price = 9.0m
+                Id = chickenSoupId, Name = "Chicken Soup", ContainsAlcohol = false, Price = 9.0m
             });
             context.KitchenProducts.Add(new KitchenProduct
             {
-                Id = Guid.NewGuid(), Name = "Pork chop", ContainsAlcohol = false, Price = 23.0m
+                Id = porkchopId, Name = "Pork chop", ContainsAlcohol = false, Price = 23.0m
             });
             context.KitchenProducts.Add(new KitchenProduct
             {
-                Id = Guid.NewGuid(), Name = "Chickpea Salad", ContainsAlcohol = false, Price = 14.0m
+                Id = chickpeaSaladId, Name = "Chickpea Salad", ContainsAlcohol = false, Price = 14.0m
             });
             context.KitchenProducts.Add(new KitchenProduct
             {
-                Id = Guid.NewGuid(), Name = "Burger", ContainsAlcohol = false, Price = 19.99m
+                Id = burgerId, Name = "Burger", ContainsAlcohol = false, Price = 19.99m
             });
             context.KitchenProducts.Add(new KitchenProduct
             {
-                Id = Guid.NewGuid(), Name = "Fries", ContainsAlcohol = false, Price = 9.99m
+                Id = friesId, Name = "Fries", ContainsAlcohol = false, Price = 9.99m
             });
             context.KitchenProducts.Add(new KitchenProduct
             {
-                Id = Guid.NewGuid(), Name = "Water", ContainsAlcohol = false, Price = 5.99m
+                Id = waterId, Name = "Water", ContainsAlcohol = false, Price = 5.99m
             });
             context.KitchenProducts.Add(new KitchenProduct
             {
-                Id = Guid.NewGuid(), Name = "Wine", ContainsAlcohol = true, Price = 22.99m
+                Id = wineId, Name = "Wine", ContainsAlcohol = true, Price = 22.99m
             });
+            context.KitchenProducts.Add(new KitchenProduct
+            {
+                Id = pancakesId, Name = "Pancakes with beer", ContainsAlcohol = true, Price = 14.99m
+            });
+
+            context.KitchenRecipes.Add(new KitchenRecipe
+            {
+                Id = Guid.NewGuid(), Content = "Wrzucić kurę do garnka i gotować przez 40 minut.", OutcomeProductId = chickenSoupId
+            });
+            context.KitchenRecipes.Add(new KitchenRecipe
+            {
+                Id = Guid.NewGuid(), Content = "Woźmie zimnioki, a obierze je. Woźmie umyje. Na ruszt wrzuci i upiecze, a miukkie budo. Podowat' z widłami do jezenia dla ślachcica.", OutcomeProductId = porkchopId
+            });
+            context.KitchenRecipes.Add(new KitchenRecipe
+            {
+                Id = Guid.NewGuid(), Content = "Niech kret ugotuje Ci kapustę. Zawijaj masę ziemną w liście i gotuj w garnku przez 2 godziny.", OutcomeProductId = chickpeaSaladId
+            });
+            context.KitchenRecipes.Add(new KitchenRecipe
+            {
+                Id = Guid.NewGuid(), Content = "Zamknąć w bułkę smażony kotlet.", OutcomeProductId = burgerId
+            });
+            context.KitchenRecipes.Add(new KitchenRecipe
+            {
+                Id = Guid.NewGuid(), Content = "Pokroić zimnioki. Zasmażać zanużone w oleju palmowym.", OutcomeProductId = friesId
+            });
+            context.KitchenRecipes.Add(new KitchenRecipe
+            {
+                Id = Guid.NewGuid(), Content = "Nalać wina do lampki.", OutcomeProductId = wineId
+            });
+            context.KitchenRecipes.Add(new KitchenRecipe
+            {
+                Id = pancakes0RecipeId, Content = "Smażyć ciasto na oleju z piwem", OutcomeProductId = pancakesId
+            });
+            context.KitchenRecipes.Add(new KitchenRecipe
+            {
+                Id = pancakes1RecipeId, Content = "Dodać sproszkowane piwo do ciasta. Dokładnie wymieszać. Smażyć pół godziny.", OutcomeProductId = pancakesId
+            });
+
+
+            await context.SaveChangesAsync();
+
+
+            context.KitchenRecipeIngredients.Add(new KitchenRecipeIngredient
+            {
+                RecipeId = context.KitchenRecipes.FirstOrDefault(r => r.OutcomeProductId == chickenSoupId)!.Id,
+                ArticleId = context.KitchenArticles.FirstOrDefault(a => a.Name == "Chicken meat")!.Id,
+                Count = 0.5m, Unit = ArticleUnit.Kg
+            });
+            context.KitchenRecipeIngredients.Add(new KitchenRecipeIngredient
+            {
+                RecipeId = context.KitchenRecipes.FirstOrDefault(r => r.OutcomeProductId == chickenSoupId)!.Id,
+                ArticleId = context.KitchenArticles.FirstOrDefault(a => a.Name == "Pack of nuddles")!.Id,
+                Count = 1, Unit = ArticleUnit.Pieces
+            });
+            context.KitchenRecipeIngredients.Add(new KitchenRecipeIngredient
+            {
+                RecipeId = context.KitchenRecipes.FirstOrDefault(r => r.OutcomeProductId == chickenSoupId)!.Id,
+                ArticleId = context.KitchenArticles.FirstOrDefault(a => a.Name == "Olive oil")!.Id,
+                Count = 0.1m, Unit = ArticleUnit.Liters
+            });
+
+            context.KitchenRecipeIngredients.Add(new KitchenRecipeIngredient
+            {
+                RecipeId = context.KitchenRecipes.FirstOrDefault(r => r.OutcomeProductId == porkchopId)!.Id,
+                ArticleId = context.KitchenArticles.FirstOrDefault(a => a.Name == "Beef")!.Id,
+                Count = 1.5m, Unit = ArticleUnit.Kg
+            });
+            context.KitchenRecipeIngredients.Add(new KitchenRecipeIngredient
+            {
+                RecipeId = context.KitchenRecipes.FirstOrDefault(r => r.OutcomeProductId == porkchopId)!.Id,
+                ArticleId = context.KitchenArticles.FirstOrDefault(a => a.Name == "Potato")!.Id,
+                Count = 0.5m, Unit = ArticleUnit.Kg
+            });
+            context.KitchenRecipeIngredients.Add(new KitchenRecipeIngredient
+            {
+                RecipeId = context.KitchenRecipes.FirstOrDefault(r => r.OutcomeProductId == porkchopId)!.Id,
+                ArticleId = context.KitchenArticles.FirstOrDefault(a => a.Name == "Olive oil")!.Id,
+                Count = 0.1m, Unit = ArticleUnit.Liters
+            });
+
+            context.KitchenRecipeIngredients.Add(new KitchenRecipeIngredient
+            {
+                RecipeId = context.KitchenRecipes.FirstOrDefault(r => r.OutcomeProductId == chickpeaSaladId)!.Id,
+                ArticleId = context.KitchenArticles.FirstOrDefault(a => a.Name == "Chickpea")!.Id,
+                Count = 0.4m, Unit = ArticleUnit.Kg
+            });
+            context.KitchenRecipeIngredients.Add(new KitchenRecipeIngredient
+            {
+                RecipeId = context.KitchenRecipes.FirstOrDefault(r => r.OutcomeProductId == chickpeaSaladId)!.Id,
+                ArticleId = context.KitchenArticles.FirstOrDefault(a => a.Name == "Salad")!.Id,
+                Count = 1, Unit = ArticleUnit.Pieces
+            });
+
+            context.KitchenRecipeIngredients.Add(new KitchenRecipeIngredient
+            {
+                RecipeId = context.KitchenRecipes.FirstOrDefault(r => r.OutcomeProductId == burgerId)!.Id,
+                ArticleId = context.KitchenArticles.FirstOrDefault(a => a.Name == "Beef")!.Id,
+                Count = 0.4m, Unit = ArticleUnit.Kg
+            });
+            context.KitchenRecipeIngredients.Add(new KitchenRecipeIngredient
+            {
+                RecipeId = context.KitchenRecipes.FirstOrDefault(r => r.OutcomeProductId == burgerId)!.Id,
+                ArticleId = context.KitchenArticles.FirstOrDefault(a => a.Name == "Salad")!.Id,
+                Count = 1, Unit = ArticleUnit.Pieces
+            });
+
+            context.KitchenRecipeIngredients.Add(new KitchenRecipeIngredient
+            {
+                RecipeId = context.KitchenRecipes.FirstOrDefault(r => r.OutcomeProductId == friesId)!.Id,
+                ArticleId = context.KitchenArticles.FirstOrDefault(a => a.Name == "Potato")!.Id,
+                Count = 0.5m, Unit = ArticleUnit.Kg
+            });
+            context.KitchenRecipeIngredients.Add(new KitchenRecipeIngredient
+            {
+                RecipeId = context.KitchenRecipes.FirstOrDefault(r => r.OutcomeProductId == friesId)!.Id,
+                ArticleId = context.KitchenArticles.FirstOrDefault(a => a.Name == "Olive oil")!.Id,
+                Count = 0.1m, Unit = ArticleUnit.Liters
+            });
+
+            context.KitchenRecipeIngredients.Add(new KitchenRecipeIngredient
+            {
+                RecipeId = context.KitchenRecipes.FirstOrDefault(r => r.OutcomeProductId == wineId)!.Id,
+                ArticleId = context.KitchenArticles.FirstOrDefault(a => a.Name == "Italian wine")!.Id,
+                Count = 0.25m, Unit = ArticleUnit.Liters
+            });
+
+            context.KitchenRecipeIngredients.Add(new KitchenRecipeIngredient
+            {
+                 RecipeId = pancakes0RecipeId,
+                 ArticleId = context.KitchenArticles.FirstOrDefault(a => a.Name == "Egg")!.Id,
+                 Count = 2, Unit = ArticleUnit.Pieces
+            });
+            context.KitchenRecipeIngredients.Add(new KitchenRecipeIngredient
+            {
+                 RecipeId = pancakes0RecipeId,
+                 ArticleId = context.KitchenArticles.FirstOrDefault(a => a.Name == "Wheat")!.Id,
+                 Count = 0.5m, Unit = ArticleUnit.Kg
+            });
+            context.KitchenRecipeIngredients.Add(new KitchenRecipeIngredient
+            {
+                 RecipeId = pancakes0RecipeId,
+                 ArticleId = context.KitchenArticles.FirstOrDefault(a => a.Name == "Beer")!.Id,
+                 Count = 0.1m, Unit = ArticleUnit.Liters
+            });
+            context.KitchenRecipeIngredients.Add(new KitchenRecipeIngredient
+            {
+                 RecipeId = pancakes0RecipeId,
+                 ArticleId = context.KitchenArticles.FirstOrDefault(a => a.Name == "Olive oil")!.Id,
+                 Count = 0.1m, Unit = ArticleUnit.Liters
+            });
+
+            context.KitchenRecipeIngredients.Add(new KitchenRecipeIngredient
+            {
+                 RecipeId = pancakes1RecipeId,
+                 ArticleId = context.KitchenArticles.FirstOrDefault(a => a.Name == "Egg")!.Id,
+                 Count = 2, Unit = ArticleUnit.Pieces
+            });
+            context.KitchenRecipeIngredients.Add(new KitchenRecipeIngredient
+            {
+                 RecipeId = pancakes1RecipeId,
+                 ArticleId = context.KitchenArticles.FirstOrDefault(a => a.Name == "Wheat")!.Id,
+                 Count = 0.5m, Unit = ArticleUnit.Kg
+            });
+            context.KitchenRecipeIngredients.Add(new KitchenRecipeIngredient
+            {
+                 RecipeId = pancakes1RecipeId,
+                 ArticleId = context.KitchenArticles.FirstOrDefault(a => a.Name == "Powder of beer flavour")!.Id,
+                 Count = 0.1m, Unit = ArticleUnit.Kg
+            });
+            context.KitchenRecipeIngredients.Add(new KitchenRecipeIngredient
+            {
+                 RecipeId = pancakes1RecipeId,
+                 ArticleId = context.KitchenArticles.FirstOrDefault(a => a.Name == "Olive oil")!.Id,
+                 Count = 0.1m, Unit = ArticleUnit.Liters
+            });
+
+            await context.SaveChangesAsync();
         }
     }
 

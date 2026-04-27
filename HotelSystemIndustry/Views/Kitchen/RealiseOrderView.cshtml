@@ -1,0 +1,63 @@
+@using HotelSystemIndustry.Models.Kitchen
+
+@model List<Order>
+
+
+@{
+    ViewData["Title"] = "Realise Order";
+    ViewBag.LowerNavPartial = "_KitchenNavPartial";
+}
+
+
+<h1>Realise an order</h1>
+<hr />
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Submission Time</th>
+            <th>Order Type</th>
+            <th>Destination</th>
+            <th>Products</th>
+            <th></th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var order in Model) {
+            <tr>
+                <td>
+                    @order.SubmissionTime.ToLocalTime()
+                </td>
+                <td>
+                    @order.Type!.Name
+                </td>
+                <td>
+                    @order.DeliveryDestination
+                </td>
+                <td>
+                    <ul>
+                        @foreach (var prod in order.Products!)
+                        {
+                            <li>
+                                <div class="row">
+                                    <div class="col-md-3 text-start">@prod.Product!.Name</div> <div class="col-md-4 text-end">x @prod.Count</div>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                </td>
+                <td>
+                    <form method="post" asp-action="MarkOrderRealised" asp-route-id="@order.Id">
+                        @Html.AntiForgeryToken()
+                        <input type="submit" value="Realise" class="btn btn-success" />
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-action="Index" asp-controller="Kitchen" class="btn btn-primary">Back</a>
+
