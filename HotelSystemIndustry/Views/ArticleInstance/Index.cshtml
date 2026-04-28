@@ -21,9 +21,6 @@
             <th>
                 @Html.DisplayNameFor(model => model.Count)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Unit)
-            </th>
             <th></th>
         </tr>
     </thead>
@@ -37,10 +34,7 @@
                 @Html.DisplayFor(modelItem => item.Storage.Name)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Count)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Unit)
+                @Html.DisplayFor(modelItem => item.Count) @Html.DisplayFor(modelItem => item.Article!.Unit)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

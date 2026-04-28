@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace HotelSystemIndustry.Controllers.Kitchen
 {
+    [Authorize(Roles="KitchenEmployee,MaintainanceEmployee,Admin")]
     public class ArticleInstanceController : Controller
     {
         private readonly HotelDbContext _context;
@@ -48,7 +49,6 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         }
 
         // GET: ArticleInstance/Create
-        [Authorize(Roles = "Admin,KitchenEmployee,MaintainanceEmployee")]
         public IActionResult Create()
         {
             ViewData["ArticleId"] = new SelectList(_context.KitchenArticles, "Id", "Name");
@@ -61,16 +61,10 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin,KitchenEmployee,MaintainanceEmployee")]
-        public async Task<IActionResult> Create([Bind("Id,ArticleId,StorageId,Count,Unit")] ArticleInstance articleInstance)
+        public async Task<IActionResult> Create([Bind("Id,ArticleId,StorageId,Count")] ArticleInstance articleInstance)
         {
-            if (ModelState.IsValid &&
-                articleInstance.ArticleId != Guid.Empty &&
-                articleInstance.StorageId != Guid.Empty)
+            if (ModelState.IsValid)
             {
-                articleInstance.Article = _context.KitchenArticles.Where(a => a.Id == articleInstance.ArticleId).Single();
-                articleInstance.Storage = _context.KitchenStorages.Where(s => s.Id == articleInstance.StorageId).Single();
-
                 articleInstance.Id = Guid.NewGuid();
                 _context.Add(articleInstance);
                 await _context.SaveChangesAsync();
@@ -82,7 +76,6 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         }
 
         // GET: ArticleInstance/Edit/5
-        [Authorize(Roles = "Admin,KitchenEmployee,MaintainanceEmployee")]
         public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null)
@@ -90,7 +83,7 @@ namespace HotelSystemIndustry.Controllers.Kitchen
                 return NotFound();
             }
 
-            var articleInstance = await _context.KitchenArticleInstances.FindAsync(id);
+            var articleInstance = await _context.KitchenArticleInstances.Include(a => a.Article).FirstOrDefaultAsync(a => a.Id == id);
             if (articleInstance == null)
             {
                 return NotFound();
@@ -105,8 +98,7 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin,KitchenEmployee,MaintainanceEmployee")]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Id,ArticleId,StorageId,Count,Unit")] ArticleInstance articleInstance)
+        public async Task<IActionResult> Edit(Guid id, [Bind("Id,ArticleId,StorageId,Count")] ArticleInstance articleInstance)
         {
             if (id != articleInstance.Id)
             {
@@ -115,9 +107,6 @@ namespace HotelSystemIndustry.Controllers.Kitchen
 
             if (ModelState.IsValid)
             {
-                articleInstance.Article = _context.KitchenArticles.Where(a => a.Id == articleInstance.ArticleId).Single();
-                articleInstance.Storage = _context.KitchenStorages.Where(s => s.Id == articleInstance.StorageId).Single();
-
                 try
                 {
                     _context.Update(articleInstance);
@@ -142,7 +131,6 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         }
 
         // GET: ArticleInstance/Delete/5
-        [Authorize(Roles = "Admin,KitchenEmployee,MaintainanceEmployee")]
         public async Task<IActionResult> Delete(Guid? id)
         {
             if (id == null)
@@ -165,7 +153,6 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         // POST: ArticleInstance/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin,KitchenEmployee,MaintainanceEmployee")]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
             var articleInstance = await _context.KitchenArticleInstances.FindAsync(id);

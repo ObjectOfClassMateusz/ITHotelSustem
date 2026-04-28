@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using HotelSystemIndustry.Infrastructure;
 using HotelSystemIndustry.Models.Kitchen;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HotelSystemIndustry.Controllers.Kitchen
 {
+    [Authorize(Roles="KitchenEmployee,Admin")]
     public class OrderController : Controller
     {
         private readonly HotelDbContext _context;

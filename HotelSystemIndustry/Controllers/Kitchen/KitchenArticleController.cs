@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace HotelSystemIndustry.Controllers.Kitchen
 {
+    [Authorize(Roles="KitchenEmployee,MaintainanceEmployee,Admin")]
     public class KitchenArticleController : Controller
     {
         private readonly HotelDbContext _context;
@@ -47,7 +48,6 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         }
 
         // GET: KitchenArticle/Create
-        [Authorize(Roles = "Admin,KitchenEmployee,MaintainanceEmployee")]
         public IActionResult Create()
         {
             ViewData["TypeId"] = new SelectList(_context.KitchenArticleTypes, "Id", "Name");
@@ -59,13 +59,10 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin,KitchenEmployee,MaintainanceEmployee")]
-        public async Task<IActionResult> Create([Bind("Id,Name,TypeId")] KitchenArticle kitchenArticle)
+        public async Task<IActionResult> Create([Bind("Id,Name,TypeId,Unit")] KitchenArticle kitchenArticle)
         {
-            if (ModelState.IsValid && kitchenArticle.TypeId != Guid.Empty)
+            if (ModelState.IsValid)
             {
-                kitchenArticle.Type = _context.KitchenArticleTypes.Where(ka => ka.Id == kitchenArticle.TypeId).Single();
-
                 kitchenArticle.Id = Guid.NewGuid();
                 _context.Add(kitchenArticle);
                 await _context.SaveChangesAsync();
@@ -76,7 +73,6 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         }
 
         // GET: KitchenArticle/Edit/5
-        [Authorize(Roles = "Admin,KitchenEmployee,MaintainanceEmployee")]
         public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null)
@@ -98,8 +94,7 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin,KitchenEmployee,MaintainanceEmployee")]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Id,Name,TypeId")] KitchenArticle kitchenArticle)
+        public async Task<IActionResult> Edit(Guid id, [Bind("Id,Name,TypeId,Unit")] KitchenArticle kitchenArticle)
         {
             if (id != kitchenArticle.Id)
             {
@@ -108,8 +103,6 @@ namespace HotelSystemIndustry.Controllers.Kitchen
 
             if (ModelState.IsValid)
             {
-                kitchenArticle.Type = _context.KitchenArticleTypes.Where(ka => ka.Id == kitchenArticle.TypeId).Single();
-                
                 try
                 {
                     _context.Update(kitchenArticle);
@@ -133,7 +126,6 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         }
 
         // GET: KitchenArticle/Delete/5
-        [Authorize(Roles = "Admin,KitchenEmployee,MaintainanceEmployee")]
         public async Task<IActionResult> Delete(Guid? id)
         {
             if (id == null)
@@ -155,7 +147,6 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         // POST: KitchenArticle/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin,KitchenEmployee,MaintainanceEmployee")]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
             var kitchenArticle = await _context.KitchenArticles.FindAsync(id);

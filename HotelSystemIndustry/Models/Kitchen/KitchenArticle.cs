@@ -13,6 +13,14 @@ namespace HotelSystemIndustry.Models.Kitchen
     }
 
 
+    public enum ArticleUnit
+    {
+        Pieces,
+        Kg,
+        Liters
+    }
+
+
     public class KitchenArticle
     {
         [Key]
@@ -26,6 +34,10 @@ namespace HotelSystemIndustry.Models.Kitchen
         public Guid TypeId { get; set; }
 
         public virtual KitchenArticleType? Type { get; set; }
+
+
+        [Required]
+        public ArticleUnit Unit { get; set; }
     }
 
 }

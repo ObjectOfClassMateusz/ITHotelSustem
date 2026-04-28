@@ -2,14 +2,6 @@ using System.ComponentModel.DataAnnotations;
 
 namespace HotelSystemIndustry.Models.Kitchen
 {
-
-    public enum ArticleUnit
-    {
-        Pieces,
-        Kg,
-        Liters
-    }
-
     public class ArticleInstance
     {
         [Key]
@@ -32,9 +24,6 @@ namespace HotelSystemIndustry.Models.Kitchen
         */
         [Range(typeof(decimal), "0", "79228162514264337593543950335")]
         public decimal Count { get; set; }
-        
-
-        public ArticleUnit Unit { get; set; }
     }
 
 }

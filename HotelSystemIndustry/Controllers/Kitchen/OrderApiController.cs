@@ -41,11 +41,13 @@ namespace HotelSystemIndustry.Controllers.Kitchen
 
         
         [HttpPost("[action]")]
-        public async Task<bool> SubmitOrder(NewOrderViewModel model)
+        public async Task<Guid> SubmitOrder(NewOrderViewModel model)
         {
+            Guid guid = Guid.NewGuid();
+
             Order order = new Order
             {
-                Id = Guid.NewGuid(),
+                Id = guid,
                 SubmissionTime = DateTime.Now.ToUniversalTime(),
                 RealisedTime = null,
                 TypeId = model.Type,
@@ -57,7 +59,7 @@ namespace HotelSystemIndustry.Controllers.Kitchen
                 .Where(t => t.Id == model.Type)
                 .FirstOrDefaultAsync();
             if (type == null)
-                return false;
+                return Guid.Empty;
 
             order.Type = type;
 
@@ -69,7 +71,7 @@ namespace HotelSystemIndustry.Controllers.Kitchen
                     .Where(p => p.Id == prodAndNumber.ProductId)
                     .FirstOrDefaultAsync();
                 if (product == null)
-                    return false;
+                    return Guid.Empty;
 
                 OrderProduct orderProduct = new OrderProduct
                 {
@@ -85,7 +87,7 @@ namespace HotelSystemIndustry.Controllers.Kitchen
 
             await _context.SaveChangesAsync();
 
-            return true;
+            return guid;
         }
 
 

@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace HotelSystemIndustry.Controllers.Kitchen
 {
+    [Authorize(Roles = "Admin,KitchenEmployee")]
     public class KitchenRecipeController : Controller
     {
         private readonly HotelDbContext _context;
@@ -49,7 +50,6 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         }
 
         // GET: KitchenRecipe/Create
-        [Authorize(Roles = "Admin,KitchenEmployee")]
         public IActionResult Create()
         {
             ViewData["OutcomeProductId"] = new SelectList(_context.KitchenProducts, "Id", "Name");
@@ -61,7 +61,6 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin,KitchenEmployee")]
         public async Task<IActionResult> Create([Bind("Id,OutcomeProductId,Content")] KitchenRecipe kitchenRecipe)
         {
             if (ModelState.IsValid && kitchenRecipe.OutcomeProductId != Guid.Empty)
@@ -78,7 +77,6 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         }
 
         // GET: KitchenRecipe/Edit/5
-        [Authorize(Roles = "Admin,KitchenEmployee")]
         public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null)
@@ -100,7 +98,6 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin,KitchenEmployee")]
         public async Task<IActionResult> Edit(Guid id, [Bind("Id,OutcomeProductId,Content")] KitchenRecipe kitchenRecipe)
         {
             if (id != kitchenRecipe.Id)
@@ -135,7 +132,6 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         }
 
         // GET: KitchenRecipe/Delete/5
-        [Authorize(Roles = "Admin,KitchenEmployee")]
         public async Task<IActionResult> Delete(Guid? id)
         {
             if (id == null)
@@ -157,7 +153,6 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         // POST: KitchenRecipe/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin,KitchenEmployee")]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
             var kitchenRecipe = await _context.KitchenRecipes.FindAsync(id);

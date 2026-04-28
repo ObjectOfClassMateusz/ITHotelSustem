@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace HotelSystemIndustry.Controllers.Kitchen
 {
+    [Authorize(Roles="KitchenEmployee,MaintainanceEmployee,Admin")]
     public class StorageController : Controller
     {
         private readonly HotelDbContext _context;
@@ -45,7 +46,6 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         }
 
         // GET: Storage/Create
-        [Authorize(Roles = "Admin,KitchenEmployee,MaintainanceEmployee")]
         public IActionResult Create()
         {
             return View();
@@ -56,7 +56,6 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin,KitchenEmployee,MaintainanceEmployee")]
         public async Task<IActionResult> Create([Bind("Id,Name,Location")] Storage storage)
         {
             if (ModelState.IsValid)
@@ -70,7 +69,6 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         }
 
         // GET: Storage/Edit/5
-        [Authorize(Roles = "Admin,KitchenEmployee,MaintainanceEmployee")]
         public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null)
@@ -91,7 +89,6 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin,KitchenEmployee,MaintainanceEmployee")]
         public async Task<IActionResult> Edit(Guid id, [Bind("Id,Name,Location")] Storage storage)
         {
             if (id != storage.Id)
@@ -123,7 +120,6 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         }
 
         // GET: Storage/Delete/5
-        [Authorize(Roles = "Admin,KitchenEmployee,MaintainanceEmployee")]
         public async Task<IActionResult> Delete(Guid? id)
         {
             if (id == null)
@@ -144,7 +140,6 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         // POST: Storage/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin,KitchenEmployee,MaintainanceEmployee")]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
             var storage = await _context.KitchenStorages.FindAsync(id);

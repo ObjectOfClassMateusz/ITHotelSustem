@@ -38,6 +38,12 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ChooseOrderProducts(NewOrderViewModel model)
         {
+            if (!ModelState.IsValid)
+            {
+                ViewBag.OrderTypes = new SelectList(_context.KitchenOrderTypes, "Id", "Name");
+                return View("PlaceOrder");
+            }
+
             NewOrderNewProductViewModel newModel = new()
             {
                 Order = model
@@ -53,6 +59,9 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddOrderProduct(NewOrderNewProductViewModel model)
         {
+            if (!ModelState.IsValid)
+                return View(model);
+
             if (model.NewProductId != null && model.NewProductCount != null)
             {
                 if (model.Order.Products.Any(p => p.ProductId == model.NewProductId.Value))
@@ -80,6 +89,9 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> VerifyOrder(NewOrderNewProductViewModel model)
         {
+            if (!ModelState.IsValid)
+                return BadRequest("Invalid order data!");
+
             var orderTypes = await _context.KitchenOrderTypes.AsNoTracking().ToListAsync();
             ViewBag.OrderTypes = orderTypes;
 
@@ -93,14 +105,17 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SubmitOrder([FromForm] NewOrderViewModel model)
         {
+            if (!ModelState.IsValid)
+                return BadRequest("Invalid order data!");
+
             var orderApi = new OrderApiController(_context)
             {
                 ControllerContext = this.ControllerContext
             };
 
-            var result = await orderApi.SubmitOrder(model);
+            Guid result = await orderApi.SubmitOrder(model);
 
-            if (!result)
+            if (result == Guid.Empty)
                 return BadRequest("Invalid order type or invalid products!");
 
             return View("OrderSubmitSuccess");
