@@ -29,7 +29,7 @@
             @foreach (var prod in Products) {
                 <div class="col-md-4 my-2">
                     <input type="radio" asp-for="NewProductId" value="@prod.Id" id="Prod(@prod.Id)" class="radiobutton-box" />
-                    <label for="Prod(@prod.Id)" class="row mx-0"><div class="col-md-8 text-start">@prod.Name</div> <div class="text-end col-md-2">@prod.Price</div></label>
+                    <label for="Prod(@prod.Id)" class="row mx-0"><div class="col-md-8 text-start">@prod.Name</div> <div class="text-end col-md-2">$@prod.Price</div></label>
                     <span asp-validation-for="NewProductId" class="text-danger"></span>
                 </div>
             }
@@ -69,8 +69,10 @@
                             var productPrice = product.Price*count;
                             totalPrice += productPrice;
 
-                            <div class="row">
-                                <div class="col-md-8 text-start">@product.Name x @count</div> <div class="col-md-2 text-end">@productPrice</div>
+                            <div class="row align-items-center">
+                                <div class="col-md-7 text-start">@product.Name x @count</div> <div class="col-md-3 text-end">$ @productPrice</div>
+
+                                <div class="col-md-1 my-1"><input type="submit" asp-action="RemoveOrderProduct" class="btn btn-danger" value="x" asp-route-index="@i" /></div>
                             </div>
                         }
                     </li>

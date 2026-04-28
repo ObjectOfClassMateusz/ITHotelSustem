@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace HotelSystemIndustry.Models.Kitchen
@@ -15,8 +16,11 @@ namespace HotelSystemIndustry.Models.Kitchen
 
     public enum ArticleUnit
     {
+        [Display(Name="Pieces")]
         Pieces,
+        [Display(Name="kg")]
         Kg,
+        [Display(Name="l")]
         Liters
     }
 

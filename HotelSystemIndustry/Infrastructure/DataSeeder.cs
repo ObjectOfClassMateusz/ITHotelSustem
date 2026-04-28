@@ -51,6 +51,16 @@ public class DataSeeder
         await AddUserAsync(userManager, "maintainanceguy@maintainance.com", "Marek Niedzielski", "admin123$N", "MaintainanceEmployee");
         await AddUserAsync(userManager, "tradingperson@trading.com", "Orestes Niedzielski", "admin123$N", "TradingEmployee");
         await AddUserAsync(userManager, "recreationguy@recreation.com", "Sławomir Niedzielski", "admin123$N", "RecreationEmployee");
+
+        await AddUserAsync(userManager, "malwiech@wp.pl", "Małgorzata Wiech", "admin123$N", "HotelEmployee");
+        var malwiech = await userManager.FindByEmailAsync("malwiech@wp.pl");
+        if (malwiech != null)
+        {
+            await userManager.AddToRoleAsync(malwiech, "KitchenEmployee");
+            await userManager.AddToRoleAsync(malwiech, "MaintainanceEmployee");
+            await userManager.AddToRoleAsync(malwiech, "TradingEmployee");
+            await userManager.AddToRoleAsync(malwiech, "RecreationEmployee");
+        }
     }
 
 

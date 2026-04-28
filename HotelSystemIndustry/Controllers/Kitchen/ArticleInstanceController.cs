@@ -49,9 +49,9 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         }
 
         // GET: ArticleInstance/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            ViewData["ArticleId"] = new SelectList(_context.KitchenArticles, "Id", "Name");
+            ViewData["ArticleId"] = await GetArticlesSelectList();
             ViewData["StorageId"] = new SelectList(_context.KitchenStorages, "Id", "Name");
             return View();
         }
@@ -70,7 +70,7 @@ namespace HotelSystemIndustry.Controllers.Kitchen
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ArticleId"] = new SelectList(_context.KitchenArticles, "Id", "Name", articleInstance.ArticleId);
+            ViewData["ArticleId"] = await GetArticlesSelectList(articleInstance.ArticleId);
             ViewData["StorageId"] = new SelectList(_context.KitchenStorages, "Id", "Name", articleInstance.StorageId);
             return View(articleInstance);
         }
@@ -88,7 +88,7 @@ namespace HotelSystemIndustry.Controllers.Kitchen
             {
                 return NotFound();
             }
-            ViewData["ArticleId"] = new SelectList(_context.KitchenArticles, "Id", "Name", articleInstance.ArticleId);
+            ViewData["ArticleId"] = await GetArticlesSelectList(articleInstance.ArticleId);
             ViewData["StorageId"] = new SelectList(_context.KitchenStorages, "Id", "Name", articleInstance.StorageId);
             return View(articleInstance);
         }
@@ -125,7 +125,7 @@ namespace HotelSystemIndustry.Controllers.Kitchen
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ArticleId"] = new SelectList(_context.KitchenArticles, "Id", "Name", articleInstance.ArticleId);
+            ViewData["ArticleId"] = await GetArticlesSelectList(articleInstance.ArticleId);
             ViewData["StorageId"] = new SelectList(_context.KitchenStorages, "Id", "Name", articleInstance.StorageId);
             return View(articleInstance);
         }
@@ -168,6 +168,39 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         private bool ArticleInstanceExists(Guid id)
         {
             return _context.KitchenArticleInstances.Any(e => e.Id == id);
+        }
+
+
+        private async Task<SelectList> GetArticlesSelectList(Guid? articleId = null)
+        {
+            var articles = await _context.KitchenArticles
+                .AsNoTracking()
+                .ToListAsync();
+
+            var articlesSelList = new List<SelectListItem>();
+            foreach (var article in articles)
+            {
+                string unitText = string.Empty;
+                switch (article.Unit)
+                {
+                    case ArticleUnit.Pieces:
+                        unitText = "Pieces";
+                        break;
+                    case ArticleUnit.Kg:
+                        unitText = "kg";
+                        break;
+                    case ArticleUnit.Liters:
+                        unitText = "l";
+                        break;
+                }
+
+                articlesSelList.Add(new SelectListItem(article.Name + " (" + unitText + ")", article.Id.ToString()));
+            }
+
+            if (articleId != null)
+                return new SelectList(articlesSelList, "Value", "Text", articleId);
+            else
+                return new SelectList(articlesSelList, "Value", "Text");
         }
     }
 }

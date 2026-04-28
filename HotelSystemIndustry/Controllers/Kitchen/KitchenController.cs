@@ -59,22 +59,22 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddOrderProduct(NewOrderNewProductViewModel model)
         {
-            if (!ModelState.IsValid)
-                return View(model);
-
-            if (model.NewProductId != null && model.NewProductCount != null)
+            if (ModelState.IsValid)
             {
-                if (model.Order.Products.Any(p => p.ProductId == model.NewProductId.Value))
+                if (model.NewProductId != null && model.NewProductCount != null)
                 {
-                    var product = model.Order.Products.First(p => p.ProductId == model.NewProductId.Value);
-                    product.Count += model.NewProductCount.Value;
-                }
-                else
-                {
-                    model.Order.Products.Add(new ProductAndNumber { ProductId = model.NewProductId.Value, Count = model.NewProductCount.Value });
-                }
+                    if (model.Order.Products.Any(p => p.ProductId == model.NewProductId.Value))
+                    {
+                        var product = model.Order.Products.First(p => p.ProductId == model.NewProductId.Value);
+                        product.Count += model.NewProductCount.Value;
+                    }
+                    else
+                    {
+                        model.Order.Products.Add(new ProductAndNumber { ProductId = model.NewProductId.Value, Count = model.NewProductCount.Value });
+                    }
 
-                model.NewProductId = null;
+                    model.NewProductId = null;
+                }
             }
 
             var products = await _context.KitchenProducts.AsNoTracking().ToListAsync();
@@ -83,6 +83,23 @@ namespace HotelSystemIndustry.Controllers.Kitchen
             ModelState.Clear(); // Zresetuj zapamiętane wartości w Hiddenach
 
             return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RemoveOrderProduct(NewOrderNewProductViewModel model, int index)
+        {
+            if (ModelState.IsValid && index >= 0 && index < model.Order.Products.Count)
+            {
+                model.Order.Products.RemoveAt(index);
+            }
+
+            var products = await _context.KitchenProducts.AsNoTracking().ToListAsync();
+            ViewBag.Products = products;
+
+            ModelState.Clear(); // Zresetuj zapamiętane wartości w Hiddenach
+
+            return View("AddOrderProduct", model);
         }
 
         [HttpPost]
@@ -118,6 +135,13 @@ namespace HotelSystemIndustry.Controllers.Kitchen
             if (result == Guid.Empty)
                 return BadRequest("Invalid order type or invalid products!");
 
+            return RedirectToAction("OrderSubmitSuccess");
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> OrderSubmitSuccess()
+        {
             return View("OrderSubmitSuccess");
         }
 
@@ -206,6 +230,96 @@ namespace HotelSystemIndustry.Controllers.Kitchen
                 return NotFound();
 
             return RedirectToAction("CancelOrderView");
+        }
+
+
+        [HttpGet]
+        [Authorize(Roles="KitchenEmployee")]
+        public async Task<IActionResult> HandleDelivery()
+        {
+            var articles = await _context.KitchenArticles.AsNoTracking().ToListAsync();
+            ViewBag.Articles = articles;
+            ViewBag.Storages = await _context.KitchenStorages.AsNoTracking().ToListAsync();
+            ViewBag.ArticlesSelectList = await GetArticlesSelectList(articles);
+            ViewBag.StorageSelectList = new SelectList(_context.KitchenStorages, "Id", "Name");
+            return View(new KitchenDeliveryArticleViewModel());
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles="KitchenEmployee")]
+        public async Task<IActionResult> AddDeliveryArticle(KitchenDeliveryArticleViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                model.DeliveredArticles.Add(model.ToAdd);
+                model.ToAdd = new KitchenArticleDelivery();
+            }
+
+            ModelState.Clear();
+
+            var articles = await _context.KitchenArticles.AsNoTracking().ToListAsync();
+            ViewBag.Articles = articles;
+            ViewBag.Storages = await _context.KitchenStorages.AsNoTracking().ToListAsync();
+            ViewBag.ArticlesSelectList = await GetArticlesSelectList(articles);
+            ViewBag.StorageSelectList = new SelectList(_context.KitchenStorages, "Id", "Name");
+            return View("HandleDelivery", model);
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles="KitchenEmployee")]
+        public async Task<IActionResult> RegisterDeliveredArticles(KitchenDeliveryArticleViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                KitchenApiController apiController = new KitchenApiController(_context)
+                {
+                    ControllerContext = this.ControllerContext
+                };
+
+                var result = await apiController.RegisterDeliveredArticles(model.DeliveredArticles);
+                if (!result)
+                    return BadRequest("Invalid delivery data!");
+            }
+            else
+                return BadRequest("Invalid delivery data!");
+
+            return RedirectToAction("DeliveryRegisterSuccess");
+        }
+
+
+        [HttpGet]
+        [Authorize(Roles="KitchenEmployee")]
+        public async Task<IActionResult> DeliveryRegisterSuccess()
+        {
+            return View();
+        }
+
+
+        private async Task<List<SelectListItem>> GetArticlesSelectList(IList<KitchenArticle> articles)
+        {
+            var articlesSelList = new List<SelectListItem>();
+            foreach (var article in articles)
+            {
+                string unitText = string.Empty;
+                switch (article.Unit)
+                {
+                    case ArticleUnit.Pieces:
+                        unitText = "Pieces";
+                        break;
+                    case ArticleUnit.Kg:
+                        unitText = "kg";
+                        break;
+                    case ArticleUnit.Liters:
+                        unitText = "l";
+                        break;
+                }
+
+                articlesSelList.Add(new SelectListItem(article.Name + " (" + unitText + ")", article.Id.ToString()));
+            }
+            return articlesSelList;
         }
     }
 
