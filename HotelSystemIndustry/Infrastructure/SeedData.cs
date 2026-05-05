@@ -8,7 +8,8 @@ namespace HotelSystemIndustry.Infrastructure
         public static async Task InitializeAsync(HotelDbContext db)
         {
             // Wait for schema to exist before querying
-            var pendingMigrations = await db.Database.GetPendingMigrationsAsync();
+            /*
+             * var pendingMigrations = await db.Database.GetPendingMigrationsAsync();
             if (pendingMigrations.Any())
             {
                 return; // Migration hasn't run yet, skip seeding
@@ -20,10 +21,11 @@ namespace HotelSystemIndustry.Infrastructure
             {
             Address.Create("32-600 Brzezinka", "12 Kalinińskiego", "Ełk", "Poland"),
             Address.Create("32-600 Brzezinka", "14 Kalinińskiego", "Ełk", "Poland")
-        };
+            };
 
             await db.Addresses.AddRangeAsync(addresses);
             await db.SaveChangesAsync();
+            */
         }
     }
 }

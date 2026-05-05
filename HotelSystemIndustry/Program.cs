@@ -59,7 +59,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
+//8C 16:00 Poniedzia³ek
 app.UseRouting();
 
 app.UseAuthentication();

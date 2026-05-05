@@ -31,7 +31,7 @@ public class DataSeeder
         }
         catch (Exception e)
         {
-            logger.LogError(e, "Wystąpił błąd przy seedowaniu bazy danych");
+            logger.LogError(e.InnerException, "Wystąpił błąd przy seedowaniu bazy danych");
         }
     }
 
