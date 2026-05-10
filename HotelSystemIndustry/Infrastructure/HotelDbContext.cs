@@ -161,7 +161,7 @@ namespace HotelSystemIndustry.Infrastructure
                 .OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<ArticleInstance>()
                 .HasOne(ai => ai.Article)
-                .WithMany()
+                .WithMany(ka => ka.Instances)
                 .HasForeignKey(ai => ai.ArticleId)
                 .OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<ArticleInstance>()

@@ -31,6 +31,19 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         }
 
 
+        [HttpGet("[action]/{articleId}")]
+        [Authorize(Roles="KitchenEmployee")]
+        public async Task<List<ArticleInstance>> GetArticleInstanceList(Guid articleId)
+        {
+            var articleInstances = await _context.KitchenArticleInstances
+                .AsNoTracking()
+                .Where(ai => ai.ArticleId == articleId)
+                .Include(ai => ai.Storage)
+                .ToListAsync();
+            return articleInstances;
+        }
+
+
         [HttpGet("[action]")]
         [Authorize(Roles="KitchenEmployee")]
         public async Task<List<Storage>> GetStorageList()
@@ -66,6 +79,41 @@ namespace HotelSystemIndustry.Controllers.Kitchen
                         .ThenInclude(a => a!.Type)
                 .ToListAsync();
             return recipes;
+        }
+
+
+        [HttpPost("[action]")]
+        [Authorize(Roles="KitchenEmployee")]
+        public async Task<bool> TakeArticleInstances(Guid instanceId, decimal count)
+        {
+            if (count < 0.0m)
+                return false;
+
+            var artInstance = await _context.KitchenArticleInstances
+                .Where(ai => ai.Id == instanceId)
+                .FirstOrDefaultAsync();
+
+            if (artInstance == null)
+                return false;
+
+            
+            if (artInstance.Count == count)
+            {
+                _context.Remove(artInstance);
+                await _context.SaveChangesAsync();
+            }
+            else if (artInstance.Count > count)
+            {
+                artInstance.Count -= count;
+                _context.Update(artInstance);
+                await _context.SaveChangesAsync();
+            }
+            else
+            {
+                return false;
+            }
+
+            return true;
         }
 
 

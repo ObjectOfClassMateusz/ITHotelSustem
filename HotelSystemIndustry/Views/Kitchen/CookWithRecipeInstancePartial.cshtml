@@ -1,0 +1,39 @@
+@using HotelSystemIndustry.Models.Kitchen
+@using HotelSystemIndustry.ViewModels.Kitchen
+@model CookWithRecipeTakeArticleViewModel
+
+@{
+    var recipeId = (Guid)ViewBag.RecipeId;
+    var ing = (KitchenRecipeIngredient)ViewBag.Ingredient;
+    var instance = (ArticleInstance)ViewBag.Instance;
+}
+
+<form method="post" asp-action="CookWithRecipeTakeArticle" class="my-2">
+    @Html.AntiForgeryToken()
+
+    <input type="hidden" asp-for="RecipeId" value="@recipeId" />
+    <input type="hidden" asp-for="ArticleInstanceId" value="@instance.Id" />
+
+    <div class="row">
+        <div class="col-md-6">
+            @instance.Count @Html.DisplayFor(m => ing.Article!.Unit) <span>in</span> <span class="fw-bold">@instance.Storage!.Name</span>
+        </div>
+        <div class="col-md-2">
+            <input asp-for="Count" type="number" min="0" max="@instance.Count" step="any" value="@ing.Count" class="form-control" />
+            <span asp-validation-for="Count" class="text-danger"></span>
+        </div>
+        <div class="col-md-2">
+            <input type="submit" class="btn btn-success" value="Take" />
+        </div>
+    </div>
+
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+</form>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial.cshtml");
+    }
+}
+
