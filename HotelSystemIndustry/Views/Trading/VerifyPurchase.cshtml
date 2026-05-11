@@ -1,0 +1,76 @@
+@using HotelSystemIndustry.Models.Trading
+@using HotelSystemIndustry.ViewModels.Trading
+@model SellOrRentItems
+
+@{
+    ViewData["Title"] = "Verify Purchase";
+    ViewBag.LowerNavPartial = "_TradingNavPartial";
+
+    var Items = (IList<SaleItemInstance>)ViewBag.SaleItemInstances;
+}
+
+
+<h1>Verify Purchase</h1>
+<hr />
+
+
+<form method="post">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+
+    @Html.HiddenFor(m => m.ShopPointId)
+
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.LabelFor(m => m.ShopPointId, "Shop point: ")
+        </dt>
+        <dd class="col-sm-10">
+            @ViewBag.ShopPointText
+        </dd>
+    </dl>
+
+    @{ decimal totalPrice = 0; }
+
+    <ul>
+        @for (var i = 0; i < Model.Items.Count; i++) {
+            <li>
+                @Html.HiddenFor(m => m.Items[i].SaleItemId)
+                @Html.HiddenFor(m => m.Items[i].Count)
+                @{
+                    var id = Model.Items[i].SaleItemId;
+                    var count = Model.Items[i].Count;
+                    var item = Items.Single(p => p.Id == id);
+
+                    var itemPrice = item.Price * count;
+                    totalPrice += itemPrice;
+
+                    <div class="row">
+                        <div class="col-md-6 text-start">@item.Item!.Name x @count</div>
+                        <div class="col-md-2 text-start">@if (item.Item!.Type!.IsForRent) { <span>(ForRent)</span> }</div>
+                        <div class="col-md-2 text-end">@itemPrice</div>
+                    </div>
+                }
+            </li>
+        }
+    </ul>
+
+    <hr />
+    <div class="row mx-2 my-4">
+        <div class="col-md-7 text-start">Total: </div> <div class="col-md-3 text-end">$ @totalPrice</div>
+    </div>
+    
+    <input type="submit" value="Submit" asp-action="SubmitPurchase" class="btn btn-success" />
+
+    <input type="submit" value="Back" asp-action="ReturnToSellOrRentItemsView" class="btn btn-primary" />
+
+    <a asp-action="Index" class="btn btn-primary">Cancel</a>
+
+</form>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial.cshtml");
+    }
+}
+

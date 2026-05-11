@@ -10,6 +10,8 @@ namespace HotelSystemIndustry.Models.Trading
         * - FOR_DAY_LEASE,
         * - FOR_MONTHLY_LEASE
         */
+
+        public bool IsForRent { get; set; }
     }
     
     public class SaleItem

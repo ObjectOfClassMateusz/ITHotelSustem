@@ -1,0 +1,29 @@
+@using HotelSystemIndustry.Models.Trading
+@model PurchaseItem
+
+<dl class="row">
+    <dt class="col-sm-2">
+        @Html.DisplayNameFor(model => model.SaleItem!.Name)
+    </dt>
+    <dd class="col-sm-10">
+        @Html.DisplayFor(model => model.SaleItem!.Name)
+    </dd>
+    <dt class="col-sm-2">
+        @Html.DisplayNameFor(model => model.Variant)
+    </dt>
+    <dd class="col-sm-10">
+        @Html.DisplayFor(model => model.Variant)
+    </dd>
+    <dt class="col-sm-2">
+        @Html.DisplayNameFor(model => model.Count)
+    </dt>
+    <dd class="col-sm-10">
+        @Html.DisplayFor(model => model.Count)
+    </dd>
+    <dt class="col-sm-2">
+        @Html.DisplayNameFor(model => model.UnitPrice)
+    </dt>
+    <dd class="col-sm-10">
+        @Html.DisplayFor(model => model.UnitPrice)
+    </dd>
+</dl>

@@ -63,6 +63,8 @@ namespace HotelSystemIndustry.Controllers.Trading
 
             var purchase = await _context.Purchases
                 .Include(p => p.ShopPoint)
+                .Include(p => p.Items)
+                    !.ThenInclude(p => p.SaleItem)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (purchase == null)
             {
@@ -179,6 +181,8 @@ namespace HotelSystemIndustry.Controllers.Trading
 
             var purchase = await _context.Purchases
                 .Include(p => p.ShopPoint)
+                .Include(p => p.Items)
+                    !.ThenInclude(p => p.SaleItem)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (purchase == null)
             {

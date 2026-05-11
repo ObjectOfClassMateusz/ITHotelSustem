@@ -31,10 +31,16 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.SubmissionTime)
+                @{ var submissionTime = item.SubmissionTime.ToLocalTime(); }
+                @Html.DisplayFor(modelItem => submissionTime)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.RealisedTime)
+                @{
+                    var realisedTime = item.RealisedTime;
+                    if (realisedTime != null)
+                        realisedTime = realisedTime.Value.ToLocalTime();
+                }
+                @Html.DisplayFor(modelItem => realisedTime)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Type.Name)

@@ -6,6 +6,7 @@ using HotelSystemIndustry.Models.Kitchen;
 using HotelSystemIndustry.Models.Trading;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using System.Reflection.Emit;
 
 namespace HotelSystemIndustry.Infrastructure
 {
@@ -318,6 +319,7 @@ namespace HotelSystemIndustry.Infrastructure
                 .HasOne(m => m.Room)
                 .WithMany(r => r.MaintenanceRequests)
                 .OnDelete(DeleteBehavior.Restrict);
+
             modelBuilder.Entity<Purchase>()
                 .HasOne(p => p.ShopPoint)
                 .WithMany()
@@ -326,7 +328,13 @@ namespace HotelSystemIndustry.Infrastructure
                 .OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<Purchase>()
                 .HasMany(p => p.Items)
-                .WithOne()
+                .WithOne(p => p.Purchase)
+                .HasForeignKey(p => p.PurchaseId)
+                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<PurchaseItem>()
+                .HasOne(p => p.SaleItem)
+                .WithMany()
+                .HasForeignKey(p => p.SaleItemId)
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }
