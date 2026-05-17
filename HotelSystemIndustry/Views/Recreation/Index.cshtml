@@ -1,6 +1,36 @@
-
 @{
-    ViewData["Title"] = "Recreation";
+    ViewData["Title"] = "Recreation Panel";
     ViewBag.LowerNavPartial = "_RecreationNavPartial";
 }
 
+<div class="container mt-4">
+    <h1 class="text-center">Recreation Center</h1>
+    <hr />
+
+    <div class="row justify-content-center mt-5">
+        
+        <div class="col-md-4 text-center my-2">
+            <div class="card shadow-sm">
+                <div class="card-body py-5">
+                    <h4>Recreation Offer</h4>
+                    <p class="text-muted">Browse available options and book your date.</p>
+                    <a asp-action="FacilityList" class="btn btn-primary w-100">Look up Facilities</a>
+                </div>
+            </div>
+        </div>
+
+        @if (User.IsInRole("Admin") || User.IsInRole("RecreationEmployee"))
+        {
+            <div class="col-md-4 text-center my-2">
+                <div class="card shadow-sm bg-light">
+                    <div class="card-body py-5">
+                        <h4>Managing the facilities</h4>
+                        <p class="text-muted">Add a facility - new recreation</p>
+                        <a asp-action="CreateFacility" class="btn btn-warning w-100">Add</a>
+                    </div>
+                </div>
+            </div>
+        }
+
+    </div>
+</div>
