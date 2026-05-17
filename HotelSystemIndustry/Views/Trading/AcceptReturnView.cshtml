@@ -1,12 +1,57 @@
+@using HotelSystemIndustry.Models.Trading
 
 @{
     ViewData["Title"] = "Accept Return";
     ViewBag.LowerNavPartial = "_TradingNavPartial";
+
+    var items = (IList<PurchaseItem>)ViewBag.Items;
 }
 
 <h1>Accept Return</h1>
 <hr />
 
+
+<div class="container my-4">
+
+    <h3>Rented items that have not been returned yet</h3>
+
+    @if (items.Count > 0) {
+    
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Variant</th>
+                    <th>Count</th>
+                    <th>Unit price</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in items) {
+                    <tr>
+                        <td>@item.SaleItem!.Name</td>
+                        <td>@item.Variant</td>
+                        <td>@item.Count</td>
+                        <td>@item.UnitPrice</td>
+                        <td>
+                            
+                            <form method="get" asp-action="ReturnItemMenu" asp-route-purchaseItemId="@item.Id" >
+
+                                <input type="submit" class="btn btn-success" value="Return" />
+                            </form>
+
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+    } else {
+        <span>There are no rented items to be returned.</span>
+    }
+
+</div>
 
 <a asp-action="Index" class="btn btn-primary">Back</a>
 

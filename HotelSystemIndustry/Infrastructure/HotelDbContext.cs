@@ -83,6 +83,8 @@ namespace HotelSystemIndustry.Infrastructure
 
         public virtual DbSet<Purchase> Purchases { get; set; }
 
+        public virtual DbSet<PurchaseItem> PurchaseItems { get; set; }
+
 
         public virtual DbSet<EmployeeShift> EmployeeShifts { get; set; }
 

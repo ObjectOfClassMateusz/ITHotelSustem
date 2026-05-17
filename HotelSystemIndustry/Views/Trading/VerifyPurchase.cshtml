@@ -34,10 +34,10 @@
     <ul>
         @for (var i = 0; i < Model.Items.Count; i++) {
             <li>
-                @Html.HiddenFor(m => m.Items[i].SaleItemId)
+                @Html.HiddenFor(m => m.Items[i].SaleItemInstanceId)
                 @Html.HiddenFor(m => m.Items[i].Count)
                 @{
-                    var id = Model.Items[i].SaleItemId;
+                    var id = Model.Items[i].SaleItemInstanceId;
                     var count = Model.Items[i].Count;
                     var item = Items.Single(p => p.Id == id);
 
@@ -47,7 +47,7 @@
                     <div class="row">
                         <div class="col-md-6 text-start">@item.Item!.Name x @count</div>
                         <div class="col-md-2 text-start">@if (item.Item!.Type!.IsForRent) { <span>(ForRent)</span> }</div>
-                        <div class="col-md-2 text-end">@itemPrice</div>
+                        <div class="col-md-2 text-end">@itemPrice.ToString("C2")</div>
                     </div>
                 }
             </li>
@@ -56,7 +56,7 @@
 
     <hr />
     <div class="row mx-2 my-4">
-        <div class="col-md-7 text-start">Total: </div> <div class="col-md-3 text-end">$ @totalPrice</div>
+        <div class="col-md-7 text-start">Total: </div> <div class="col-md-3 text-end">@totalPrice.ToString("C2")</div>
     </div>
     
     <input type="submit" value="Submit" asp-action="SubmitPurchase" class="btn btn-success" />

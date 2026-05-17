@@ -31,12 +31,20 @@
             <div class="form-group row justify-content-center my-4">
                 @foreach (var item in Items) {
                     var countAfterPurchase = (int)item.Count;
-                    var currentItem = Model.Items.Items.FirstOrDefault(a => a.SaleItemId == item.Id);
+                    var currentItem = Model.Items.Items.FirstOrDefault(a => a.SaleItemInstanceId == item.Id);
                     if (currentItem != null)
                         countAfterPurchase -= (int)currentItem.Count;
                     
+                    // Skip items that are all already in the cart
                     if (countAfterPurchase <= 0)
                         continue;
+
+                    if (item.ExpireDate != null)
+                    {
+                        // Skip expired items
+                        if (DateTime.UtcNow.Date > item.ExpireDate.Value.Date)
+                            continue;
+                    }
 
                     <div class="container my-2">
                         <input type="radio" asp-for="NewItemId" value="@item.Id" id="Item(@item.Id)" class="radiobutton-box" />
@@ -45,7 +53,7 @@
                             <div class="col-md-3 text-start">@item.Variant</div>
                             <div class="col-md-2 text-start">@item.Magazine!.Location</div>
                             <div class="col-md-2 text-start">x @countAfterPurchase</div>
-                            <div class="col-md-2 text-end"> $ @item.Price </div>
+                            <div class="col-md-2 text-end">@Html.DisplayFor(m => item.Price)</div>
                         </label>
                         <span asp-validation-for="NewItemId" class="text-danger"></span>
                     </div>
@@ -60,10 +68,10 @@
                 <ul>
                     @for (var i = 0; i < Model.Items.Items.Count; i++) {
                         <li>
-                            @Html.HiddenFor(m => m.Items.Items[i].SaleItemId)
+                            @Html.HiddenFor(m => m.Items.Items[i].SaleItemInstanceId)
                             @Html.HiddenFor(m => m.Items.Items[i].Count)
                             @{
-                                var id = Model.Items.Items[i].SaleItemId;
+                                var id = Model.Items.Items[i].SaleItemInstanceId;
                                 var count = Model.Items.Items[i].Count;
                                 var item = Items.Single(p => p.Id == id);
 
@@ -71,7 +79,7 @@
                                 totalPrice += itemPrice;
 
                                 <div class="row align-items-center">
-                                    <div class="col-md-7 text-start">@item.Item!.Name x @count</div> <div class="col-md-3 text-end">$ @itemPrice</div>
+                                    <div class="col-md-7 text-start">@item.Item!.Name x @count</div> <div class="col-md-3 text-end">@itemPrice.ToString("C2")</div>
 
                                     <div class="col-md-1 my-1"><input type="submit" asp-action="RemoveSaleItem" class="btn btn-danger" value="x" asp-route-index="@i" /></div>
                                 </div>
@@ -82,7 +90,7 @@
 
                 <hr />
                 <div class="row mx-2">
-                    <div class="col-md-8 text-start">Total: </div> <div class="col-md-3 text-end">$ @totalPrice</div>
+                    <div class="col-md-8 text-start">Total: </div> <div class="col-md-3 text-end">@totalPrice.ToString("C2")</div>
                 </div>
             }
         </div>

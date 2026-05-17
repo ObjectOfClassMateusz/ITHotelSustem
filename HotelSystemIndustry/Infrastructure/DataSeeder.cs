@@ -867,7 +867,7 @@ public class DataSeeder
             });
             context.SaleItemInstances.Add(new SaleItemInstance
             {
-                Id = Guid.NewGuid(), Variant = "Geje hokeje", Count = 2, ExpireDate = null, Price = 12.99m,
+                Id = Guid.NewGuid(), Variant = "Heated Rivalry", Count = 2, ExpireDate = null, Price = 12.99m,
                 ItemId = context.SaleItems.FirstOrDefault(si => si.Name == "Blu-ray movie rental")!.Id,
                 MagazineId = context.ShopMagazines.FirstOrDefault(m => m.Location == "Hotel basement")!.Id,
             });

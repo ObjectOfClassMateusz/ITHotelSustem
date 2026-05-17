@@ -13,7 +13,9 @@ namespace HotelSystemIndustry.Models.Kitchen
 
         public bool ContainsAlcohol { get; set; }
 
-        [Range(typeof(decimal), "0", "79228162514264337593543950335")]
+        [DataType(DataType.Currency)]
+        [DisplayFormat(DataFormatString="{0:C2}")]
+        [Range(typeof(decimal), "0", "10000")]
         public decimal Price { get; set; }
     }
 

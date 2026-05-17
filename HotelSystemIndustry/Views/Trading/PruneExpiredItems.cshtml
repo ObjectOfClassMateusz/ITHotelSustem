@@ -1,12 +1,56 @@
+@using HotelSystemIndustry.Models.Trading
 
 @{
     ViewData["Title"] = "Prune Expired Items";
     ViewBag.LowerNavPartial = "_TradingNavPartial";
+
+    var expiredItems = (IList<SaleItemInstance>)ViewBag.ExpiredItems;
 }
 
 <h1>Prune Expired Items</h1>
 <hr />
 
+
+@if (expiredItems.Count == 0) {
+
+    <h2>There are no expired items to prune!</h2>
+    <div class="my-4">Hurray!</div>
+
+} else {
+    <h2 class="my-4">These are the items that are expired:</h2>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Item</th>
+                <th>Variant</th>
+                <th>Count</th>
+                <th>In magazine</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            @foreach (var item in expiredItems) {
+                <tr>
+                    <td>@item.Item!.Name</td>
+                    <td>@item.Variant</td>
+                    <td>@item.Count</td>
+                    <td>@item.Magazine!.Location</td>
+                </tr>
+            }
+
+        </tbody>
+    </table>
+
+    <form method="post" asp-action="ConfirmExpiredItemsPrunning">
+        @Html.AntiForgeryToken()
+
+        <div class="form-group my-4">
+            Please remove these items in their magazines and then confirm the operation.
+            <input type="submit" class="btn btn-danger mx-4" value="Confirm prunning" />
+        </div>
+    </form>
+}
 
 <a asp-action="Index" class="btn btn-primary">Back</a>
 

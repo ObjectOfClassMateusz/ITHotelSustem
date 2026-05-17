@@ -5,7 +5,7 @@ namespace HotelSystemIndustry.ViewModels.Trading
     
     public class SaleItemAndCount
     {
-        public Guid SaleItemId { get; set; }
+        public Guid SaleItemInstanceId { get; set; }
 
         public uint Count { get; set; }
     }
