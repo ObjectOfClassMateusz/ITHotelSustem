@@ -3,12 +3,15 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Hotel System Industry</title>
+    <title>Hotel System Industry</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/button.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/layout.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/HotelSystemIndustry.styles.css" asp-append-version="true" />
+
+    <link rel="stylesheet" href="~/css/Layout/layout.css" asp-append-version="true" />
+
 </head>
 <body>
     <header class="bg-goldyellow">
@@ -22,7 +25,6 @@
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>-->
-
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <partial name="_MenusPartial"/>
                     <partial name="_LoginPartial"/>
@@ -35,6 +37,8 @@
                 </div>
             }
         </nav>
+    
+    
     </header>
     <div class="container">
         <main role="main" class="pb-3">
