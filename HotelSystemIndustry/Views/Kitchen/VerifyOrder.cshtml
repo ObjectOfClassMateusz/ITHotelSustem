@@ -57,7 +57,7 @@
                     totalPrice += productPrice;
 
                     <div class="row">
-                        <div class="col-md-8 text-start">@product.Name x @count</div> <div class="col-md-2 text-end">@productPrice</div>
+                        <div class="col-md-8 text-start">@product.Name x @count</div> <div class="col-md-2 text-end">@productPrice.ToString("C2")</div>
                     </div>
                 }
             </li>
@@ -66,7 +66,7 @@
 
     <hr />
     <div class="row mx-2 my-4">
-        <div class="col-md-7 text-start">Total: </div> <div class="col-md-3 text-end">$ @totalPrice</div>
+        <div class="col-md-7 text-start">Total: </div> <div class="col-md-3 text-end">@totalPrice.ToString("C2")</div>
     </div>
     
     <input type="submit" value="Submit" asp-action="SubmitOrder" class="btn btn-success" />

@@ -1,0 +1,74 @@
+@using HotelSystemIndustry.Models.Events
+@using HotelSystemIndustry.ViewModels.Events
+@model BookingEventViewModel
+
+@{
+    ViewData["Title"] = "Organize an event - fill details";
+    @if (User.IsInRole("HotelEmployee"))
+    {
+        ViewBag.LowerNavPartial = "_HotelManagementNavPartial";
+    } else {
+        ViewBag.LowerNavPartial = "_CustomerNavPartial";
+    }
+
+    uint numMaxGuests = (uint)ViewBag.NumMaxGuests;
+}
+
+
+<h1>Fill event details</h1>
+<hr />
+
+
+<form method="post" asp-action="VerifyAndRetrieveAgreement">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+
+    @Html.HiddenFor(m => m.EventTypeId)
+    @Html.HiddenFor(m => m.StartTime)
+    @Html.HiddenFor(m => m.EndTime)
+
+    @for (var i = 0; i < Model.Halls.Count; i++) {
+        @Html.HiddenFor(m => m.Halls[i].HallId)
+        @Html.HiddenFor(m => m.Halls[i].Selected)
+
+        @for (var j = 0; j < Model.Halls[i].Equipment.Count; j++) {
+            @Html.HiddenFor(m => m.Halls[i].Equipment[j].EquipmentInstanceId)
+            @Html.HiddenFor(m => m.Halls[i].Equipment[j].Selected)
+        }
+    }
+
+
+    <div class="form-group row justify-content-center my-4">
+        <div class="col-md-4">
+            <label asp-for="NumGuests" class="fs-5">Number of guests:</label>
+        </div>
+        <div class="col-md-4">
+            <input asp-for="NumGuests" min="10" max="@numMaxGuests" class="form-control" />
+            <span asp-validation-for="NumGuests" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group row justify-content-center my-4">
+        <div class="col-md-4">
+            <label type="number" asp-for="NumServantStuff" class="fs-5">Number of additional servant stuff:</label>
+        </div>
+        <div class="col-md-4">
+            <input type="number" min="0" asp-for="NumServantStuff" class="form-control" />
+            <span asp-validation-for="NumServantStuff" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="row justify-content-center my-4">
+        <div class="col-md-2">
+            <input type="submit" class="btn btn-success" value="Next" />
+        </div>
+        <div class="col-md-6"></div>
+    </div>
+
+</form>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial.cshtml");
+    }
+}
+

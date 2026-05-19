@@ -62,7 +62,7 @@ namespace HotelSystemIndustry.Controllers.Trading
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin,TradingEmployee,MaintainanceEmployee")]
-        public async Task<IActionResult> Create([Bind("Id,ItemId,MagazineId,Variant,Count,ExpireDate")] SaleItemInstance saleItemInstance)
+        public async Task<IActionResult> Create([Bind("Id,ItemId,MagazineId,Variant,Count,Price,ExpireDate")] SaleItemInstance saleItemInstance)
         {
             if (ModelState.IsValid &&
                 saleItemInstance.ItemId != Guid.Empty &&
@@ -108,7 +108,7 @@ namespace HotelSystemIndustry.Controllers.Trading
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin,TradingEmployee,MaintainanceEmployee")]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Id,ItemId,MagazineId,Variant,Count,ExpireDate")] SaleItemInstance saleItemInstance)
+        public async Task<IActionResult> Edit(Guid id, [Bind("Id,ItemId,MagazineId,Variant,Count,Price,ExpireDate")] SaleItemInstance saleItemInstance)
         {
             if (id != saleItemInstance.Id)
             {

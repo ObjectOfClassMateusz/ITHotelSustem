@@ -42,6 +42,9 @@ namespace HotelSystemIndustry.Models.Kitchen
 
         [Required]
         public ArticleUnit Unit { get; set; }
+
+
+        public virtual IList<ArticleInstance>? Instances { get; set; }
     }
 
 }

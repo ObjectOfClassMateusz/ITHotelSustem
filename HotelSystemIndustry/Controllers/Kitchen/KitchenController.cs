@@ -298,6 +298,111 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         }
 
 
+        [HttpGet]
+        [Authorize(Roles="KitchenEmployee")]
+        public async Task<IActionResult> ChooseProductCookingHelp()
+        {
+            List<KitchenRecipe> recipes = await _context.KitchenRecipes
+                .Include(kr => kr.OutcomeProduct)
+                .Include(kr => kr.Ingredients)
+                    !.ThenInclude(kri => kri.Article)
+                .ToListAsync();
+
+            List<ChooseProductCookingHelpViewModel> productList = new();
+            foreach (var recipe in recipes)
+            {
+                ChooseProductCookingHelpViewModel? product = productList.SingleOrDefault(p => p.ProductId == recipe.OutcomeProductId);
+
+                if (product == null)
+                {
+                    product = new ChooseProductCookingHelpViewModel
+                    {
+                        ProductId = recipe.OutcomeProductId,
+                        ProductName = recipe.OutcomeProduct!.Name
+                    };
+
+                    productList.Add(product);
+                }
+
+                product.ProductRecipes.Add(recipe);
+            }
+
+            ViewBag.ProductRecipes = productList;
+
+            return View();
+        }
+
+
+        [HttpGet]
+        [Authorize(Roles="KitchenEmployee")]
+        public async Task<IActionResult> CookWithRecipe(Guid id)
+        {
+            if (id == Guid.Empty)
+                return BadRequest("CookWithRecipe: invalid recipe ID!");
+
+            var recipe = await _context.KitchenRecipes
+                .AsNoTracking()
+                .Where(kr => kr.Id == id)
+                .Include(kr => kr.OutcomeProduct)
+                .Include(kr => kr.Ingredients)
+                    !.ThenInclude(kri => kri.Article)
+                    .ThenInclude(ka => ka!.Instances)
+                    !.ThenInclude(ai => ai.Storage)
+                .FirstOrDefaultAsync();
+            
+            if (recipe == null)
+                return BadRequest("CookWithRecipe: there's no recipe with given ID!");
+
+            ViewBag.ResultMessage = string.Empty;
+
+            return View(recipe);
+        }
+
+
+        [HttpPost]
+        [Authorize(Roles="KitchenEmployee")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CookWithRecipeTakeArticle(CookWithRecipeTakeArticleViewModel model)
+        {
+            if (model.RecipeId == Guid.Empty)
+                return BadRequest("CookWithRecipeTakeArticle: invalid recipe ID!");
+
+
+            var artInstance = await _context.KitchenArticleInstances
+                .Where(ai => ai.Id == model.ArticleInstanceId)
+                .FirstOrDefaultAsync();
+
+            if (artInstance == null)
+                return BadRequest("CookWithRecipeTakeArticle: there's no article instance with given ID!");
+
+
+            KitchenApiController apiController = new KitchenApiController(_context)
+            {
+                ControllerContext = this.ControllerContext
+            };
+            if (await apiController.TakeArticleInstances(model.ArticleInstanceId, model.Count))
+                ViewBag.ResultMessage = "Successfully taken article from storage!";
+            else
+                ViewBag.ResultMessage = "Not enough article in storage!";
+
+
+            var recipe = await _context.KitchenRecipes
+                .AsNoTracking()
+                .Where(kr => kr.Id == model.RecipeId)
+                .Include(kr => kr.OutcomeProduct)
+                .Include(kr => kr.Ingredients)
+                    !.ThenInclude(kri => kri.Article)
+                    .ThenInclude(ka => ka!.Instances)
+                    !.ThenInclude(ai => ai.Storage)
+                .FirstOrDefaultAsync();
+            
+            if (recipe == null)
+                return BadRequest("CookWithRecipeTakeArticle: there's no recipe with given ID!");
+            
+            return View("CookWithRecipe", recipe);
+        }
+
+
         private async Task<List<SelectListItem>> GetArticlesSelectList(IList<KitchenArticle> articles)
         {
             var articlesSelList = new List<SelectListItem>();

@@ -1,0 +1,70 @@
+@using HotelSystemIndustry.Models.Events
+@using HotelSystemIndustry.ViewModels.Events
+@model BookingEventViewModel
+
+@{
+    ViewData["Title"] = "Organize an event - choose equipment";
+    @if (User.IsInRole("HotelEmployee"))
+    {
+        ViewBag.LowerNavPartial = "_HotelManagementNavPartial";
+    } else {
+        ViewBag.LowerNavPartial = "_CustomerNavPartial";
+    }
+
+    var eventHalls = (IList<EventHall>)ViewBag.EventHalls;
+}
+
+
+<h1>Reserve event hall equipment</h1>
+<hr />
+
+<form method="post" asp-action="FillEventDetails">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+
+    @Html.HiddenFor(m => m.EventTypeId)
+    @Html.HiddenFor(m => m.StartTime)
+    @Html.HiddenFor(m => m.EndTime)
+
+    <h2>Choose the equipment that you need from each hall</h2>
+
+    @for (var i = 0; i < Model.Halls.Count; i++) {
+        @Html.HiddenFor(m => m.Halls[i].HallId)
+        @Html.HiddenFor(m => m.Halls[i].Selected)
+
+        if (!Model.Halls[i].Selected)
+            continue;
+
+        var hall = eventHalls.FirstOrDefault(eh => eh.Id == Model.Halls[i].HallId);
+
+        <h3 class="my-4">@hall!.Name</h3>
+        
+        <hr />
+
+
+        @for (var j = 0; j < Model.Halls[i].Equipment.Count; j++) {
+            var equipmentToSelect = Model.Halls[i].Equipment[j];
+            var equipmentInstance = hall.Equipment!.FirstOrDefault(ei => ei.Id == equipmentToSelect.EquipmentInstanceId);
+
+            @Html.HiddenFor(m => m.Halls[i].Equipment[j].EquipmentInstanceId)
+
+            <div class="form-check my-3 fs-5">
+                <input type="checkbox" asp-for="Halls[i].Equipment[j].Selected" class="form-check-input" />
+                <label asp-for="Halls[i].Equipment[j].Selected" class="form-check-label row">
+                    <span class="col-sm-4">@equipmentInstance!.Equipment!.Name</span>
+                    <span class="col-sm-4">@equipmentInstance.Equipment.Type!.Name</span>
+                    <span class="col-sm-4">@Html.DisplayFor(m => equipmentInstance.ReservationPrice)</span>
+                </label>
+            </div>
+        }
+    }
+
+    <input type="submit" class="btn btn-success my-4" value="Next" />
+</form>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial.cshtml");
+    }
+}

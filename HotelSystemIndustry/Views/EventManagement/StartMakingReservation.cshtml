@@ -1,0 +1,72 @@
+@using HotelSystemIndustry.ViewModels.Events
+@model BookingEventViewModel
+
+@{
+    ViewData["Title"] = "Organize an event";
+    @if (User.IsInRole("HotelEmployee"))
+    {
+        ViewBag.LowerNavPartial = "_HotelManagementNavPartial";
+    } else {
+        ViewBag.LowerNavPartial = "_CustomerNavPartial";
+    }
+}
+
+
+<h1>Organize an event</h1>
+<hr />
+
+
+<form method="post" asp-action="DisplayAvailableEventHalls">
+    @Html.AntiForgeryToken()
+
+    <div class="row justify-content-center my-4">
+
+        <div class="form-group row col-md-10 my-2">
+            <div class="col-md-5 fs-5">
+                <label asp-for="EventTypeId" class="control-label">Type of event:</label>
+            </div>
+            <div class="col-md-5">
+                <select asp-for="EventTypeId" asp-items="ViewBag.EventTypes" class="form-control"></select>
+            </div>
+            <span asp-validation-for="EventTypeId" class="text-danger"></span>
+        </div>
+        <div class="form-group row col-md-10 my-2">
+            <div class="col-md-5 fs-5">
+                <label asp-for="StartTime" class="control-label">Choose reservation beginning time:</label>
+            </div>
+            <div class="col-md-5">
+                <input asp-for="StartTime" class="form-control" />
+            </div>
+            <span asp-validation-for="StartTime" class="text-danger"></span>
+        </div>
+        <div class="form-group row col-md-10 my-2">
+            <div class="col-md-5 fs-5">
+                <label asp-for="EndTime" class="control-label">Choose reservation ending time:</label>
+            </div>
+            <div class="col-md-5">
+                <input asp-for="EndTime" class="form-control" />
+            </div>
+            <span asp-validation-for="EndTime" class="text-danger"></span>
+        </div>
+
+
+        <div class="col-md-10 my-2">
+            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+        </div>
+
+
+        <div class="col-md-10 my-2">
+            <input type="submit" class="btn btn-success" value="Check event halls availability" />
+        </div>
+
+    </div>
+</form>
+
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial.cshtml");
+    }
+}
+
