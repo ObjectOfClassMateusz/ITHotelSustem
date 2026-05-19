@@ -233,6 +233,7 @@ namespace HotelSystemIndustry.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    IsForRent = table.Column<bool>(type: "boolean", nullable: false),
                     Name = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
                     Value = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false),
@@ -398,7 +399,7 @@ namespace HotelSystemIndustry.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
+                    Name = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     TypeId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
@@ -869,21 +870,15 @@ namespace HotelSystemIndustry.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     ItemId = table.Column<Guid>(type: "uuid", nullable: false),
-                    MagazineId = table.Column<Guid>(type: "uuid", nullable: true),
+                    MagazineId = table.Column<Guid>(type: "uuid", nullable: false),
                     Variant = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     Count = table.Column<long>(type: "bigint", nullable: false),
-                    ExpireDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    PurchaseId = table.Column<Guid>(type: "uuid", nullable: true)
+                    Price = table.Column<decimal>(type: "numeric", nullable: false),
+                    ExpireDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_SaleItemInstances", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_SaleItemInstances_Purchases_PurchaseId",
-                        column: x => x.PurchaseId,
-                        principalTable: "Purchases",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_SaleItemInstances_SaleItems_ItemId",
                         column: x => x.ItemId,
@@ -894,6 +889,35 @@ namespace HotelSystemIndustry.Migrations
                         name: "FK_SaleItemInstances_ShopMagazines_MagazineId",
                         column: x => x.MagazineId,
                         principalTable: "ShopMagazines",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PurchaseItems",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    PurchaseId = table.Column<Guid>(type: "uuid", nullable: false),
+                    SaleItemId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Count = table.Column<long>(type: "bigint", nullable: false),
+                    UnitPrice = table.Column<decimal>(type: "numeric", nullable: false),
+                    Variant = table.Column<string>(type: "text", nullable: false),
+                    HasBeenReturned = table.Column<bool>(type: "boolean", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PurchaseItems", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PurchaseItems_Purchases_PurchaseId",
+                        column: x => x.PurchaseId,
+                        principalTable: "Purchases",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_PurchaseItems_SaleItems_SaleItemId",
+                        column: x => x.SaleItemId,
+                        principalTable: "SaleItems",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -1255,6 +1279,16 @@ namespace HotelSystemIndustry.Migrations
                 column: "HotelId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_PurchaseItems_PurchaseId",
+                table: "PurchaseItems",
+                column: "PurchaseId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PurchaseItems_SaleItemId",
+                table: "PurchaseItems",
+                column: "SaleItemId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Purchases_ShopPointId",
                 table: "Purchases",
                 column: "ShopPointId");
@@ -1303,11 +1337,6 @@ namespace HotelSystemIndustry.Migrations
                 name: "IX_SaleItemInstances_MagazineId",
                 table: "SaleItemInstances",
                 column: "MagazineId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_SaleItemInstances_PurchaseId",
-                table: "SaleItemInstances",
-                column: "PurchaseId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_SaleItems_TypeId",
@@ -1383,6 +1412,9 @@ namespace HotelSystemIndustry.Migrations
                 name: "Phones");
 
             migrationBuilder.DropTable(
+                name: "PurchaseItems");
+
+            migrationBuilder.DropTable(
                 name: "RaportPayments");
 
             migrationBuilder.DropTable(
@@ -1419,6 +1451,9 @@ namespace HotelSystemIndustry.Migrations
                 name: "KitchenOrders");
 
             migrationBuilder.DropTable(
+                name: "Purchases");
+
+            migrationBuilder.DropTable(
                 name: "Payments");
 
             migrationBuilder.DropTable(
@@ -1429,9 +1464,6 @@ namespace HotelSystemIndustry.Migrations
 
             migrationBuilder.DropTable(
                 name: "RecreationFacilities");
-
-            migrationBuilder.DropTable(
-                name: "Purchases");
 
             migrationBuilder.DropTable(
                 name: "SaleItems");
@@ -1458,10 +1490,10 @@ namespace HotelSystemIndustry.Migrations
                 name: "KitchenOrderTypes");
 
             migrationBuilder.DropTable(
-                name: "Reservations");
+                name: "ShopPoints");
 
             migrationBuilder.DropTable(
-                name: "ShopPoints");
+                name: "Reservations");
 
             migrationBuilder.DropTable(
                 name: "SaleItemTypes");

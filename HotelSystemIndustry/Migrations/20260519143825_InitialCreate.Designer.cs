@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HotelSystemIndustry.Migrations
 {
     [DbContext(typeof(HotelDbContext))]
-    [Migration("20260517092401_InitialCreate")]
+    [Migration("20260519143825_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -205,8 +205,8 @@ namespace HotelSystemIndustry.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("character varying(30)");
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.Property<Guid>("TypeId")
                         .HasColumnType("uuid");
@@ -1072,6 +1072,40 @@ namespace HotelSystemIndustry.Migrations
                     b.ToTable("Purchases");
                 });
 
+            modelBuilder.Entity("HotelSystemIndustry.Models.Trading.PurchaseItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<long>("Count")
+                        .HasColumnType("bigint");
+
+                    b.Property<bool>("HasBeenReturned")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("PurchaseId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("SaleItemId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("Variant")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PurchaseId");
+
+                    b.HasIndex("SaleItemId");
+
+                    b.ToTable("PurchaseItems");
+                });
+
             modelBuilder.Entity("HotelSystemIndustry.Models.Trading.SaleItem", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1111,11 +1145,11 @@ namespace HotelSystemIndustry.Migrations
                     b.Property<Guid>("ItemId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("MagazineId")
+                    b.Property<Guid>("MagazineId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("PurchaseId")
-                        .HasColumnType("uuid");
+                    b.Property<decimal>("Price")
+                        .HasColumnType("numeric");
 
                     b.Property<string>("Variant")
                         .IsRequired()
@@ -1127,8 +1161,6 @@ namespace HotelSystemIndustry.Migrations
                     b.HasIndex("ItemId");
 
                     b.HasIndex("MagazineId");
-
-                    b.HasIndex("PurchaseId");
 
                     b.ToTable("SaleItemInstances");
                 });
@@ -1144,6 +1176,9 @@ namespace HotelSystemIndustry.Migrations
                         .HasColumnType("character varying(100)");
 
                     b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsForRent")
                         .HasColumnType("boolean");
 
                     b.Property<string>("Name")
@@ -1541,7 +1576,7 @@ namespace HotelSystemIndustry.Migrations
             modelBuilder.Entity("HotelSystemIndustry.Models.Kitchen.ArticleInstance", b =>
                 {
                     b.HasOne("HotelSystemIndustry.Models.Kitchen.KitchenArticle", "Article")
-                        .WithMany()
+                        .WithMany("Instances")
                         .HasForeignKey("ArticleId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -1727,6 +1762,25 @@ namespace HotelSystemIndustry.Migrations
                     b.Navigation("ShopPoint");
                 });
 
+            modelBuilder.Entity("HotelSystemIndustry.Models.Trading.PurchaseItem", b =>
+                {
+                    b.HasOne("HotelSystemIndustry.Models.Trading.Purchase", "Purchase")
+                        .WithMany("Items")
+                        .HasForeignKey("PurchaseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("HotelSystemIndustry.Models.Trading.SaleItem", "SaleItem")
+                        .WithMany()
+                        .HasForeignKey("SaleItemId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Purchase");
+
+                    b.Navigation("SaleItem");
+                });
+
             modelBuilder.Entity("HotelSystemIndustry.Models.Trading.SaleItem", b =>
                 {
                     b.HasOne("HotelSystemIndustry.Models.Trading.SaleItemType", "Type")
@@ -1749,12 +1803,8 @@ namespace HotelSystemIndustry.Migrations
                     b.HasOne("HotelSystemIndustry.Models.Trading.ShopMagazine", "Magazine")
                         .WithMany("Items")
                         .HasForeignKey("MagazineId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("HotelSystemIndustry.Models.Trading.Purchase", null)
-                        .WithMany("Items")
-                        .HasForeignKey("PurchaseId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("Item");
 
@@ -1856,6 +1906,11 @@ namespace HotelSystemIndustry.Migrations
                     b.Navigation("PhoneNumbers");
 
                     b.Navigation("Rooms");
+                });
+
+            modelBuilder.Entity("HotelSystemIndustry.Models.Kitchen.KitchenArticle", b =>
+                {
+                    b.Navigation("Instances");
                 });
 
             modelBuilder.Entity("HotelSystemIndustry.Models.Kitchen.KitchenRecipe", b =>
