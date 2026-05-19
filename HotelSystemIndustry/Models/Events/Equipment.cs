@@ -18,7 +18,7 @@ namespace HotelSystemIndustry.Models.Events
         [Key]
         public Guid Id { get; set; }
 
-        [Required, MaxLength(30, ErrorMessage = "Nazwa jest zbyt długa")]
+        [Required, MaxLength(50, ErrorMessage = "Nazwa jest zbyt długa")]
         public required string Name { get; set; }
 
 

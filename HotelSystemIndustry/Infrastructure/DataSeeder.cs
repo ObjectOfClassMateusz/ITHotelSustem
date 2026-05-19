@@ -124,6 +124,182 @@ public class DataSeeder
             {
                 Id = Guid.NewGuid(), Name = "Microphone", Value = "microphone", IsActive = true
             });
+
+            await context.SaveChangesAsync();
+        }
+
+        if (context.Equipment.Count() == 0)
+        {
+            context.Equipment.Add(new Equipment
+            {
+                Id = Guid.NewGuid(), Name = "MinBieda Video Projector", TypeId = context.EquipmentTypes.FirstOrDefault(t => t.Value == "video-projector")!.Id
+            });
+            context.Equipment.Add(new Equipment
+            {
+                Id = Guid.NewGuid(), Name = "MaxPro Video Projector", TypeId = context.EquipmentTypes.FirstOrDefault(t => t.Value == "video-projector")!.Id
+            });
+            context.Equipment.Add(new Equipment
+            {
+                Id = Guid.NewGuid(), Name = "AvgJoe Video Projector", TypeId = context.EquipmentTypes.FirstOrDefault(t => t.Value == "video-projector")!.Id
+            });
+            context.Equipment.Add(new Equipment
+            {
+                Id = Guid.NewGuid(), Name = "Harmann-Kardon Speaker", TypeId = context.EquipmentTypes.FirstOrDefault(t => t.Value == "hifi-speaker")!.Id
+            });
+            context.Equipment.Add(new Equipment
+            {
+                Id = Guid.NewGuid(), Name = "JBL Speaker", TypeId = context.EquipmentTypes.FirstOrDefault(t => t.Value == "hifi-speaker")!.Id
+            });
+            context.Equipment.Add(new Equipment
+            {
+                Id = Guid.NewGuid(), Name = "Universal temperature controller", TypeId = context.EquipmentTypes.FirstOrDefault(t => t.Value == "temperature-controller")!.Id
+            });
+            context.Equipment.Add(new Equipment
+            {
+                Id = Guid.NewGuid(), Name = "Bluetooth microphone", TypeId = context.EquipmentTypes.FirstOrDefault(t => t.Value == "microphone")!.Id
+            });
+            context.Equipment.Add(new Equipment
+            {
+                Id = Guid.NewGuid(), Name = "Cable microphone", TypeId = context.EquipmentTypes.FirstOrDefault(t => t.Value == "microphone")!.Id
+            });
+
+            await context.SaveChangesAsync();
+        }
+
+
+        if (context.EventHalls.Count() == 0)
+        {
+            context.EventHalls.Add(new EventHall
+            {
+                Id = Guid.NewGuid(), Name = "Conference Hall", NumMaxGuests = 300, ReservationPrice = 200.0m
+            });
+            context.EventHalls.Add(new EventHall
+            {
+                Id = Guid.NewGuid(), Name = "Banquette Hall", NumMaxGuests = 150, ReservationPrice = 150.0m
+            });
+            context.EventHalls.Add(new EventHall
+            {
+                Id = Guid.NewGuid(), Name = "Main Assembly Hall", NumMaxGuests = 500, ReservationPrice = 300.0m
+            });
+
+            await context.SaveChangesAsync();
+        }
+
+
+        if (context.EquipmentInstances.Count() == 0)
+        {
+            context.EquipmentInstances.Add(new EquipmentInstance
+            {
+                Id = Guid.NewGuid(), EquipmentId = context.Equipment.FirstOrDefault(e => e.Name == "MinBieda Video Projector")!.Id,
+                EventHallId = context.EventHalls.FirstOrDefault(eh => eh.Name == "Banquette Hall")!.Id, ReservationPrice = 10.0m
+            });
+            context.EquipmentInstances.Add(new EquipmentInstance
+            {
+                Id = Guid.NewGuid(), EquipmentId = context.Equipment.FirstOrDefault(e => e.Name == "MinBieda Video Projector")!.Id,
+                EventHallId = context.EventHalls.FirstOrDefault(eh => eh.Name == "Conference Hall")!.Id, ReservationPrice = 10.0m
+            });
+            context.EquipmentInstances.Add(new EquipmentInstance
+            {
+                Id = Guid.NewGuid(), EquipmentId = context.Equipment.FirstOrDefault(e => e.Name == "MaxPro Video Projector")!.Id,
+                EventHallId = context.EventHalls.FirstOrDefault(eh => eh.Name == "Conference Hall")!.Id, ReservationPrice = 60.0m
+            });
+            context.EquipmentInstances.Add(new EquipmentInstance
+            {
+                Id = Guid.NewGuid(), EquipmentId = context.Equipment.FirstOrDefault(e => e.Name == "AvgJoe Video Projector")!.Id,
+                EventHallId = context.EventHalls.FirstOrDefault(eh => eh.Name == "Main Assembly Hall")!.Id, ReservationPrice = 30.0m
+            });
+            context.EquipmentInstances.Add(new EquipmentInstance
+            {
+                Id = Guid.NewGuid(), EquipmentId = context.Equipment.FirstOrDefault(e => e.Name == "MaxPro Video Projector")!.Id,
+                EventHallId = context.EventHalls.FirstOrDefault(eh => eh.Name == "Main Assembly Hall")!.Id, ReservationPrice = 60.0m
+            });
+            context.EquipmentInstances.Add(new EquipmentInstance
+            {
+                Id = Guid.NewGuid(), EquipmentId = context.Equipment.FirstOrDefault(e => e.Name == "Harmann-Kardon Speaker")!.Id,
+                EventHallId = context.EventHalls.FirstOrDefault(eh => eh.Name == "Banquette Hall")!.Id, ReservationPrice = 50.0m
+            });
+            context.EquipmentInstances.Add(new EquipmentInstance
+            {
+                Id = Guid.NewGuid(), EquipmentId = context.Equipment.FirstOrDefault(e => e.Name == "Harmann-Kardon Speaker")!.Id,
+                EventHallId = context.EventHalls.FirstOrDefault(eh => eh.Name == "Banquette Hall")!.Id, ReservationPrice = 50.0m
+            });
+            context.EquipmentInstances.Add(new EquipmentInstance
+            {
+                Id = Guid.NewGuid(), EquipmentId = context.Equipment.FirstOrDefault(e => e.Name == "Harmann-Kardon Speaker")!.Id,
+                EventHallId = context.EventHalls.FirstOrDefault(eh => eh.Name == "Main Assembly Hall")!.Id, ReservationPrice = 50.0m
+            });
+            context.EquipmentInstances.Add(new EquipmentInstance
+            {
+                Id = Guid.NewGuid(), EquipmentId = context.Equipment.FirstOrDefault(e => e.Name == "Harmann-Kardon Speaker")!.Id,
+                EventHallId = context.EventHalls.FirstOrDefault(eh => eh.Name == "Main Assembly Hall")!.Id, ReservationPrice = 50.0m
+            });
+            context.EquipmentInstances.Add(new EquipmentInstance
+            {
+                Id = Guid.NewGuid(), EquipmentId = context.Equipment.FirstOrDefault(e => e.Name == "Harmann-Kardon Speaker")!.Id,
+                EventHallId = context.EventHalls.FirstOrDefault(eh => eh.Name == "Main Assembly Hall")!.Id, ReservationPrice = 60.0m
+            });
+            context.EquipmentInstances.Add(new EquipmentInstance
+            {
+                Id = Guid.NewGuid(), EquipmentId = context.Equipment.FirstOrDefault(e => e.Name == "Harmann-Kardon Speaker")!.Id,
+                EventHallId = context.EventHalls.FirstOrDefault(eh => eh.Name == "Main Assembly Hall")!.Id, ReservationPrice = 60.0m
+            });
+            context.EquipmentInstances.Add(new EquipmentInstance
+            {
+                Id = Guid.NewGuid(), EquipmentId = context.Equipment.FirstOrDefault(e => e.Name == "JBL Speaker")!.Id,
+                EventHallId = context.EventHalls.FirstOrDefault(eh => eh.Name == "Conference Hall")!.Id, ReservationPrice = 40.0m
+            });
+            context.EquipmentInstances.Add(new EquipmentInstance
+            {
+                Id = Guid.NewGuid(), EquipmentId = context.Equipment.FirstOrDefault(e => e.Name == "JBL Speaker")!.Id,
+                EventHallId = context.EventHalls.FirstOrDefault(eh => eh.Name == "Conference Hall")!.Id, ReservationPrice = 40.0m
+            });
+            context.EquipmentInstances.Add(new EquipmentInstance
+            {
+                Id = Guid.NewGuid(), EquipmentId = context.Equipment.FirstOrDefault(e => e.Name == "Universal temperature controller")!.Id,
+                EventHallId = context.EventHalls.FirstOrDefault(eh => eh.Name == "Conference Hall")!.Id, ReservationPrice = 15.0m
+            });
+            context.EquipmentInstances.Add(new EquipmentInstance
+            {
+                Id = Guid.NewGuid(), EquipmentId = context.Equipment.FirstOrDefault(e => e.Name == "Universal temperature controller")!.Id,
+                EventHallId = context.EventHalls.FirstOrDefault(eh => eh.Name == "Banquette Hall")!.Id, ReservationPrice = 25.0m
+            });
+            context.EquipmentInstances.Add(new EquipmentInstance
+            {
+                Id = Guid.NewGuid(), EquipmentId = context.Equipment.FirstOrDefault(e => e.Name == "Universal temperature controller")!.Id,
+                EventHallId = context.EventHalls.FirstOrDefault(eh => eh.Name == "Main Assembly Hall")!.Id, ReservationPrice = 20.0m
+            });
+            context.EquipmentInstances.Add(new EquipmentInstance
+            {
+                Id = Guid.NewGuid(), EquipmentId = context.Equipment.FirstOrDefault(e => e.Name == "Cable microphone")!.Id,
+                EventHallId = context.EventHalls.FirstOrDefault(eh => eh.Name == "Conference Hall")!.Id, ReservationPrice = 5.99m
+            });
+            context.EquipmentInstances.Add(new EquipmentInstance
+            {
+                Id = Guid.NewGuid(), EquipmentId = context.Equipment.FirstOrDefault(e => e.Name == "Cable microphone")!.Id,
+                EventHallId = context.EventHalls.FirstOrDefault(eh => eh.Name == "Main Assembly Hall")!.Id, ReservationPrice = 5.99m
+            });
+            context.EquipmentInstances.Add(new EquipmentInstance
+            {
+                Id = Guid.NewGuid(), EquipmentId = context.Equipment.FirstOrDefault(e => e.Name == "Bluetooth microphone")!.Id,
+                EventHallId = context.EventHalls.FirstOrDefault(eh => eh.Name == "Banquette Hall")!.Id, ReservationPrice = 7.99m
+            });
+            context.EquipmentInstances.Add(new EquipmentInstance
+            {
+                Id = Guid.NewGuid(), EquipmentId = context.Equipment.FirstOrDefault(e => e.Name == "Bluetooth microphone")!.Id,
+                EventHallId = context.EventHalls.FirstOrDefault(eh => eh.Name == "Main Assembly Hall")!.Id, ReservationPrice = 7.99m
+            });
+            context.EquipmentInstances.Add(new EquipmentInstance
+            {
+                Id = Guid.NewGuid(), EquipmentId = context.Equipment.FirstOrDefault(e => e.Name == "Bluetooth microphone")!.Id,
+                EventHallId = context.EventHalls.FirstOrDefault(eh => eh.Name == "Conference Hall")!.Id, ReservationPrice = 7.99m
+            });
+            context.EquipmentInstances.Add(new EquipmentInstance
+            {
+                Id = Guid.NewGuid(), EquipmentId = context.Equipment.FirstOrDefault(e => e.Name == "Bluetooth microphone")!.Id,
+                EventHallId = context.EventHalls.FirstOrDefault(eh => eh.Name == "Conference Hall")!.Id, ReservationPrice = 7.99m
+            });
+
+            await context.SaveChangesAsync();
         }
 
 
@@ -149,6 +325,8 @@ public class DataSeeder
             {
                 Id = Guid.NewGuid(), Name = "Finished", Value = "finished", IsActive = true
             });
+
+            await context.SaveChangesAsync();
         }
 
         if (context.EventTypes.Count() == 0)
@@ -181,6 +359,8 @@ public class DataSeeder
             {
                 Id = Guid.NewGuid(), Name = "Name day", Value = "name-day", IsActive = true
             });
+
+            await context.SaveChangesAsync();
         }
     }
 

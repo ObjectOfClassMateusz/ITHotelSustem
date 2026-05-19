@@ -1,0 +1,119 @@
+@using HotelSystemIndustry.Models.Events
+@using HotelSystemIndustry.ViewModels.Events
+@model BookingEventViewModel
+
+@{
+    ViewData["Title"] = "Organize an event - verify and submit agreement";
+    @if (User.IsInRole("HotelEmployee"))
+    {
+        ViewBag.LowerNavPartial = "_HotelManagementNavPartial";
+    } else {
+        ViewBag.LowerNavPartial = "_CustomerNavPartial";
+    }
+
+    var eventHalls = (IList<EventHall>)ViewBag.EventHalls;
+}
+
+
+<h1>Verify data and submit agreement</h1>
+<hr />
+
+<form method="post">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+
+    @Html.HiddenFor(m => m.EventTypeId)
+    @Html.HiddenFor(m => m.StartTime)
+    @Html.HiddenFor(m => m.EndTime)
+    @Html.HiddenFor(m => m.NumGuests)
+    @Html.HiddenFor(m => m.NumServantStuff)
+
+    <dl class="fs-5">
+        <div class="row my-2">
+            <dt class="col-md-3">Type of event:</dt>
+            <dd class="col-md-2">@ViewBag.TypeName</dd>
+        </div>
+        <div class="row my-2">
+            <dt class="col-md-3">Start time:</dt>
+            <dd class="col-md-2">@Model.StartTime.ToLocalTime()</dd>
+        </div>
+        <div class="row my-2">
+            <dt class="col-md-3">End time:</dt>
+            <dd class="col-md-2">@Model.EndTime.ToLocalTime()</dd>
+        </div>
+        <div class="row my-2">
+            <dt class="col-md-3">Number of guests:</dt>
+            <dd class="col-md-2">@Model.NumGuests</dd>
+        </div>
+        <div class="row my-2">
+            <dt class="col-md-3">Number of additional servants:</dt>
+            <dd class="col-md-2">@Model.NumServantStuff</dd>
+        </div>
+    </dl>
+
+    <h2>Halls</h2>
+
+    @{
+        int numDays = (Model.EndTime.Date - Model.StartTime.Date).Days + 1;
+        decimal totalPrice = 0.0m;
+    }
+
+    @for (var i = 0; i < Model.Halls.Count; i++) {
+        @Html.HiddenFor(m => m.Halls[i].HallId)
+        @Html.HiddenFor(m => m.Halls[i].Selected)
+
+        @for (var j = 0; j < Model.Halls[i].Equipment.Count; j++) {
+            @Html.HiddenFor(m => m.Halls[i].Equipment[j].EquipmentInstanceId)
+            @Html.HiddenFor(m => m.Halls[i].Equipment[j].Selected)
+        }
+
+        if (!Model.Halls[i].Selected)
+            continue;
+
+        var eventHall = eventHalls.FirstOrDefault(eh => eh.Id == Model.Halls[i].HallId);
+        totalPrice += eventHall!.ReservationPrice * numDays;
+
+        <div class="row">
+            <span class="col-md-4 fw-bold fs-3">@eventHall!.Name</span>
+            <span class="col-md-4 fs-4">@Html.DisplayFor(m => eventHall.ReservationPrice) x @numDays</span>
+        </div>
+
+        <ul>
+            @foreach (var equipmentSelect in Model.Halls[i].Equipment) {
+                if (!equipmentSelect.Selected)
+                    continue;
+
+                var equipmentInstance = eventHall.Equipment!.FirstOrDefault(ei => ei.Id == equipmentSelect.EquipmentInstanceId);
+                totalPrice += equipmentInstance!.ReservationPrice;
+
+                <li class="row">
+                    <span class="col-md-4">@equipmentInstance!.Equipment!.Name</span>
+                    <span class="col-md-4">@Html.DisplayFor(m => equipmentInstance!.ReservationPrice)</span>
+                </li>
+            }
+        </ul>
+    }
+
+    <div class="my-4 row fw-bold fs-2">
+        <span class="col-md-4">Total price:</span>
+        <span class="col-md-4">@totalPrice.ToString("C2")</span>
+    </div>
+
+    <div class="my-4 row fs-5">
+        <span class="col-md-4">Submit agreement document:</span>
+        <span class="col-md-4"><input type="button" class="btn btn-primary" value="Submit document" /></span>
+    </div>
+
+    <div class="my-4">
+        <input type="submit" class="btn btn-success" value="Submit" disabled />
+    </div>
+
+</form>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial.cshtml");
+    }
+}
+

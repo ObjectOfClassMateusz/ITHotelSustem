@@ -1,0 +1,82 @@
+@using HotelSystemIndustry.Models.Events
+@using HotelSystemIndustry.ViewModels.Events
+@model BookingEventViewModel
+
+@{
+    ViewData["Title"] = "Organize an event - choose event halls";
+    @if (User.IsInRole("HotelEmployee"))
+    {
+        ViewBag.LowerNavPartial = "_HotelManagementNavPartial";
+    } else {
+        ViewBag.LowerNavPartial = "_CustomerNavPartial";
+    }
+
+    var freeHalls = (IList<EventHall>)ViewBag.FreeHalls;
+}
+
+
+<h1>Reserve event halls</h1>
+<hr />
+
+<form method="post" asp-action="ChooseEventHallEquipment">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+
+    @Html.HiddenFor(m => m.EventTypeId)
+    @Html.HiddenFor(m => m.StartTime)
+    @Html.HiddenFor(m => m.EndTime)
+
+    @if (freeHalls.Count == 0) {
+        <span>Sorry! There are no free event halls in the given time span.</span>
+
+        <div>
+            <a asp-action="StartMakingReservation">Back</a>
+        </div>
+    } else {
+        <h2 class="my-4">Please select all the halls that you want to reserve for your event.</h2>
+
+        <h3>Available halls in the time span from @Model.StartTime.ToLocalTime() to @Model.EndTime.ToLocalTime():</h3>
+
+        <div class="row my-4">
+            @for (var i = 0; i < Model.Halls.Count; i++) {
+                var hallToSelect = Model.Halls[i];
+                var hall = freeHalls.FirstOrDefault(h => h.Id == hallToSelect.HallId);
+
+                @Html.HiddenFor(m => m.Halls[i].HallId)
+
+                <div class="container my-2 mx-4">
+                    <input type="checkbox" asp-for="Halls[i].Selected" class="radiobutton-box" />
+                    <label asp-for="Halls[i].Selected" class="row">
+                        <h3 class="col-sm-4 text-start my-2">@hall!.Name</h3>
+                        <span class="col-sm-4 text-center my-2">Max. @hall.NumMaxGuests guests</span>
+                        <span class="col-sm-4 text-end my-2">Reservation price / day: @Html.DisplayFor(m => hall.ReservationPrice)</span>
+                    
+                        @if (hall.Equipment!.Count() > 0) {
+                            <hr />
+                            <span class="fw-bold">Available equipment:</span>
+
+                            <ul>
+                                @foreach (var equipment in hall.Equipment!) {
+                                    <li>@equipment.Equipment!.Name (@equipment.Equipment.Type!.Name)</li>
+                                }
+                            </ul>
+                        }
+                    </label>
+                </div>
+            }
+        </div>
+
+        <div class="mx-4">
+            <input type="submit" class="btn btn-success" value="Next" />
+        </div>
+    }
+
+</form>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial.cshtml");
+    }
+}
+
