@@ -1,0 +1,759 @@
+﻿@using HotelSystemIndustry.Models
+@{
+    ViewData["Title"] = "Kalendarz — " + ((Hotel)ViewBag.Hotel).Name;
+
+    Hotel hotel = (Hotel)ViewBag.Hotel;
+    DateTime startDate = (DateTime)ViewBag.StartDate;
+    DateTime endDate = (DateTime)ViewBag.EndDate;
+    DateTime today = (DateTime)ViewBag.Today;
+   // var reservations = (List<Reservation>)ViewBag.Reservations;
+    int totalDays = (int)(endDate - startDate).TotalDays;
+
+    // Grupy tygodniowe do nagłówka
+    var weeks = new List<(DateTime WeekStart, int Span)>();
+    DateTime cur = startDate;
+    while (cur < endDate)
+    {
+        DateTime wEnd = cur.AddDays(7 - (int)cur.DayOfWeek == 0 ? 7 : 7 - (int)cur.DayOfWeek);
+        if (wEnd > endDate) wEnd = endDate;
+        int span = (int)(wEnd - cur).TotalDays;
+        weeks.Add((cur, span));
+        cur = wEnd;
+    }
+
+    DateTime prevDate = startDate.AddDays(-30);
+    DateTime nextDate = startDate.AddDays(30);
+
+    // Helpers
+    string RouteDate(DateTime dt) =>
+        $"?id={hotel.Id}&day={dt.Day}&month={dt.Month}&year={dt.Year}";
+
+    string TodayRoute() =>
+        $"?id={hotel.Id}&day={today.Day}&month={today.Month}&year={today.Year}";
+
+    string ColLeft(DateTime checkIn)
+    {
+        var eff = checkIn < startDate ? startDate : checkIn;
+        return ((eff - startDate).TotalDays / totalDays * 100).ToString("F3", System.Globalization.CultureInfo.InvariantCulture) + "%";
+    }
+    string ColWidth(DateTime checkIn, DateTime checkOut)
+    {
+        var eff_in = checkIn < startDate ? startDate : checkIn;
+        var eff_out = checkOut > endDate ? endDate : checkOut;
+        double w = (eff_out - eff_in).TotalDays / totalDays * 100;
+        return Math.Max(w, 0.5).ToString("F3", System.Globalization.CultureInfo.InvariantCulture) + "%";
+    }
+
+    string[] palette = new[] {
+        "#4a7fc1","#c15a4a","#4ac18e","#b84ac1","#c1984a",
+        "#4ac1b8","#7f4ac1","#c1c14a","#c14a7f","#4a8fc1"
+    };
+    int colorIdx = 0;
+    var resColors = new Dictionary<Guid, string>();
+   /* foreach (var r in reservations)
+    {
+        if (!resColors.ContainsKey(r.Id))
+            resColors[r.Id] = palette[colorIdx++ % palette.Length];
+    }*/
+}
+
+<style>
+    import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap');
+
+    :root {
+        --bg: #0f0f12;
+        --surface: #17171d;
+        --surface2: #1e1e27;
+        --border: #2a2a38;
+        --border2: #353548;
+        --gold: #d4a843;
+        --gold-dim: #8a6c28;
+        --text: #e8e6f0;
+        --muted: #6b6880;
+        --today: rgba(212,168,67,0.18);
+        --today-bd: rgba(212,168,67,0.7);
+        --weekend: rgba(255,255,255,0.022);
+        --row-h: 44px;
+        --head-h: 52px;
+    }
+
+    *, *::before, *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    html, body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: 'Syne', sans-serif;
+        height: 100%;
+        overflow: hidden;
+    }
+
+    /* ── TOP TOOLBAR ──────────────────────── */
+    .toolbar {
+        height: 58px;
+        background: var(--surface);
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        padding: 0 1.25rem;
+        gap: 0;
+        position: relative;
+        z-index: 50;
+        flex-shrink: 0;
+    }
+
+    .toolbar-brand {
+        font-size: 0.72rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--gold);
+        font-weight: 700;
+        padding-right: 1.5rem;
+        border-right: 1px solid var(--border);
+        white-space: nowrap;
+    }
+
+    .toolbar-sep {
+        width: 1px;
+        background: var(--border);
+        height: 32px;
+        margin: 0 0.75rem;
+    }
+
+    /* Action buttons */
+    .tb-group {
+        display: flex;
+        align-items: center;
+        gap: 2px;
+        padding: 0 0.5rem;
+    }
+
+    .tb-btn {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 3px;
+        background: none;
+        border: none;
+        color: var(--text);
+        cursor: pointer;
+        padding: 6px 14px;
+        border-radius: 4px;
+        font-family: 'Syne', sans-serif;
+        font-size: 0.6rem;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        text-decoration: none;
+        transition: background 0.15s, color 0.15s;
+        white-space: nowrap;
+        line-height: 1;
+    }
+
+        .tb-btn:hover {
+            background: var(--surface2);
+            color: var(--gold);
+            text-decoration: none;
+        }
+
+        .tb-btn.active {
+            background: var(--surface2);
+            color: var(--gold);
+        }
+
+    .tb-icon {
+        font-size: 1.2rem;
+        line-height: 1;
+    }
+
+    .tb-label-group {
+        font-size: 0.55rem;
+        letter-spacing: 0.12em;
+        color: var(--muted);
+        text-transform: uppercase;
+        padding: 0 0.4rem 0.2rem;
+        align-self: flex-end;
+        margin-bottom: -4px;
+    }
+
+    /* Nav cluster */
+    .nav-cluster {
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        margin-left: auto;
+    }
+
+    .nav-btn {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        color: var(--text);
+        cursor: pointer;
+        padding: 0.4rem 0.75rem;
+        border-radius: 3px;
+        font-family: 'DM Mono', monospace;
+        font-size: 0.78rem;
+        text-decoration: none;
+        transition: background 0.15s, border-color 0.15s, color 0.15s;
+        white-space: nowrap;
+        line-height: 1.4;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+
+        .nav-btn:hover {
+            background: var(--border);
+            color: var(--gold);
+            border-color: var(--gold-dim);
+            text-decoration: none;
+        }
+
+    .nav-today {
+        background: var(--gold);
+        color: #0f0f12;
+        border-color: var(--gold);
+        font-weight: 700;
+    }
+
+        .nav-today:hover {
+            background: #e6ba55;
+            color: #0f0f12;
+            border-color: #e6ba55;
+        }
+
+    .nav-range {
+        font-family: 'DM Mono', monospace;
+        font-size: 0.72rem;
+        color: var(--muted);
+        padding: 0 0.4rem;
+        letter-spacing: 0.04em;
+    }
+
+    /* ── CALENDAR SHELL ───────────────────── */
+    .cal-shell {
+        display: flex;
+        flex-direction: column;
+        height: calc(100vh - 58px);
+        overflow: hidden;
+    }
+
+    /* ── HEADER ROWS ──────────────────────── */
+    .cal-head {
+        flex-shrink: 0;
+        display: flex;
+        background: var(--surface);
+        border-bottom: 1px solid var(--border2);
+        position: relative;
+        z-index: 20;
+    }
+
+    .cal-head-rooms {
+        width: 180px;
+        flex-shrink: 0;
+        border-right: 2px solid var(--border2);
+    }
+
+    .cal-head-weeks-row,
+    .cal-head-days-row {
+        flex: 1;
+        display: flex;
+        overflow: hidden;
+    }
+
+    .head-weeks {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+    }
+
+    /* Week band */
+    .week-band {
+        height: 22px;
+        display: flex;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .week-cell {
+        border-right: 1px solid var(--border2);
+        display: flex;
+        align-items: center;
+        padding: 0 6px;
+        font-size: 0.58rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--gold-dim);
+        font-weight: 700;
+        white-space: nowrap;
+        overflow: hidden;
+    }
+
+    /* Day band */
+    .day-band {
+        height: 30px;
+        display: flex;
+    }
+
+    .day-cell {
+        flex: 1;
+        border-right: 1px solid var(--border);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        font-family: 'DM Mono', monospace;
+        font-size: 0.6rem;
+        color: var(--muted);
+        cursor: default;
+        position: relative;
+        transition: background 0.1s;
+        min-width: 0;
+    }
+
+        .day-cell.today {
+            background: var(--today);
+            color: var(--gold);
+            font-weight: 700;
+        }
+
+        .day-cell.weekend {
+            background: var(--weekend);
+        }
+
+    .day-num {
+        font-size: 0.72rem;
+        font-weight: 500;
+        line-height: 1;
+    }
+
+    .day-name {
+        font-size: 0.48rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        opacity: 0.6;
+    }
+
+    /* ── BODY ─────────────────────────────── */
+    .cal-body {
+        flex: 1;
+        display: flex;
+        overflow-y: auto;
+        overflow-x: hidden;
+        scrollbar-width: thin;
+        scrollbar-color: var(--border2) transparent;
+    }
+
+    /* Room labels */
+    .room-labels {
+        width: 180px;
+        flex-shrink: 0;
+        border-right: 2px solid var(--border2);
+        background: var(--surface);
+    }
+
+    .room-label {
+        height: var(--row-h);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 0 0.85rem;
+        border-bottom: 1px solid var(--border);
+        transition: background 0.15s;
+        cursor: default;
+    }
+
+        .room-label:hover {
+            background: var(--surface2);
+        }
+
+    .room-label-num {
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: var(--text);
+        line-height: 1;
+    }
+
+    .room-label-type {
+        font-size: 0.58rem;
+        color: var(--muted);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin-top: 2px;
+    }
+
+    .room-label-reno {
+        display: inline-block;
+        background: #c15a4a22;
+        color: #c15a4a;
+        border: 1px solid #c15a4a44;
+        font-size: 0.48rem;
+        padding: 1px 4px;
+        border-radius: 2px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin-top: 2px;
+    }
+
+    /* Grid area */
+    .cal-grid {
+        flex: 1;
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Day column lines */
+    .grid-columns {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    .grid-col {
+        flex: 1;
+        border-right: 1px solid var(--border);
+        height: 100%;
+    }
+
+        .grid-col.today {
+            background: var(--today);
+            border-right-color: var(--today-bd);
+        }
+
+        .grid-col.weekend {
+            background: var(--weekend);
+        }
+
+    /* Rows */
+    .grid-rows {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+    }
+
+    .grid-row {
+        height: var(--row-h);
+        border-bottom: 1px solid var(--border);
+        position: relative;
+    }
+
+    /* Reservation blocks */
+    .res-block {
+        position: absolute;
+        top: 5px;
+        height: calc(var(--row-h) - 10px);
+        border-radius: 3px;
+        display: flex;
+        align-items: center;
+        padding: 0 8px;
+        font-size: 0.62rem;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        cursor: pointer;
+        transition: filter 0.15s, transform 0.1s;
+        z-index: 10;
+        border-left: 3px solid rgba(255,255,255,0.3);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+        color: rgba(255,255,255,0.92);
+        font-family: 'DM Mono', monospace;
+    }
+
+        .res-block:hover {
+            filter: brightness(1.15);
+            transform: scaleY(1.06);
+            z-index: 20;
+        }
+
+    /* Empty state */
+    .cal-empty {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 0.75rem;
+        color: var(--muted);
+        font-size: 0.85rem;
+    }
+
+    /* Scrollbar */
+    .cal-body::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .cal-body::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .cal-body::-webkit-scrollbar-thumb {
+        background: var(--border2);
+        border-radius: 3px;
+    }
+
+    /* ── STATUS BAR ───────────────────────── */
+    .statusbar {
+        height: 26px;
+        background: var(--surface);
+        border-top: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        padding: 0 1rem;
+        gap: 1.5rem;
+        font-family: 'DM Mono', monospace;
+        font-size: 0.6rem;
+        color: var(--muted);
+        flex-shrink: 0;
+    }
+
+    .status-item span {
+        color: var(--gold);
+        font-weight: 500;
+    }
+
+    /* ── TOOLTIP ──────────────────────────── */
+    .res-block[data-tip]:hover::after {
+        content: attr(data-tip);
+        position: absolute;
+        bottom: calc(100% + 6px);
+        left: 0;
+        background: #1e1e27;
+        border: 1px solid var(--border2);
+        color: var(--text);
+        font-family: 'DM Mono', monospace;
+        font-size: 0.65rem;
+        padding: 5px 9px;
+        border-radius: 3px;
+        white-space: nowrap;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+        z-index: 100;
+        pointer-events: none;
+    }
+
+    @@media (max-width: 768px) {
+        .room-labels, .cal-head-rooms {
+            width: 90px;
+        }
+
+        .room-label {
+            padding: 0 0.4rem;
+        }
+
+        .room-label-type {
+            display: none;
+        }
+
+        .tb-label-group {
+            display: none;
+        }
+
+        .nav-range {
+            display: none;
+        }
+    }
+</style>
+
+<a asp-action="Details" asp-route-id="@hotel.Id" class=" asp-link">
+    Wróć
+</a>
+
+<hr/>
+
+<div class="toolbar">
+    <div class="toolbar-brand">&#9670; @hotel.Name</div>
+
+    <div class="toolbar-sep"></div>
+
+    <div style="display:flex;flex-direction:column;">
+        <span class="tb-label-group">Goście</span>
+        <div class="tb-group">
+            <a asp-controller="Guests" asp-action="Create" asp-route-hotelId="@hotel.Id" class="tb-btn">
+                <span class="tb-icon">👨</span>Dodaj
+            </a>
+            <a asp-controller="Guests" asp-action="Index" asp-route-hotelId="@hotel.Id" class="tb-btn">
+                <span class="tb-icon">🛠️</span>Zarządzaj
+            </a>
+            <a href="#" class="tb-btn">
+                <span class="tb-icon">📕</span>Czarna Lista
+            </a>
+            <!--<a asp-action="AddRoom" asp-route-id="hotel.Id" class="tb-btn">
+                <span class="tb-icon">🏨</span>Dodaj pokój
+            </a>-->
+        </div>
+    </div>
+
+    <div class="toolbar-sep"></div>
+
+    <div style="display:flex;flex-direction:column;">
+        <span class="tb-label-group">Widok</span>
+        <div class="tb-group">
+            <a href="#" class="tb-btn">
+                <span class="tb-icon">📤</span>Rezerwacje
+            </a>
+            <a href="#" class="tb-btn">
+                <span class="tb-icon">📜</span>Faktury
+            </a>
+            <a href="#" class="tb-btn">
+                <span class="tb-icon">📝</span>Raporty
+            </a>
+        </div>
+    </div>
+
+    <div class="nav-cluster">
+        <a href="@(RouteDate(prevDate))" class="nav-btn" title="Poprzednie 30 dni">&#8592; Wstecz</a>
+        <a href="@TodayRoute()" class="nav-btn nav-today">Dziś</a>
+        <span class="nav-range">
+            @startDate.ToString("dd.MM.yyyy") — @endDate.AddDays(-1).ToString("dd.MM.yyyy")
+        </span>
+        <a href="@(RouteDate(nextDate))" class="nav-btn" title="Następne 30 dni">Dalej &#8594;</a>
+    </div>
+</div>
+
+<div class="cal-shell">
+
+    <div class="cal-head">
+        <div class="cal-head-rooms" style="display:flex;flex-direction:column;border-bottom:1px solid var(--border2);">
+            <div style="height:22px;display:flex;align-items:center;padding:0 0.85rem;border-bottom:1px solid var(--border);font-size:0.55rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);">Tygodnie</div>
+            <div style="height:30px;display:flex;align-items:center;padding:0 0.85rem;font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);">Pokój / Piętro</div>
+        </div>
+
+        <div style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
+            <div class="week-band">
+                @{
+                    DateTime wCur = startDate;
+                    while (wCur < endDate)
+                    {
+                        // find end of this week (next Monday or endDate)
+                        DateTime wEnd = wCur.AddDays(1);
+                        while (wEnd < endDate && wEnd.DayOfWeek != DayOfWeek.Monday)
+                            wEnd = wEnd.AddDays(1);
+                        int wSpan = (int)(wEnd - wCur).TotalDays;
+                        double pct = (double)wSpan / totalDays * 100;
+                        <div class="week-cell" style="width:@pct.ToString("F3", System.Globalization.CultureInfo.InvariantCulture)%;flex-shrink:0;">
+                            @wCur.ToString("dd MMM", new System.Globalization.CultureInfo("pl-PL")) — @wEnd.AddDays(-1).ToString("dd MMM", new System.Globalization.CultureInfo("pl-PL"))
+                        </div>
+                        wCur = wEnd;
+                    }
+                }
+            </div>
+
+            <div class="day-band">
+                @for (int di = 0; di < totalDays; di++)
+                {
+                    DateTime dt = startDate.AddDays(di);
+                    bool isToday = dt == today;
+                    bool isWeekend = dt.DayOfWeek == DayOfWeek.Saturday || dt.DayOfWeek == DayOfWeek.Sunday;
+                    string dayCls = isToday ? "day-cell today" : (isWeekend ? "day-cell weekend" : "day-cell");
+                    <div class="@dayCls" style="flex:1;min-width:0;">
+                        <span class="day-num">@dt.Day</span>
+                        <span class="day-name">@dt.ToString("ddd", new System.Globalization.CultureInfo("pl-PL"))</span>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="cal-body">
+
+        @if (!hotel.Rooms.Any())
+        {
+            <div class="cal-empty">
+                <span style="font-size:2rem;">🏨</span>
+                <span>Brak pokoi w tym hotelu</span>
+                <a asp-action="AddRoom" asp-route-id="@hotel.Id"
+                   style="color:var(--gold);font-size:0.8rem;text-decoration:none;">+ Dodaj pierwszy pokój</a>
+            </div>
+        }
+        else
+        {
+            <div class="room-labels">
+                @foreach (var room in hotel.Rooms.OrderBy(r => r.Floor).ThenBy(r => r.RoomNumber))
+                {
+                    <div class="room-label">
+                        <div class="room-label-num">@room.RoomNumber</div>
+                        <div class="room-label-type">
+                            @room.RoomType.ToString() &middot; p.@room.Floor &middot; @room.Capacity os.
+                        </div>
+                        @if (room.Renovation)
+                        {
+                            <span class="room-label-reno">remont</span>
+                        }
+                    </div>
+                }
+            </div>
+
+            <div class="cal-grid">
+
+                <div class="grid-columns">
+                    @for (int di = 0; di < totalDays; di++)
+                    {
+                        DateTime dt = startDate.AddDays(di);
+                        bool isToday = dt == today;
+                        bool isWeekend = dt.DayOfWeek == DayOfWeek.Saturday || dt.DayOfWeek == DayOfWeek.Sunday;
+                        string cls = isToday ? "grid-col today" : (isWeekend ? "grid-col weekend" : "grid-col");
+                        <div class="@cls" style="flex:1;"></div>
+                    }
+                </div>
+
+                <div class="grid-rows">
+                    @foreach (var room in hotel.Rooms.OrderBy(r => r.Floor).ThenBy(r => r.RoomNumber))
+                    {
+                        //var roomRes = reservations.Where(r => r.Room?.Id == room.Id).ToList();
+                        <div class="grid-row">
+                            @* @foreach (var res in roomRes)
+                            {
+                                string left = ColLeft(res.CheckInDate);
+                                string width = ColWidth(res.CheckInDate, res.CheckOutDate);
+                                string bg = resColors.ContainsKey(res.Id) ? resColors[res.Id] : "#4a7fc1";
+                                string nights = ((res.CheckOutDate - res.CheckInDate).TotalDays).ToString("0") + "n";
+                                string tip = $"{res.CheckInDate:dd.MM} → {res.CheckOutDate:dd.MM} ({nights})";
+
+                                <div class="res-block"
+                                     style="left:@left;width:@width;background:@bg;"
+                                     data-tip="@tip">
+                                    @nights
+                                </div>
+                            } *@
+                        </div>
+                    }
+                </div>
+
+            </div>
+        }
+    </div>
+
+    <div class="statusbar">
+        <div class="status-item">Pokoje: <span>@hotel.Rooms.Count</span></div>
+        <div class="status-item">Rezerwacje w widoku: <span>@*reservations.Count*@</span></div>
+        <div class="status-item">Zakres: <span>@startDate.ToString("dd.MM.yyyy") — @endDate.AddDays(-1).ToString("dd.MM.yyyy")</span></div>
+        <div class="status-item" style="margin-left:auto;">
+            Zalogowany jako: <span>HotelEmployee</span>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Highlight row on hover
+        document.querySelectorAll('.grid-row').forEach((row, i) => 
+        {
+            const label = document.querySelectorAll('.room-label')[i];
+            row.addEventListener('mouseenter', () => 
+            {
+                row.style.background = 'rgba(212,168,67,0.04)';
+                if (label) label.style.background = 'rgba(212,168,67,0.08)';
+            });
+            row.addEventListener('mouseleave', () => 
+            {
+                row.style.background = '';
+                if (label) label.style.background = '';
+            });
+        });
+    </script>
+}

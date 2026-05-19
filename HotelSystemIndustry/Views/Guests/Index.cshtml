@@ -1,0 +1,680 @@
+﻿@model IEnumerable<HotelSystemIndustry.Models.Guest>
+@{
+    ViewData["Title"] = "Goście — " + ViewBag.Hotel?.Name;
+    var hotel = ViewBag.Hotel as HotelSystemIndustry.Models.Hotel;
+    var guests = Model.ToList();
+}
+
+<style>
+    import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap');
+
+    :root {
+        --bg: #0f0f12;
+        --surface: #17171d;
+        --surface2: #1e1e27;
+        --border: #2a2a38;
+        --border2: #353548;
+        --gold: #d4a843;
+        --gold-dim: #8a6c28;
+        --gold-pale: rgba(212,168,67,0.07);
+        --text: #e8e6f0;
+        --muted: #6b6880;
+        --danger: #c15a4a;
+        --success: #4ac18e;
+    }
+
+    *, *::before, *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: 'Syne', sans-serif;
+        min-height: 100vh;
+    }
+
+    /* ── TOPBAR ───────────────────────────── */
+    .topbar {
+        height: 56px;
+        background: var(--surface);
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        padding: 0 1.5rem;
+        gap: 1rem;
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        flex-shrink: 0;
+    }
+
+    .topbar-brand {
+        font-size: 0.7rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--gold);
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        white-space: nowrap;
+    }
+
+        .topbar-brand::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: var(--gold);
+            transform: rotate(45deg);
+            flex-shrink: 0;
+        }
+
+    .topbar-sep {
+        width: 1px;
+        height: 28px;
+        background: var(--border);
+        flex-shrink: 0;
+    }
+
+    .topbar-crumb {
+        font-family: 'DM Mono', monospace;
+        font-size: 0.7rem;
+        color: var(--muted);
+        white-space: nowrap;
+    }
+
+        .topbar-crumb em {
+            color: var(--text);
+            font-style: normal;
+            font-weight: 600;
+        }
+
+    .topbar-actions {
+        margin-left: auto;
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+    }
+
+    .tb-link {
+        font-family: 'DM Mono', monospace;
+        font-size: 0.68rem;
+        color: var(--muted);
+        text-decoration: none;
+        padding: 0.38rem 0.85rem;
+        border: 1px solid var(--border);
+        border-radius: 3px;
+        background: var(--surface2);
+        transition: color 0.15s, border-color 0.15s;
+        letter-spacing: 0.05em;
+        white-space: nowrap;
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+    }
+
+        .tb-link:hover {
+            color: var(--gold);
+            border-color: var(--gold-dim);
+            text-decoration: none;
+        }
+
+        .tb-link.primary {
+            background: var(--gold);
+            color: #0f0f12;
+            border-color: var(--gold);
+            font-weight: 700;
+        }
+
+            .tb-link.primary:hover {
+                background: #e6ba55;
+                border-color: #e6ba55;
+                color: #0f0f12;
+            }
+
+    /* ── SHELL ────────────────────────────── */
+    .shell {
+        max-width: 960px;
+        margin: 2.5rem auto;
+        padding: 0 1.5rem 5rem;
+    }
+
+    /* ── PAGE HEADER ──────────────────────── */
+    .page-header {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        margin-bottom: 2rem;
+        gap: 1rem;
+        flex-wrap: wrap;
+        animation: fadeDown 0.4s ease both;
+    }
+
+    .page-kicker {
+        font-family: 'DM Mono', monospace;
+        font-size: 0.6rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--gold-dim);
+        margin-bottom: 0.3rem;
+    }
+
+    .page-h1 {
+        font-size: clamp(1.6rem, 4vw, 2.4rem);
+        font-weight: 800;
+        line-height: 1.1;
+    }
+
+        .page-h1 em {
+            font-style: italic;
+            color: var(--gold);
+            font-weight: 400;
+        }
+
+    .guest-count {
+        font-family: 'DM Mono', monospace;
+        font-size: 0.72rem;
+        color: var(--muted);
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 3px;
+        padding: 0.35rem 0.85rem;
+        align-self: center;
+    }
+
+        .guest-count span {
+            color: var(--gold);
+            font-weight: 700;
+        }
+
+    /* ── SEARCH BAR ───────────────────────── */
+    .search-bar {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1.25rem;
+        animation: fadeUp 0.4s 0.05s ease both;
+    }
+
+    .search-input {
+        flex: 1;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 3px;
+        color: var(--text);
+        font-family: 'DM Mono', monospace;
+        font-size: 0.85rem;
+        padding: 0.6rem 1rem;
+        outline: none;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+        .search-input::placeholder {
+            color: #3a3848;
+        }
+
+        .search-input:focus {
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(212,168,67,0.1);
+        }
+
+    /* ── TABLE CARD ───────────────────────── */
+    .table-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        overflow: hidden;
+        animation: fadeUp 0.4s 0.1s ease both;
+    }
+
+    .guest-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+        /* Head */
+        .guest-table thead th {
+            background: var(--surface2);
+            font-family: 'DM Mono', monospace;
+            font-size: 0.57rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--muted);
+            font-weight: 500;
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border2);
+            white-space: nowrap;
+        }
+
+            .guest-table thead th:first-child {
+                padding-left: 1.25rem;
+            }
+
+            .guest-table thead th:last-child {
+                padding-right: 1.25rem;
+                text-align: right;
+            }
+
+        /* Body rows */
+        .guest-table tbody tr {
+            border-bottom: 1px solid var(--border);
+            transition: background 0.12s;
+            cursor: default;
+        }
+
+            .guest-table tbody tr:last-child {
+                border-bottom: none;
+            }
+
+            .guest-table tbody tr:hover {
+                background: var(--gold-pale);
+            }
+
+        .guest-table tbody td {
+            padding: 0.75rem 1rem;
+            font-size: 0.88rem;
+            vertical-align: middle;
+            color: var(--text);
+        }
+
+            .guest-table tbody td:first-child {
+                padding-left: 1.25rem;
+            }
+
+            .guest-table tbody td:last-child {
+                padding-right: 1.25rem;
+            }
+
+    /* Avatar cell */
+    .td-avatar {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .mini-avatar {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: var(--gold);
+        color: #0f0f12;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.7rem;
+        font-weight: 800;
+        flex-shrink: 0;
+        letter-spacing: -0.02em;
+    }
+
+    .td-name-main {
+        font-weight: 700;
+        font-size: 0.9rem;
+        line-height: 1.2;
+    }
+
+    .td-name-id {
+        font-family: 'DM Mono', monospace;
+        font-size: 0.56rem;
+        color: #35344a;
+        margin-top: 1px;
+    }
+
+    /* Contact chip */
+    .contact-chip {
+        font-family: 'DM Mono', monospace;
+        font-size: 0.75rem;
+        color: var(--muted);
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+
+        .contact-chip a {
+            color: var(--muted);
+            text-decoration: none;
+            transition: color 0.15s;
+        }
+
+            .contact-chip a:hover {
+                color: var(--gold);
+            }
+
+        .contact-chip.empty {
+            color: #2e2e3d;
+            font-style: italic;
+        }
+
+    /* Hotel tag */
+    .hotel-tag {
+        display: inline-block;
+        background: var(--surface2);
+        border: 1px solid var(--border2);
+        color: var(--gold);
+        font-family: 'DM Mono', monospace;
+        font-size: 0.63rem;
+        padding: 0.2rem 0.6rem;
+        border-radius: 2px;
+        letter-spacing: 0.06em;
+        white-space: nowrap;
+    }
+
+    /* Reservations badge */
+    .res-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(74,193,142,0.12);
+        color: var(--success);
+        border: 1px solid rgba(74,193,142,0.22);
+        font-family: 'DM Mono', monospace;
+        font-size: 0.65rem;
+        font-weight: 700;
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+    }
+
+        .res-badge.zero {
+            background: var(--surface2);
+            color: var(--muted);
+            border-color: var(--border2);
+        }
+
+    /* Action links */
+    .action-cell {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 0.35rem;
+    }
+
+    .act-btn {
+        font-family: 'DM Mono', monospace;
+        font-size: 0.63rem;
+        color: var(--muted);
+        text-decoration: none;
+        padding: 0.3rem 0.65rem;
+        border: 1px solid var(--border);
+        border-radius: 2px;
+        background: var(--surface2);
+        transition: color 0.15s, border-color 0.15s, background 0.15s;
+        letter-spacing: 0.05em;
+        white-space: nowrap;
+    }
+
+        .act-btn:hover {
+            color: var(--gold);
+            border-color: var(--gold-dim);
+            text-decoration: none;
+        }
+
+        .act-btn.danger:hover {
+            color: var(--danger);
+            border-color: var(--danger);
+        }
+
+    /* ── EMPTY STATE ──────────────────────── */
+    .empty-state {
+        padding: 4rem 2rem;
+        text-align: center;
+        color: var(--muted);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .empty-icon {
+        font-size: 2.5rem;
+    }
+
+    .empty-title {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--text);
+    }
+
+    .empty-sub {
+        font-size: 0.8rem;
+        color: var(--muted);
+    }
+
+    /* ── FOOTER HINT ──────────────────────── */
+    .table-footer {
+        padding: 0.65rem 1.25rem;
+        background: var(--surface2);
+        border-top: 1px solid var(--border);
+        font-family: 'DM Mono', monospace;
+        font-size: 0.6rem;
+        color: #2e2e3d;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+    }
+
+    /* ── ANIMATIONS ───────────────────────── */
+    @@keyframes fadeDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@keyframes fadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(12px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@media (max-width: 700px) {
+        .td-name-id, .hotel-col, .res-col {
+            display: none;
+        }
+
+        .topbar-crumb {
+            display: none;
+        }
+
+        .guest-table thead th:nth-child(4),
+        .guest-table tbody td:nth-child(4) {
+            display: none;
+        }
+    }
+</style>
+
+<div class="topbar">
+    <div class="topbar-brand">Hotel System Industry</div>
+    <div class="topbar-sep"></div>
+    <div class="topbar-crumb">
+        Lista gości &rsaquo; <em>@(hotel?.Name ?? "Hotel")</em>
+    </div>
+    <div class="topbar-actions">
+        @if (hotel != null)
+        {
+            <a asp-controller="Guests" asp-action="Create"
+               asp-route-hotelId="@hotel.Id" class="tb-link primary">
+                &#43; Nowy gość
+            </a>
+            <a asp-controller="Hotels" asp-action="Calendar"
+               asp-route-id="@hotel.Id" class="tb-link">
+                &#9670; Kalendarz
+            </a>
+            <a asp-controller="Hotels" asp-action="Details"
+               asp-route-id="@hotel.Id" class="tb-link">
+                &#8592; Hotel
+            </a>
+        }
+    </div>
+</div>
+
+<div class="shell">
+    <div class="page-header">
+        <div>
+            <p class="page-kicker">&#9670; @(hotel?.Name ?? "Hotel")</p>
+            <h1 class="page-h1">Lista <em>gości</em></h1>
+        </div>
+        <div class="guest-count">
+            Łącznie: <span>@guests.Count</span> gości
+        </div>
+    </div>
+
+    <div class="search-bar">
+        <input type="text"
+               class="search-input"
+               id="searchInput"
+               placeholder="Szukaj po imieniu, nazwisku lub e-mailu..."
+               autocomplete="off" />
+    </div>
+
+    <div class="table-card">
+        @if (!guests.Any())
+        {
+            <div class="empty-state">
+                <span class="empty-icon">👤</span>
+                <span class="empty-title">Brak zarejestrowanych gości</span>
+                <span class="empty-sub">Dodaj pierwszego gościa klikając przycisk powyżej.</span>
+                @if (hotel != null)
+                {
+                    <a asp-controller="Guests" asp-action="Create"
+                       asp-route-hotelId="@hotel.Id"
+                       style="color:var(--gold);font-size:0.8rem;text-decoration:none;margin-top:0.5rem;">
+                        &#43; Dodaj gościa
+                    </a>
+                }
+            </div>
+        }
+        else
+        {
+            <table class="guest-table" id="guestTable">
+                <thead>
+                    <tr>
+                        <th>Gość</th>
+                        <th>E-mail</th>
+                        <th>Telefon</th>
+                        <th class="hotel-col">Hotel</th>
+                        <th class="res-col">Rez.</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in guests)
+                    {
+                        string ini = (item.FirstName.Length > 0 ? item.FirstName[0].ToString() : "")
+                        + (item.LastName.Length > 0 ? item.LastName[0].ToString() : "");
+                        int resCount = item.Reservations?.Count ?? 0;
+
+                        <tr class="guest-row"
+                            data-search="@(item.FirstName + " " + item.LastName + " " + item.Email)">
+
+                            <td>
+                                <div class="td-avatar">
+                                    <div class="mini-avatar">@ini.ToUpper()</div>
+                                    <div>
+                                        <div class="td-name-main">@item.FirstName @item.LastName</div>
+                                        <div class="td-name-id">@item.Id.ToString()[..8]…</div>
+                                    </div>
+                                </div>
+                            </td>
+
+                            <td>
+                                @if (!string.IsNullOrEmpty(item.Email))
+                                {
+                                    <span class="contact-chip">
+                                        <a href="mailto:@item.Email">@item.Email</a>
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="contact-chip empty">—</span>
+                                }
+                            </td>
+
+                            <td>
+                                @if (!string.IsNullOrEmpty(item.PhoneNumber))
+                                {
+                                    <span class="contact-chip">
+                                        <a href="tel:@item.PhoneNumber">@item.PhoneNumber</a>
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="contact-chip empty">—</span>
+                                }
+                            </td>
+
+                            <td class="hotel-col">
+                                <span class="hotel-tag">@(item.Hotel?.Name ?? "—")</span>
+                            </td>
+
+                            <td class="res-col">
+                                <span class="res-badge @(resCount == 0 ? "zero" : "")">
+                                    @resCount
+                                </span>
+                            </td>
+
+                            <td>
+                                <div class="action-cell">
+                                    <a asp-controller="Guests"
+                                       asp-action="Details"
+                                       asp-route-id="@item.Id"
+                                       class="act-btn">Profil</a>
+                                    <a asp-controller="Guests"
+                                       asp-action="Edit"
+                                       asp-route-id="@item.Id"
+                                       class="act-btn">Edytuj</a>
+                                    <a asp-controller="Guests"
+                                       asp-action="Delete"
+                                       asp-route-id="@item.Id"
+                                       class="act-btn danger">Usuń</a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            <div class="table-footer" id="tableFooter">
+                Wyświetlono @guests.Count z @guests.Count gości
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const searchInput = document.getElementById('searchInput');
+        const rows        = document.querySelectorAll('.guest-row');
+        const footer      = document.getElementById('tableFooter');
+        const total       = rows.length;
+
+        searchInput?.addEventListener('input', () => {
+            const q = searchInput.value.toLowerCase().trim();
+            let visible = 0;
+
+            rows.forEach(row => {
+                const text = row.dataset.search.toLowerCase();
+                const show = !q || text.includes(q);
+                row.style.display = show ? '' : 'none';
+                if (show) visible++;
+            });
+
+            if (footer) {
+                footer.textContent = `Wyświetlono ${visible} z ${total} gości`;
+            }
+        });
+    </script>
+}

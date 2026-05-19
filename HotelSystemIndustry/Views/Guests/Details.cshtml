@@ -1,0 +1,516 @@
+﻿@model HotelSystemIndustry.Models.Guest
+@using HotelSystemIndustry.Models
+@{
+    ViewData["Title"] = Model.FirstName + " " + Model.LastName;
+    string initials = (Model.FirstName.Length > 0 ? Model.FirstName[0].ToString() : "")
+                    + (Model.LastName.Length > 0 ? Model.LastName[0].ToString() : "");
+}
+
+<style>
+    import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap');
+
+    :root {
+        --bg: #0f0f12;
+        --surface: #17171d;
+        --surface2: #1e1e27;
+        --border: #2a2a38;
+        --border2: #353548;
+        --gold: #d4a843;
+        --gold-dim: #8a6c28;
+        --text: #e8e6f0;
+        --muted: #6b6880;
+        --danger: #c15a4a;
+        --success: #4ac18e;
+        --row-h: 40px;
+    }
+
+    *, *::before, *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: 'Syne', sans-serif;
+        min-height: 100vh;
+    }
+
+    /* ── TOPBAR ───────────────────────────── */
+    .topbar {
+        height: 56px;
+        background: var(--surface);
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        padding: 0 1.5rem;
+        gap: 1rem;
+        position: sticky;
+        top: 0;
+        z-index: 50;
+    }
+
+    .topbar-brand {
+        font-size: 0.7rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--gold);
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+        .topbar-brand::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: var(--gold);
+            transform: rotate(45deg);
+            display: inline-block;
+        }
+
+    .topbar-sep {
+        width: 1px;
+        height: 28px;
+        background: var(--border);
+    }
+
+    .topbar-actions {
+        margin-left: auto;
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+    }
+
+    .tb-link {
+        font-family: 'DM Mono', monospace;
+        font-size: 0.7rem;
+        color: var(--muted);
+        text-decoration: none;
+        padding: 0.38rem 0.85rem;
+        border: 1px solid var(--border);
+        border-radius: 3px;
+        background: var(--surface2);
+        transition: color 0.15s, border-color 0.15s;
+        letter-spacing: 0.05em;
+        white-space: nowrap;
+    }
+
+        .tb-link:hover {
+            color: var(--gold);
+            border-color: var(--gold-dim);
+            text-decoration: none;
+        }
+
+    /* ── SHELL ────────────────────────────── */
+    .shell {
+        max-width: 720px;
+        margin: 2.5rem auto;
+        padding: 0 1.5rem 5rem;
+    }
+
+    /* ── HERO BLOCK ───────────────────────── */
+    .guest-hero {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        padding: 2rem;
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        margin-bottom: 1.25rem;
+        animation: fadeUp 0.45s ease both;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .guest-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--gold), transparent);
+        }
+
+    .guest-avatar {
+        width: 72px;
+        height: 72px;
+        border-radius: 50%;
+        background: var(--gold);
+        color: #0f0f12;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.6rem;
+        font-weight: 800;
+        flex-shrink: 0;
+        letter-spacing: -0.02em;
+        box-shadow: 0 0 0 3px rgba(212,168,67,0.25), 0 4px 20px rgba(212,168,67,0.2);
+    }
+
+    .guest-hero-text {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .guest-hero-kicker {
+        font-family: 'DM Mono', monospace;
+        font-size: 0.6rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--gold-dim);
+        margin-bottom: 0.3rem;
+    }
+
+    .guest-hero-name {
+        font-size: clamp(1.4rem, 4vw, 2rem);
+        font-weight: 800;
+        line-height: 1.1;
+        margin-bottom: 0.4rem;
+    }
+
+    .guest-hero-hotel {
+        font-family: 'DM Mono', monospace;
+        font-size: 0.72rem;
+        color: var(--muted);
+    }
+
+        .guest-hero-hotel span {
+            color: var(--gold);
+        }
+
+    .guest-hero-id {
+        font-family: 'DM Mono', monospace;
+        font-size: 0.55rem;
+        color: #2e2e3d;
+        margin-top: 0.5rem;
+        letter-spacing: 0.05em;
+    }
+
+    /* ── CARDS GRID ───────────────────────── */
+    .cards-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.25rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        padding: 1.5rem 1.5rem;
+        animation: fadeUp 0.45s ease both;
+    }
+
+        .card:nth-child(1) {
+            animation-delay: 0.06s;
+        }
+
+        .card:nth-child(2) {
+            animation-delay: 0.12s;
+        }
+
+    .card-label {
+        font-size: 0.57rem;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--gold);
+        font-weight: 700;
+        padding-bottom: 0.65rem;
+        margin-bottom: 1.1rem;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .info-row {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid var(--border2);
+    }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+    .info-key {
+        font-family: 'DM Mono', monospace;
+        font-size: 0.62rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--muted);
+        flex-shrink: 0;
+        width: 72px;
+    }
+
+    .info-val {
+        font-size: 0.88rem;
+        color: var(--text);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+        .info-val a {
+            color: var(--gold);
+            text-decoration: none;
+        }
+
+            .info-val a:hover {
+                text-decoration: underline;
+            }
+
+    /* ── RESERVATIONS TABLE ───────────────── */
+    .res-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        padding: 1.5rem 1.5rem;
+        animation: fadeUp 0.45s 0.18s ease both;
+    }
+
+    .res-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-family: 'DM Mono', monospace;
+        font-size: 0.78rem;
+    }
+
+        .res-table th {
+            font-size: 0.57rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--muted);
+            padding: 0 0.75rem 0.7rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border2);
+        }
+
+            .res-table th:first-child {
+                padding-left: 0;
+            }
+
+        .res-table td {
+            padding: 0.6rem 0.75rem;
+            border-bottom: 1px solid var(--border);
+            color: var(--text);
+            vertical-align: middle;
+        }
+
+            .res-table td:first-child {
+                padding-left: 0;
+            }
+
+        .res-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .res-table tr:hover td {
+            background: rgba(212,168,67,0.03);
+        }
+
+    .room-tag {
+        display: inline-block;
+        background: var(--surface2);
+        border: 1px solid var(--border2);
+        color: var(--gold);
+        font-size: 0.65rem;
+        padding: 0.18rem 0.55rem;
+        border-radius: 2px;
+        letter-spacing: 0.08em;
+    }
+
+    .nights-tag {
+        display: inline-block;
+        background: rgba(74,193,142,0.12);
+        color: var(--success);
+        border: 1px solid rgba(74,193,142,0.25);
+        font-size: 0.65rem;
+        padding: 0.18rem 0.55rem;
+        border-radius: 2px;
+        letter-spacing: 0.05em;
+    }
+
+    .empty-res {
+        padding: 2rem 0;
+        text-align: center;
+        color: var(--muted);
+        font-size: 0.8rem;
+    }
+
+    /* ── ANIMATIONS ───────────────────────── */
+    @@keyframes fadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(12px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@media (max-width: 560px) {
+        .cards-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .guest-hero {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
+</style>
+
+<div class="topbar">
+    <div class="topbar-brand">Hotel System Industry</div>
+    <div class="topbar-sep"></div>
+    <div style="font-family:'DM Mono',monospace;font-size:0.72rem;color:var(--muted);">
+        Profil gościa
+    </div>
+    <div class="topbar-actions">
+        @if (Model.Hotel != null)
+        {
+            <a asp-controller="Guests" asp-action="Create"
+               asp-route-hotelId="@Model.HotelId" class="tb-link">&#43; Nowy gość</a>
+            <a asp-controller="Hotels" asp-action="Calendar"
+               asp-route-id="@Model.HotelId" class="tb-link">&#9670; Kalendarz</a>
+        }
+    </div>
+</div>
+
+<div class="shell">
+
+    <div class="guest-hero">
+        <div class="guest-avatar">@initials.ToUpper()</div>
+        <div class="guest-hero-text">
+            <p class="guest-hero-kicker">&#9670; Profil gościa</p>
+            <h1 class="guest-hero-name">@Model.FirstName @Model.LastName</h1>
+            @if (Model.Hotel != null)
+            {
+                <p class="guest-hero-hotel">
+                    Hotel: <span>@Model.Hotel.Name</span>
+                </p>
+            }
+            <p class="guest-hero-id">ID: @Model.Id</p>
+        </div>
+    </div>
+
+    <div class="cards-grid">
+
+        <div class="card">
+            <div class="card-label">✉ Kontakt</div>
+
+            <div class="info-row">
+                <span class="info-key">E-mail</span>
+                <span class="info-val">
+                    @if (!string.IsNullOrEmpty(Model.Email))
+                    {
+                        <a href="mailto:@Model.Email">@Model.Email</a>
+                    }
+                    else
+                    {
+
+                        <span style="color:var(--muted);font-style:italic;">—</span>
+                    }
+                </span>
+            </div>
+
+            <div class="info-row">
+                <span class="info-key">Telefon</span>
+                <span class="info-val">
+                    @if (!string.IsNullOrEmpty(Model.PhoneNumber))
+                    {
+                        <a href="tel:@Model.PhoneNumber">@Model.PhoneNumber</a>
+                    }
+                    else
+                    {
+
+                        <span style="color:var(--muted);font-style:italic;">—</span>
+                    }
+                </span>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-label">📊 Statystyki</div>
+
+            <div class="info-row">
+                <span class="info-key">Rezerwacje</span>
+                <span class="info-val">@Model.Reservations.Count</span>
+            </div>
+
+            <div class="info-row">
+                <span class="info-key">Noce łącznie</span>
+                <span class="info-val">
+                    @*@{
+                        int totalNights = Model.Reservations
+                        .Sum(r => (int)(r.CheckOut - r.CheckIn).TotalDays);
+                    }
+                    @totalNights
+                    *@
+                </span>
+            </div>
+
+            <div class="info-row">
+                <span class="info-key">Hotel</span>
+                <span class="info-val">@(Model.Hotel?.Name ?? "—")</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="res-card">
+        <div class="card-label">🗓 Historia rezerwacji (@Model.Reservations.Count)</div>
+
+        @if (Model.Reservations.Any())
+        {
+            <table class="res-table">
+                <thead>
+                    <tr>
+                        <th>Pokój</th>
+                        <th>Check-in</th>
+                        <th>Check-out</th>
+                        <th>Noce</th>
+                        <th>Cena</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @*@foreach (var res in Model.Reservations.OrderByDescending(r => r.CheckIn))
+                    {
+                        int nights = (int)(res.CheckOut - res.CheckIn).TotalDays;
+                        <tr>
+                            <td>
+                                @if (res.Room != null)
+                                {
+                                    <span class="room-tag">#@res.Room.RoomNumber</span>
+                                }
+                                else
+                                {
+                                    <span style="color:var(--muted);">—</span>
+                                }
+                            </td>
+                            <td>@res.CheckIn.ToString("dd.MM.yyyy")</td>
+                            <td>@res.CheckOut.ToString("dd.MM.yyyy")</td>
+                            <td><span class="nights-tag">@nights n</span></td>
+                            <td>@((res.Room?.BasePricePerNight * nights)?.ToString("C") ?? "—")</td>
+                        </tr>
+                    }*@
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <div class="empty-res">
+                <span style="font-size:1.5rem;display:block;margin-bottom:0.5rem;">📭</span>
+                Brak rezerwacji dla tego gościa.
+            </div>
+        }
+    </div>
+
+</div>

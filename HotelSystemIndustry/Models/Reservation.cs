@@ -20,6 +20,7 @@ namespace HotelSystemIndustry.Models
 
         [DataType(DataType.Date)]
         public DateTime CheckInDate { get; set; }
+
         [DataType(DataType.Date)]
         public DateTime CheckOutDate { get; set; }
 

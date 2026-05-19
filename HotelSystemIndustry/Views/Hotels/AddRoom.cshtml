@@ -1,0 +1,595 @@
+﻿@model HotelSystemIndustry.Infrastructure.DTO.AddRoomDTO
+@using HotelSystemIndustry.Models
+@{
+    ViewData["Title"] = "Dodaj pokój — " + Model.HotelName;
+    var roomTypes = Enum.GetValues(typeof(RoomType)).Cast<RoomType>();
+}
+
+<style>
+    import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Outfit:wght@300;400;500;600&display=swap');
+
+    :root {
+        --bg: #f2ede4;
+        --surface: #ffffff;
+        --ink: #1a1712;
+        --gold: #a07830;
+        --gold-lt: #c49a50;
+        --gold-pale: #f0e4cc;
+        --muted: #7a7060;
+        --rule: #ddd6c4;
+        --danger: #b03030;
+        --dark: #141210;
+    }
+
+    *, *::before, *::after {
+        box-sizing: border-box;
+    }
+
+    body {
+        background: var(--bg);
+        color: var(--ink);
+        font-family: 'Outfit', sans-serif;
+        font-weight: 300;
+    }
+
+    /* ── Top bar ─────────────────────────── */
+    .topbar {
+        background: var(--dark);
+        height: 56px;
+        padding: 0 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        box-shadow: 0 2px 16px rgba(0,0,0,0.3);
+    }
+
+    .topbar-brand {
+        font-family: 'Libre Baskerville', serif;
+        font-size: 0.78rem;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: wheat;
+        display: flex;
+        align-items: center;
+        gap: 0.55rem;
+    }
+
+        .topbar-brand::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: var(--gold);
+            transform: rotate(45deg);
+            display: inline-block;
+            flex-shrink: 0;
+        }
+
+    .topbar-crumb {
+        font-size: 0.78rem;
+        color: rgba(255,255,255,0.4);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+        .topbar-crumb em {
+            color: rgba(255,255,255,0.85);
+            font-style: normal;
+            font-weight: 500;
+        }
+
+    /* ── Shell ───────────────────────────── */
+    .shell {
+        max-width: 700px;
+        margin: 2.75rem auto;
+        padding: 0 1.5rem 5rem;
+    }
+
+    /* ── Page header ─────────────────────── */
+    .page-header {
+        margin-bottom: 2rem;
+        animation: slideDown 0.45s ease both;
+    }
+
+    .page-kicker {
+        font-size: 0.62rem;
+        letter-spacing: 0.25em;
+        text-transform: uppercase;
+        color: var(--gold);
+        font-weight: 600;
+        margin-bottom: 0.3rem;
+    }
+
+    .page-h1 {
+        font-family: 'Libre Baskerville', serif;
+        font-size: clamp(1.7rem, 4.5vw, 2.6rem);
+        font-weight: 700;
+        line-height: 1.15;
+        margin: 0;
+        color: var(--ink);
+    }
+
+        .page-h1 span {
+            font-style: italic;
+            color: var(--gold);
+        }
+
+    /* ── Card ────────────────────────────── */
+    .form-card {
+        background: var(--surface);
+        border: 1px solid var(--rule);
+        border-radius: 3px;
+        padding: 2rem 2.25rem;
+        box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+        margin-bottom: 1.25rem;
+        animation: cardIn 0.5s ease both;
+    }
+
+        .form-card:nth-child(2) {
+            animation-delay: 0.08s;
+        }
+
+        .form-card:nth-child(3) {
+            animation-delay: 0.16s;
+        }
+
+    .section-label {
+        font-size: 0.6rem;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--gold);
+        font-weight: 600;
+        padding-bottom: 0.65rem;
+        margin-bottom: 1.4rem;
+        border-bottom: 1px solid var(--rule);
+    }
+
+    /* ── Fields ──────────────────────────── */
+    .field {
+        margin-bottom: 1.3rem;
+    }
+
+        .field:last-child {
+            margin-bottom: 0;
+        }
+
+        .field label {
+            display: block;
+            font-size: 0.68rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--muted);
+            font-weight: 500;
+            margin-bottom: 0.4rem;
+        }
+
+        .field input,
+        .field select {
+            width: 100%;
+            padding: 0.65rem 0.9rem;
+            border: 1px solid var(--rule);
+            border-radius: 2px;
+            background: #fdfbf7;
+            color: var(--ink);
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.92rem;
+            font-weight: 400;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+            appearance: none;
+            -webkit-appearance: none;
+        }
+
+            .field input:focus,
+            .field select:focus {
+                border-color: var(--gold);
+                box-shadow: 0 0 0 3px rgba(160,120,48,0.13);
+                background: #fff;
+            }
+
+            .field input.input-validation-error,
+            .field select.input-validation-error {
+                border-color: var(--danger);
+            }
+
+    .field-validation-error {
+        display: block;
+        font-size: 0.74rem;
+        color: var(--danger);
+        margin-top: 0.3rem;
+    }
+
+    /* Select wrapper (custom arrow) */
+    .select-wrap {
+        position: relative;
+    }
+
+        .select-wrap::after {
+            content: '▾';
+            position: absolute;
+            right: 0.85rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gold);
+            pointer-events: none;
+            font-size: 0.8rem;
+        }
+
+    /* Two-column grid */
+    .field-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    .field-row-3 {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 1rem;
+    }
+
+    /* ── Renovation toggle ───────────────── */
+    .toggle-field {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.85rem 1rem;
+        background: #fdfbf7;
+        border: 1px solid var(--rule);
+        border-radius: 2px;
+        cursor: pointer;
+        transition: background 0.15s;
+        user-select: none;
+    }
+
+        .toggle-field:hover {
+            background: var(--gold-pale);
+        }
+
+    .toggle-label-text {
+        display: flex;
+        flex-direction: column;
+        gap: 0.15rem;
+    }
+
+        .toggle-label-text strong {
+            font-size: 0.88rem;
+            font-weight: 500;
+            color: var(--ink);
+        }
+
+        .toggle-label-text small {
+            font-size: 0.72rem;
+            color: var(--muted);
+        }
+
+    /* Custom switch */
+    .switch {
+        position: relative;
+        width: 42px;
+        height: 24px;
+        flex-shrink: 0;
+    }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+    .switch-track {
+        position: absolute;
+        inset: 0;
+        background: var(--rule);
+        border-radius: 24px;
+        transition: background 0.25s;
+    }
+
+    .switch input:checked + .switch-track {
+        background: var(--gold);
+    }
+
+    .switch-track::before {
+        content: '';
+        position: absolute;
+        width: 18px;
+        height: 18px;
+        left: 3px;
+        top: 3px;
+        background: white;
+        border-radius: 50%;
+        transition: transform 0.25s;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    }
+
+    .switch input:checked + .switch-track::before {
+        transform: translateX(18px);
+    }
+
+    /* ── Room type cards ─────────────────── */
+    .type-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.65rem;
+    }
+
+    .type-card input[type="radio"] {
+        position: absolute;
+        opacity: 0;
+        width: 0;
+    }
+
+    .type-card label {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.85rem 1rem;
+        border: 1px solid var(--rule);
+        border-radius: 2px;
+        background: #fdfbf7;
+        cursor: pointer;
+        transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+        text-transform: none;
+        letter-spacing: 0;
+        font-size: 0.92rem;
+        color: var(--ink);
+        font-weight: 400;
+        margin: 0;
+    }
+
+    .type-card input:checked + label {
+        border-color: var(--gold);
+        background: var(--gold-pale);
+        box-shadow: 0 0 0 2px rgba(160,120,48,0.18);
+    }
+
+    .type-card label:hover {
+        border-color: var(--gold-lt);
+        background: #fdf8ed;
+    }
+
+    .type-icon {
+        font-size: 1.3rem;
+        line-height: 1;
+        flex-shrink: 0;
+    }
+
+    .type-info strong {
+        display: block;
+        font-size: 0.88rem;
+        font-weight: 500;
+    }
+
+    .type-info small {
+        font-size: 0.7rem;
+        color: var(--muted);
+    }
+
+    /* ── Actions ─────────────────────────── */
+    .form-actions {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--rule);
+        flex-wrap: wrap;
+        animation: cardIn 0.5s 0.24s ease both;
+    }
+
+    .btn-submit {
+        background: var(--dark);
+        color: wheat;
+        border: none;
+        padding: 0.82rem 2.5rem;
+        font-family: 'Outfit', sans-serif;
+        font-size: 0.78rem;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        border-radius: 2px;
+        cursor: pointer;
+        transition: background 0.2s, transform 0.15s, color 0.2s;
+    }
+
+        .btn-submit:hover {
+            background: var(--gold);
+            color: var(--dark);
+            transform: translateY(-1px);
+        }
+
+    .btn-link {
+        font-size: 0.78rem;
+        color: var(--muted);
+        text-decoration: none;
+        letter-spacing: 0.05em;
+        transition: color 0.2s;
+    }
+
+        .btn-link:hover {
+            color: var(--ink);
+            text-decoration: none;
+        }
+
+    /* ── Animations ──────────────────────── */
+    @@keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-12px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@keyframes cardIn {
+        from {
+            opacity: 0;
+            transform: translateY(14px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@media (max-width: 560px) {
+        .field-row, .field-row-3 {
+            grid-template-columns: 1fr;
+        }
+
+        .type-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .form-card {
+            padding: 1.5rem 1.1rem;
+        }
+
+        .topbar-crumb {
+            display: none;
+        }
+    }
+</style>
+
+<div class="topbar">
+    <div class="topbar-brand">Hotel System Industry</div>
+    <div class="topbar-crumb">
+        Dodajesz pokój do: <em>@Model.HotelName</em>
+    </div>
+</div>
+
+<div class="shell">
+
+    <div class="page-header">
+        <p class="page-kicker">Nowy pokój</p>
+        <h1 class="page-h1">Dodaj pokój <span>do @Model.HotelName</span></h1>
+    </div>
+
+    @using (Html.BeginForm("AddRoom", "Hotels", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.HotelId)
+        @Html.HiddenFor(m => m.HotelName)
+
+        <div class="form-card">
+            <div class="section-label">Dane pokoju</div>
+
+            <div class="field-row">
+                <div class="field">
+                    @Html.LabelFor(m => m.RoomNumber, "Numer pokoju")
+                    @Html.TextBoxFor(m => m.RoomNumber, new { placeholder = "np. 101" })
+                    @Html.ValidationMessageFor(m => m.RoomNumber)
+                </div>
+                <div class="field">
+                    @Html.LabelFor(m => m.Floor, "Piętro")
+                    @Html.TextBoxFor(m => m.Floor, new { type = "number", placeholder = "0" })
+                    @Html.ValidationMessageFor(m => m.Floor)
+                </div>
+            </div>
+
+            <div class="field-row">
+                <div class="field">
+                    @Html.LabelFor(m => m.Capacity, "Pojemność (1–7 osób)")
+                    @Html.TextBoxFor(m => m.Capacity, new { type = "number", min = "1", max = "7", placeholder = "2" })
+                    @Html.ValidationMessageFor(m => m.Capacity)
+                </div>
+                <div class="field">
+                    @Html.LabelFor(m => m.BasePricePerNight, "Cena za noc (PLN)")
+                    @Html.TextBoxFor(m => m.BasePricePerNight, new { type = "number", min = "0.01", step = "0.01", placeholder = "299.00" })
+                    @Html.ValidationMessageFor(m => m.BasePricePerNight)
+                </div>
+            </div>
+
+            <div class="field">
+                <label style="margin-bottom:0.5rem;">Remont</label>
+                <label class="toggle-field" for="Renovation">
+                    <div class="toggle-label-text">
+                        <strong>Pokój w remoncie</strong>
+                        <small>Zaznacz jeśli pokój jest niedostępny z powodu remontu</small>
+                    </div>
+                    <div class="switch">
+                        @Html.CheckBoxFor(m => m.Renovation, new { id = "Renovation" })
+                        <span class="switch-track"></span>
+                    </div>
+                </label>
+            </div>
+        </div>
+
+        <div class="form-card">
+            <div class="section-label">Typ pokoju</div>
+            @Html.ValidationMessageFor(m => m.RoomType)
+
+            <div class="type-grid">
+                <div class="type-card">
+                    <input type="radio" name="RoomType" id="rt-single"
+                           value="@((int)RoomType.Single)"
+                           @(Model.RoomType == RoomType.Single ? "checked" : "") />
+                    <label for="rt-single">
+                        <span class="type-icon">🛏</span>
+                        <div class="type-info">
+                            <strong>Single</strong>
+                            <small>1 łóżko pojedyncze</small>
+                        </div>
+                    </label>
+                </div>
+
+                <div class="type-card">
+                    <input type="radio" name="RoomType" id="rt-double"
+                           value="@((int)RoomType.Double)"
+                           @(Model.RoomType == RoomType.Double ? "checked" : "") />
+                    <label for="rt-double">
+                        <span class="type-icon">🛏🛏</span>
+                        <div class="type-info">
+                            <strong>Double</strong>
+                            <small>2 łóżka lub jedno podwójne</small>
+                        </div>
+                    </label>
+                </div>
+
+                <div class="type-card">
+                    <input type="radio" name="RoomType" id="rt-studio"
+                           value="@((int)RoomType.Studio)"
+                           @(Model.RoomType == RoomType.Studio ? "checked" : "") />
+                    <label for="rt-studio">
+                        <span class="type-icon">🏠</span>
+                        <div class="type-info">
+                            <strong>Studio</strong>
+                            <small>Pokój z aneksem kuchennym</small>
+                        </div>
+                    </label>
+                </div>
+
+                <div class="type-card">
+                    <input type="radio" name="RoomType" id="rt-apartment"
+                           value="@((int)RoomType.Apartment)"
+                           @(Model.RoomType == RoomType.Apartment ? "checked" : "") />
+                    <label for="rt-apartment">
+                        <span class="type-icon">🏢</span>
+                        <div class="type-info">
+                            <strong>Apartment</strong>
+                            <small>Pełny apartament wielopokojowy</small>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn-submit">&#43; Dodaj pokój</button>
+            <a asp-action="Details" asp-route-id="@Model.HotelId" class="btn-link">&#8592; Anuluj</a>
+        </div>
+    }
+
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -67,15 +67,82 @@ namespace HotelSystemIndustry.Migrations
                     b.ToTable("GuestReservation");
                 });
 
+            modelBuilder.Entity("HotelSystemIndustry.Infrastructure.User", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("NormalizedEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("UserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedEmail")
+                        .HasDatabaseName("EmailIndex");
+
+                    b.HasIndex("NormalizedUserName")
+                        .IsUnique()
+                        .HasDatabaseName("UserNameIndex");
+
+                    b.ToTable("AspNetUsers", (string)null);
+                });
+
             modelBuilder.Entity("HotelSystemIndustry.Models.Address", b =>
                 {
-                    b.Property<string>("Street")
-                        .HasColumnType("text");
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
 
                     b.Property<string>("City")
-                        .HasColumnType("text");
-
-                    b.Property<string>("PostalCode")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Country")
@@ -85,7 +152,15 @@ namespace HotelSystemIndustry.Migrations
                     b.Property<Guid>("HotelId")
                         .HasColumnType("uuid");
 
-                    b.HasKey("Street", "City", "PostalCode");
+                    b.Property<string>("PostalCode")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Street")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
 
                     b.HasIndex("HotelId")
                         .IsUnique();
@@ -149,7 +224,7 @@ namespace HotelSystemIndustry.Migrations
                     b.Property<Guid>("EquipmentId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("EventHallId")
+                    b.Property<Guid>("EventHallId")
                         .HasColumnType("uuid");
 
                     b.Property<Guid?>("EventReservationId")
@@ -322,6 +397,9 @@ namespace HotelSystemIndustry.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<Guid>("HotelId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasColumnType("text");
@@ -331,6 +409,8 @@ namespace HotelSystemIndustry.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("HotelId");
 
                     b.ToTable("Guests");
                 });
@@ -562,6 +642,9 @@ namespace HotelSystemIndustry.Migrations
                     b.Property<Guid>("TypeId")
                         .HasColumnType("uuid");
 
+                    b.Property<int>("Unit")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
                     b.HasIndex("TypeId");
@@ -614,17 +697,12 @@ namespace HotelSystemIndustry.Migrations
                         .HasMaxLength(30)
                         .HasColumnType("character varying(30)");
 
-                    b.Property<Guid?>("OrderId")
-                        .HasColumnType("uuid");
-
                     b.Property<decimal>("Price")
                         .HasColumnType("numeric");
 
                     b.HasKey("Id");
 
                     b.HasIndex("EventReservationId");
-
-                    b.HasIndex("OrderId");
 
                     b.ToTable("KitchenProducts");
                 });
@@ -679,6 +757,9 @@ namespace HotelSystemIndustry.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
+                    b.Property<DateTime?>("RealisedTime")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<DateTime>("SubmissionTime")
                         .HasColumnType("timestamp with time zone");
 
@@ -690,6 +771,24 @@ namespace HotelSystemIndustry.Migrations
                     b.HasIndex("TypeId");
 
                     b.ToTable("KitchenOrders");
+                });
+
+            modelBuilder.Entity("HotelSystemIndustry.Models.Kitchen.OrderProduct", b =>
+                {
+                    b.Property<Guid>("OrderId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Count")
+                        .HasColumnType("integer");
+
+                    b.HasKey("OrderId", "ProductId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("OrderProduct");
                 });
 
             modelBuilder.Entity("HotelSystemIndustry.Models.Kitchen.OrderType", b =>
@@ -958,7 +1057,6 @@ namespace HotelSystemIndustry.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<Guid?>("ShopPointId")
-                        .IsRequired()
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("TransactionDate")
@@ -1092,6 +1190,138 @@ namespace HotelSystemIndustry.Migrations
                     b.ToTable("ShopPoints");
                 });
 
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("NormalizedName")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedName")
+                        .IsUnique()
+                        .HasDatabaseName("RoleNameIndex");
+
+                    b.ToTable("AspNetRoles", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("text");
+
+                    b.Property<string>("RoleId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetRoleClaims", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("text");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserClaims", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+                {
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ProviderKey")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ProviderDisplayName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("LoginProvider", "ProviderKey");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserLogins", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("RoleId")
+                        .HasColumnType("text");
+
+                    b.HasKey("UserId", "RoleId");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetUserRoles", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("text");
+
+                    b.HasKey("UserId", "LoginProvider", "Name");
+
+                    b.ToTable("AspNetUserTokens", (string)null);
+                });
+
             modelBuilder.Entity("SupplyUsage", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1177,7 +1407,7 @@ namespace HotelSystemIndustry.Migrations
                     b.HasOne("HotelSystemIndustry.Models.Events.EquipmentType", "Type")
                         .WithMany()
                         .HasForeignKey("TypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Type");
@@ -1188,18 +1418,22 @@ namespace HotelSystemIndustry.Migrations
                     b.HasOne("HotelSystemIndustry.Models.Events.Equipment", "Equipment")
                         .WithMany()
                         .HasForeignKey("EquipmentId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("HotelSystemIndustry.Models.Events.EventHall", null)
+                    b.HasOne("HotelSystemIndustry.Models.Events.EventHall", "EventHall")
                         .WithMany("Equipment")
-                        .HasForeignKey("EventHallId");
+                        .HasForeignKey("EventHallId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("HotelSystemIndustry.Models.Events.EventReservation", null)
                         .WithMany("Equipment")
                         .HasForeignKey("EventReservationId");
 
                     b.Navigation("Equipment");
+
+                    b.Navigation("EventHall");
                 });
 
             modelBuilder.Entity("HotelSystemIndustry.Models.Events.EventReservation", b =>
@@ -1207,18 +1441,29 @@ namespace HotelSystemIndustry.Migrations
                     b.HasOne("HotelSystemIndustry.Models.Events.EventType", "EventType")
                         .WithMany()
                         .HasForeignKey("EventTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("HotelSystemIndustry.Models.Events.EventReservationStatus", "Status")
                         .WithMany()
                         .HasForeignKey("StatusId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("EventType");
 
                     b.Navigation("Status");
+                });
+
+            modelBuilder.Entity("HotelSystemIndustry.Models.Guest", b =>
+                {
+                    b.HasOne("HotelSystemIndustry.Models.Hotel", "Hotel")
+                        .WithMany()
+                        .HasForeignKey("HotelId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Hotel");
                 });
 
             modelBuilder.Entity("HotelSystemIndustry.Models.HousekeepingMaintenance.EmployeeShift", b =>
@@ -1295,7 +1540,7 @@ namespace HotelSystemIndustry.Migrations
                     b.HasOne("HotelSystemIndustry.Models.Kitchen.KitchenArticle", "Article")
                         .WithMany()
                         .HasForeignKey("ArticleId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("HotelSystemIndustry.Models.Kitchen.Storage", "Storage")
@@ -1314,7 +1559,7 @@ namespace HotelSystemIndustry.Migrations
                     b.HasOne("HotelSystemIndustry.Models.Kitchen.KitchenArticleType", "Type")
                         .WithMany()
                         .HasForeignKey("TypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Type");
@@ -1325,10 +1570,6 @@ namespace HotelSystemIndustry.Migrations
                     b.HasOne("HotelSystemIndustry.Models.Events.EventReservation", null)
                         .WithMany("Food")
                         .HasForeignKey("EventReservationId");
-
-                    b.HasOne("HotelSystemIndustry.Models.Kitchen.Order", null)
-                        .WithMany("Products")
-                        .HasForeignKey("OrderId");
                 });
 
             modelBuilder.Entity("HotelSystemIndustry.Models.Kitchen.KitchenRecipe", b =>
@@ -1366,10 +1607,29 @@ namespace HotelSystemIndustry.Migrations
                     b.HasOne("HotelSystemIndustry.Models.Kitchen.OrderType", "Type")
                         .WithMany()
                         .HasForeignKey("TypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Type");
+                });
+
+            modelBuilder.Entity("HotelSystemIndustry.Models.Kitchen.OrderProduct", b =>
+                {
+                    b.HasOne("HotelSystemIndustry.Models.Kitchen.Order", "Order")
+                        .WithMany("Products")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("HotelSystemIndustry.Models.Kitchen.KitchenProduct", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Order");
+
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("HotelSystemIndustry.Models.Payment", b =>
@@ -1459,8 +1719,7 @@ namespace HotelSystemIndustry.Migrations
                     b.HasOne("HotelSystemIndustry.Models.Trading.ShopPoint", "ShopPoint")
                         .WithMany()
                         .HasForeignKey("ShopPointId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("ShopPoint");
                 });
@@ -1470,7 +1729,7 @@ namespace HotelSystemIndustry.Migrations
                     b.HasOne("HotelSystemIndustry.Models.Trading.SaleItemType", "Type")
                         .WithMany()
                         .HasForeignKey("TypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Type");
@@ -1481,7 +1740,7 @@ namespace HotelSystemIndustry.Migrations
                     b.HasOne("HotelSystemIndustry.Models.Trading.SaleItem", "Item")
                         .WithMany()
                         .HasForeignKey("ItemId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("HotelSystemIndustry.Models.Trading.ShopMagazine", "Magazine")
@@ -1497,6 +1756,57 @@ namespace HotelSystemIndustry.Migrations
                     b.Navigation("Item");
 
                     b.Navigation("Magazine");
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+                {
+                    b.HasOne("HotelSystemIndustry.Infrastructure.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+                {
+                    b.HasOne("HotelSystemIndustry.Infrastructure.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("HotelSystemIndustry.Infrastructure.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+                {
+                    b.HasOne("HotelSystemIndustry.Infrastructure.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("SupplyUsage", b =>

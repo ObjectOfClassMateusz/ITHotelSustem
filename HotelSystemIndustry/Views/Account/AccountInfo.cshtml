@@ -1,4 +1,4 @@
-@using HotelSystemIndustry.Infrastructure
+﻿@using HotelSystemIndustry.Infrastructure
 @using Microsoft.AspNetCore.Identity
 
 @inject SignInManager<User> SignInManager
@@ -13,46 +13,61 @@
     var roles = await UserManager.GetRolesAsync(user!);
 }
 
+<head>
+    <link rel="stylesheet" href="~/css/accountInfo.css" asp-append-version="true" />
+</head>
 
-<div class="row">
-    <div class="col-md-6">
-        <section>
-            <h2 class=text-center mb-4>Account Info</h2>
+<div class="account-page">
+    <div class="account-card">
+        <div class="account-header">
+            <div class="header-text">
+                <p class="header-eyebrow">Profil użytkownika</p>
+                <div class="header-name">@fullName</div>
+            </div>
+        </div>
+        @* Body *@
+        <div class="account-body">
+            <div class="info-block">
+                <div class="block-label">Dane konta</div>
 
-            <dl class="row">
-                <dt class="col-sm-2">
-                    Full name:
-                </dt>
-                <dd class="col-sm-10">
-                    @fullName
-                </dd>
+                <div class="info-row">
+                    <span class="info-key">Nazwa</span>
+                    <span class="info-val">@fullName</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-key">E-mail</span>
+                    <span class="info-val">@user!.Email</span>
+                </div>
+            </div>
+            @* Roles *@
+            <div class="roles-block">
+                <div class="block-label">Uprawnienia</div>
+                @if (roles.Count > 0)
+                {
+                    <ul class="roles-list">
+                        @foreach (var role in roles)
+                        {
+                            <li class="role-chip">@role</li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <div class="customer-badge">
+                        ✦ Konto standardowe
+                    </div>
+                }
+            </div>
 
-                <dt class="col-sm-2">
-                    Email:
-                </dt>
-                <dd class="col-sm-10">
-                    @user!.Email
-                </dd>
-            </dl>
+        </div>
+        <div class="account-footer">
+            <a class="change-pwd-link"
+               asp-controller="Account"
+               asp-action="ChangePassword">
+                Zmień hasło
+                <span class="arrow">&#8594;</span>
+            </a>
+        </div>
 
-            @if (roles.Count > 0) {
-                <hr />
-                <h3 class="text-center mb-2">Roles</h3>
-
-                <ul>
-                    @foreach (var role in roles) {
-                        <li>@role</li>
-                    }
-                </ul>
-            }
-            else
-            {
-                <p>Normal customer account</p>
-            }
-
-            <hr />
-
-            <a class="nav-link" id="change-password" asp-controller="Account" asp-action="ChangePassword">Change password</a>
-        </section>
     </div>
 </div>

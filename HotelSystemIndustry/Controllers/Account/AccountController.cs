@@ -14,19 +14,16 @@ namespace HotelSystemIndustry.Controllers
     public class AccountController : Controller
     {
         private readonly SignInManager<User> _signInManager;
-
         private readonly UserManager<User> _userManager;
-
         private readonly RoleManager<IdentityRole> _roleManager;
 
-
-        public AccountController(SignInManager<User> signInManager, UserManager<User> userManager, RoleManager<IdentityRole> roleManager)
+        public AccountController(SignInManager<User> signInManager, UserManager<User> userManager, 
+            RoleManager<IdentityRole> roleManager)
         {
             _signInManager = signInManager;
             _userManager = userManager;
             _roleManager = roleManager;
         }
-
         [HttpGet]
         public async Task<IActionResult> Login()
         {
@@ -46,7 +43,7 @@ namespace HotelSystemIndustry.Controllers
 
             if (result.Succeeded)
             {
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Index", "Hotels");
             }
 
             var user = await _userManager.FindByEmailAsync(model.Email);
@@ -137,7 +134,7 @@ namespace HotelSystemIndustry.Controllers
             var result = await _userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
             if (result.Succeeded)
             {
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Index", "Hotels");
             }
 
             foreach (var error in result.Errors)
@@ -153,7 +150,7 @@ namespace HotelSystemIndustry.Controllers
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Index", "Hotels");
         }
 
         [HttpGet]
@@ -168,7 +165,7 @@ namespace HotelSystemIndustry.Controllers
         {
             if (email == null)
             {
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Index", "Hotels");
             }
 
             var user = await _userManager.FindByEmailAsync(email);

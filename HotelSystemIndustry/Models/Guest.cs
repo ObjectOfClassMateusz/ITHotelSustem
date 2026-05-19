@@ -15,7 +15,11 @@ namespace HotelSystemIndustry.Models
         [Phone]
         public string PhoneNumber { get; set; } = string.Empty;
 
+        public Guid HotelId { get; set; }
+        public Hotel? Hotel { get; set; }
+
         public ICollection<Reservation> Reservations { get; set; } = new List<Reservation>();
+
 
         public ICollection<Recreation.RecreationBooking> RecreationBookings { get; set; } = new List<Recreation.RecreationBooking>();
     }

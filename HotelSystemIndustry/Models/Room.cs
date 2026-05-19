@@ -31,10 +31,11 @@ namespace HotelSystemIndustry.Models
         public Guid HotelId { get; set; }
         [Required(ErrorMessage = "Wpisz hotel pokoju")]
         public Hotel Hotel { get; set; } = null!;
+        public ICollection<Reservation> Reservations { get; set; } = new List<Reservation>();
 
         public ICollection<LostAndFoundItem> FoundItems { get; set; } = new List<LostAndFoundItem>();
 
-        public ICollection<Reservation> Reservations { get; set; } = new List<Reservation>();
+        
 
         public ICollection<EventReservation> EventReservations { get; set; } = new List<EventReservation>();
         public ICollection<RoomCleaning> Cleanings { get; set; } = new List<RoomCleaning>(); //zaplanowane sprzątania
