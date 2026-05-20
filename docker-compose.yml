@@ -15,21 +15,6 @@ services:
     networks:
       - hotel_network
 
-<<<<<<< HEAD
-=======
-  api:
-    build: ./HotelSystemIndustry/
-    container_name: myapp-api
-    depends_on:
-      - postgres
-    ports:
-      - "5000:8080"
-    environment:
-      ASPNETCORE_URLS: http://+:8080
-    networks:
-      - hotel_network
-
->>>>>>> 434ddaef74410d60b147aac6ec1e9e200d85d235
 volumes:
   postgres_data:
 networks:
