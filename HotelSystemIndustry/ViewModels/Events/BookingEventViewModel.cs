@@ -22,6 +22,9 @@ namespace HotelSystemIndustry.ViewModels.Events
         public uint NumServantStuff { get; set; } = 0;
 
 
+        public IFormFile? AgreementFile { get; set; }
+
+
         public class EquipmentSelection
         {
             public Guid EquipmentInstanceId { get; set; }

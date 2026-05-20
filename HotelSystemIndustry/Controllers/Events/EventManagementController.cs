@@ -14,10 +14,13 @@ namespace HotelSystemIndustry.Controllers.Events
         
         private HotelDbContext _context;
 
+        private IWebHostEnvironment _appEnvironment;
 
-        public EventManagementController(HotelDbContext context)
+
+        public EventManagementController(HotelDbContext context, IWebHostEnvironment appEnvironment)
         {
             _context = context;
+            _appEnvironment = appEnvironment;
         }
 
 
@@ -166,6 +169,56 @@ namespace HotelSystemIndustry.Controllers.Events
         }
 
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SubmitReservation(BookingEventViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                var eventHalls = await _context.EventHalls
+                    .AsNoTracking()
+                    .Include(eh => eh.Equipment)
+                        !.ThenInclude(ei => ei.Equipment)
+                            .ThenInclude(e => e!.Type)
+                    .ToListAsync();
+
+                ViewBag.TypeName = (await _context.EventTypes.FirstOrDefaultAsync(t => t.Id == model.EventTypeId))!.Name;
+                ViewBag.EventHalls = eventHalls;
+                return View("VerifyAndRetrieveAgreement", model);
+            }
+
+
+
+            // TODO: submitting to database
+            var savedPath = await SaveAgreementFile(model);
+
+            if (string.IsNullOrEmpty(savedPath))
+            {
+                ModelState.AddModelError("AgreementFile", "Error while uploading the agreement document!");
+
+                var eventHalls = await _context.EventHalls
+                    .AsNoTracking()
+                    .Include(eh => eh.Equipment)
+                        !.ThenInclude(ei => ei.Equipment)
+                            .ThenInclude(e => e!.Type)
+                    .ToListAsync();
+
+                ViewBag.TypeName = (await _context.EventTypes.FirstOrDefaultAsync(t => t.Id == model.EventTypeId))!.Name;
+                ViewBag.EventHalls = eventHalls;
+                return View("VerifyAndRetrieveAgreement", model);
+            }
+
+            return RedirectToAction("EventReservationSuccess");
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> EventReservationSuccess()
+        {
+            return View();
+        }
+
+
         private async Task<uint> CalcMaxGuestCount(BookingEventViewModel model)
         {
             uint numMaxGuests = 0;
@@ -182,6 +235,33 @@ namespace HotelSystemIndustry.Controllers.Events
             }
 
             return numMaxGuests;
+        }
+
+        private async Task<string> SaveAgreementFile(BookingEventViewModel model)
+        {
+            if (model.AgreementFile == null)
+                return string.Empty;
+
+            var extension = Path.GetExtension(model.AgreementFile.FileName).ToLowerInvariant();
+
+            if (string.IsNullOrEmpty(extension) || extension != ".pdf")
+                return string.Empty;
+
+            var directoryPath = Path.Combine(_appEnvironment.WebRootPath, "EventAgreements");
+
+            if (!Directory.Exists(directoryPath))
+                Directory.CreateDirectory(directoryPath);
+
+
+            string targetFileName = Path.GetRandomFileName() + ".pdf";
+            var filePath = Path.Combine(directoryPath, targetFileName);
+
+            using (var stream = System.IO.File.Create(filePath))
+            {
+                await model.AgreementFile.CopyToAsync(stream);
+            }
+
+            return filePath;
         }
 
     }

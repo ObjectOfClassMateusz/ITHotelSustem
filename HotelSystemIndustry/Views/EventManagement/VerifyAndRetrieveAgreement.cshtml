@@ -18,7 +18,7 @@
 <h1>Verify data and submit agreement</h1>
 <hr />
 
-<form method="post">
+<form method="post" enctype="multipart/form-data" asp-action="SubmitReservation">
     @Html.AntiForgeryToken()
     <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
 
@@ -100,12 +100,13 @@
     </div>
 
     <div class="my-4 row fs-5">
-        <span class="col-md-4">Submit agreement document:</span>
-        <span class="col-md-4"><input type="button" class="btn btn-primary" value="Submit document" /></span>
+        <label asp-for="AgreementFile" class="control-label col-md-4">Submit agreement document (PDF):</label>
+        <span class="col-md-4"><input asp-for="AgreementFile" type="file" accept="application/pdf" class="btn" onchange="AJAXSubmitAgreementDocument(this)" /></span>
+        <span asp-validation-for="AgreementFile" class="text-danger"></span>
     </div>
 
     <div class="my-4">
-        <input type="submit" class="btn btn-success" value="Submit" disabled />
+        <input type="submit" class="btn btn-success" id="submit-button" value="Submit" disabled />
     </div>
 
 </form>
@@ -115,5 +116,12 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial.cshtml");
     }
+    
+    <script type="text/javascript">
+        function AJAXSubmitAgreementDocument(postedFile){
+            if (postedFile.value != "")
+                document.getElementById("submit-button").disabled = false;
+        }
+    </script>
 }
 
