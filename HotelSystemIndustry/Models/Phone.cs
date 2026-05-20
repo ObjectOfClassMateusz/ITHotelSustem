@@ -8,7 +8,6 @@ namespace HotelSystemIndustry.Models
         public Guid Id { get; set; }
         [Required, Phone]
         public required string PhoneNumber { get; set; }
-
         public Guid HotelId { get; set; }
         public Hotel? Hotel { get; set; }
     }

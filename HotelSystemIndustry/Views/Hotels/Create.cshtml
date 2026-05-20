@@ -1,43 +1,92 @@
-﻿@model HotelSystemIndustry.Models.Hotel
-
+﻿@model HotelSystemIndustry.Infrastructure.DTO.CreateHotelDTO
 @{
     ViewData["Title"] = "Create";
 }
 
-<h1>Create</h1>
+<div class="hotel-form-wrapper">
+    <h1 class="page-heading">Zarejestruj Hotel</h1>
+    <p class="page-subheading">Nowy obiekt hotelowy</p>
 
-<h4>Hotel</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    @using (Html.BeginForm("Create", "Hotels", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+        <div class="form-section">
+            <div class="section-title">Informacje o hotelu</div>
             <div class="form-group">
                 <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
+                @Html.TextBoxFor(m => m.Name, new { @class = "form-control"})
+                @Html.ValidationMessageFor(m => m.Name)
             </div>
+
             <div class="form-group">
                 <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
-                <span asp-validation-for="Description" class="text-danger"></span>
+                @Html.TextAreaFor(m => m.Description, 4, 0, new { @class = "form-control", placeholder = "Opis oferty i udogodnień hotelu..." })
+                @Html.ValidationMessageFor(m => m.Description)
             </div>
+
             <div class="form-group">
                 <label asp-for="Email" class="control-label"></label>
-                <input asp-for="Email" class="form-control" />
-                <span asp-validation-for="Email" class="text-danger"></span>
+                @Html.TextBoxFor(m => m.Email, new { @class = "form-control", type = "email", placeholder = "Adres e-mail" })
+                @Html.ValidationMessageFor(m => m.Email)
             </div>
+        </div>
+
+        <div class="form-section">
+            <div class="section-title">Adres</div>
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <label asp-for="Street" class="control-label"></label>
+                @Html.TextBoxFor(m => m.Street, new { @class = "form-control", placeholder = "ul. {nazwa} {numer}" })
+                @Html.ValidationMessageFor(m => m.Street)
             </div>
-        </form>
-    </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label asp-for="City" class="control-label"></label>
+                    @Html.TextBoxFor(m => m.City, new { @class = "form-control", placeholder = "Warszawa" })
+                    @Html.ValidationMessageFor(m => m.City)
+                </div>
+                <div class="form-group">
+                    <label asp-for="PostalCode" class="control-label"></label>
+                    @Html.TextBoxFor(m => m.PostalCode, new { @class = "form-control", placeholder = "00-001" })
+                    @Html.ValidationMessageFor(m => m.PostalCode)
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Country" class="control-label"></label>
+                @Html.TextBoxFor(m => m.Country, new { @class = "form-control", placeholder = "Polska" })
+                @Html.ValidationMessageFor(m => m.Country)
+            </div>
+        </div>
+
+        <div class="form-section">
+            <div class="section-title">Numery telefonów</div>
+
+            <div class="phone-list" id="phoneList">
+                <div class="phone-entry">
+
+                </div>
+            </div>
+            <button type="button" class="btn-add-phone" onclick="addPhone()">
+                &#43; Dodaj numer
+            </button>
+            <p class="phone-hint">Możesz dodać wiele numerów telefonów.</p>
+            <div class="nonvalid-field">@ViewBag.ErrorPhones</div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn-submit">Zarejestruj hotel</button>
+            <a asp-action="Index" class="back-link">&#8592; Powrót do listy</a>
+        </div>
+    }
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+@section Scripts 
+{
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script src="/js/addingPhone.js">
 
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    </script>
 }

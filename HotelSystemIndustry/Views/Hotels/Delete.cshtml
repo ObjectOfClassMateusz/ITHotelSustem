@@ -4,36 +4,354 @@
     ViewData["Title"] = "Delete";
 }
 
-<h1>Delete</h1>
+<style>
+    import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300;1,600&family=Jost:wght@300;400;500&display=swap');
 
-<h3>Are you sure you want to delete this?</h3>
-<div>
-    <h4>Hotel</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Email)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Email)
-        </dd>
-    </dl>
-    
-    <form asp-action="Delete">
-        <input type="hidden" asp-for="Id" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Back to List</a>
-    </form>
+    :root {
+        --ink: #18160f;
+        --paper: #f7f4ee;
+        --cream: #edeade;
+        --gold: #b89040;
+        --gold-lt: #d4b06a;
+        --rule: #ddd8c8;
+        --muted: #8a8070;
+        --surface: #ffffff;
+        --badge-bg: #1c1a12;
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        background: var(--paper);
+        color: var(--ink);
+        font-family: 'Jost', sans-serif;
+    }
+
+    /* ── Hotel ─────────────────────────────── */
+    .detail-hotel {
+        background: var(--badge-bg);
+        color: var(--paper);
+        padding: 3.5rem 2rem 2.75rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .detail-hotel::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(135deg, transparent 0, transparent 18px, rgba(255,255,255,0.018) 18px, rgba(255,255,255,0.018) 19px);
+        }
+
+    .hotel-inner {
+        position: relative;
+        z-index: 1;
+        max-width: 900px;
+        margin: 0 auto;
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .hotel-eyebrow {
+        font-size: 0.65rem;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--gold-lt);
+        margin-bottom: 0.5rem;
+        font-family: 'Jost', sans-serif;
+        font-weight: 400;
+    }
+
+    .hotel-name {
+        font-family: 'Cormorant Garamond', Georgia, serif;
+        font-size: clamp(2rem, 6vw, 3.6rem);
+        font-weight: 600;
+        line-height: 1.1;
+        margin: 0;
+    }
+
+    .hotel-email {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.8rem;
+        color: rgba(47,44,38,0.5);
+        margin-top: 0.6rem;
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+
+        .hotel-email:hover {
+            color: var(--gold-lt);
+        }
+
+    .hotel-actions {
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
+        flex-shrink: 0;
+    }
+
+    .btn-edit {
+        background: var(--gold);
+        color: var(--badge-bg);
+        border: none;
+        padding: 0.6rem 1.6rem;
+        font-family: 'Jost', sans-serif;
+        font-size: 0.75rem;
+        font-weight: 500;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        text-decoration: none;
+        border-radius: 2px;
+        transition: background 0.2s;
+        white-space: nowrap;
+    }
+
+        .btn-edit:hover {
+            background: var(--gold-lt);
+            color: var(--badge-bg);
+            text-decoration: none;
+        }
+
+    .btn-back {
+        font-size: 0.75rem;
+        color: rgba(247,244,238,0.45);
+        background-color: #0f0f0f;
+        padding: 0.6rem;
+        text-decoration: none;
+        letter-spacing: 0.08em;
+        transition: color 0.2s;
+        white-space: nowrap;
+    }
+
+        .btn-back:hover {
+            color: white;
+            text-decoration: none;
+        }
+
+    .detail-body {
+        max-width: 900px;
+        margin: 2.5rem auto;
+        padding: 0 1.5rem 4rem;
+        display: grid;
+        grid-template-columns: 1fr 300px;
+        gap: 1.75rem;
+        align-items: start;
+    }
+
+    .card {
+        background: var(--surface);
+        border: 1px solid var(--rule);
+        border-radius: 2px;
+        padding: 1.75rem 1.75rem;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+        animation: cardIn 0.55s ease both;
+    }
+
+    @@keyframes cardIn {
+        from {
+            opacity: 0;
+            transform: translateY(14px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .card:nth-child(2) {
+        animation-delay: 0.1s;
+    }
+
+    .card:nth-child(3) {
+        animation-delay: 0.18s;
+    }
+
+    .card:nth-child(4) {
+        animation-delay: 0.26s;
+    }
+
+    .card-label {
+        font-size: 0.62rem;
+        font-weight: 500;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--gold);
+        margin-bottom: 1.1rem;
+        padding-bottom: 0.6rem;
+        border-bottom: 1px solid var(--rule);
+        font-family: 'Jost', sans-serif;
+    }
+
+    /* ── Description ──────────────────────── */
+    .desc-text {
+        font-family: 'Cormorant Garamond', Georgia, serif;
+        font-size: 1.15rem;
+        font-weight: 300;
+        line-height: 1.9;
+        color: #3a3425;
+        font-style: italic;
+    }
+
+    /* ── Info rows ────────────────────────── */
+    .info-row {
+        display: flex;
+        align-items: baseline;
+        gap: 0.75rem;
+        padding: 0.55rem 0;
+        border-bottom: 1px solid var(--cream);
+        font-size: 0.9rem;
+    }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+    .info-key {
+        font-size: 0.7rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--muted);
+        flex-shrink: 0;
+        width: 90px;
+        font-family: 'Jost', sans-serif;
+    }
+
+    .info-val {
+        color: var(--ink);
+        font-weight: 400;
+        line-height: 1.5;
+    }
+
+    /* ── Phone chips ──────────────────────── */
+    .phone-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .phone-chip {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        background: var(--cream);
+        border-radius: 2px;
+        padding: 0.55rem 0.85rem;
+        font-size: 0.9rem;
+        color: var(--ink);
+        transition: background 0.15s;
+    }
+
+        .phone-chip:hover {
+            background: var(--rule);
+        }
+
+    .phone-icon {
+        color: var(--gold);
+        font-size: 0.9rem;
+        flex-shrink: 0;
+    }
+
+    .no-data {
+        font-size: 0.85rem;
+        color: var(--muted);
+        font-style: italic;
+    }
+
+    /* ── Rooms table ──────────────────────── */
+    .rooms-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.88rem;
+    }
+
+        .rooms-table th {
+            font-size: 0.65rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--muted);
+            font-weight: 500;
+            padding: 0 0.75rem 0.6rem;
+            text-align: left;
+            border-bottom: 1px solid var(--rule);
+        }
+
+            .rooms-table th:first-child {
+                padding-left: 0;
+            }
+
+        .rooms-table td {
+            padding: 0.7rem 0.75rem;
+            border-bottom: 1px solid var(--cream);
+            color: var(--ink);
+            vertical-align: middle;
+        }
+
+            .rooms-table td:first-child {
+                padding-left: 0;
+            }
+
+        .rooms-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .rooms-table tr:hover td {
+            background: var(--cream);
+        }
+
+    .room-badge {
+        display: inline-block;
+        background: var(--badge-bg);
+        color: var(--gold-lt);
+        font-size: 0.65rem;
+        letter-spacing: 0.08em;
+        padding: 0.2rem 0.5rem;
+        border-radius: 2px;
+        font-family: 'Jost', sans-serif;
+    }
+
+    /* ── Sidebar stacks ───────────────────── */
+    .sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 1.75rem;
+    }
+
+    /* ── Responsive ───────────────────────── */
+    @@media (max-width: 680px) {
+        .detail-body {
+            grid-template-columns: 1fr;
+        }
+
+        .hotel-inner {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
+</style>
+
+<div class="detail-hotel">
+    <div class="hotel-inner">
+        <div>
+            <h3>Czy napewno chcesz wyrejestrować hotel?</h3>
+            <p class="hotel-eyebrow">@Html.DisplayFor(model => model.Name)</p>
+        </div>
+        <div class="hotel-actions">
+            <form asp-action="Delete">
+                <input type="hidden" asp-for="Id" />
+                <input type="submit" value="Usuń" class="btn-edit" /> |
+            </form>
+            <a class="asp-link" asp-action="Details" asp-route-id="@Model.Id">
+                Wróć do Hotelu
+            </a>
+        </div>
+    </div>
 </div>
+

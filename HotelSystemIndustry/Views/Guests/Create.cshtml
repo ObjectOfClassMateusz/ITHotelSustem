@@ -1,0 +1,405 @@
+﻿@model HotelSystemIndustry.Infrastructure.DTO.CreateGuestDTO
+@{
+    ViewData["Title"] = "Nowy gość — " + Model.HotelName;
+}
+
+<style>
+    import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap');
+
+    :root {
+        --bg: #0f0f12;
+        --surface: #17171d;
+        --surface2: #1e1e27;
+        --border: #2a2a38;
+        --border2: #353548;
+        --gold: #d4a843;
+        --gold-dim: #8a6c28;
+        --gold-pale: rgba(212,168,67,0.08);
+        --text: #e8e6f0;
+        --muted: #6b6880;
+        --danger: #c15a4a;
+    }
+
+    *, *::before, *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: 'Syne', sans-serif;
+        min-height: 100vh;
+    }
+
+    /* ── TOPBAR ───────────────────────────── */
+    .topbar {
+        height: 56px;
+        background: var(--surface);
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        padding: 0 1.5rem;
+        gap: 1rem;
+        position: sticky;
+        top: 0;
+        z-index: 50;
+    }
+
+    .topbar-brand {
+        font-size: 0.7rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--gold);
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+        .topbar-brand::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: var(--gold);
+            transform: rotate(45deg);
+            display: inline-block;
+        }
+
+    .topbar-sep {
+        width: 1px;
+        height: 28px;
+        background: var(--border);
+    }
+
+    .topbar-crumb {
+        font-family: 'DM Mono', monospace;
+        font-size: 0.72rem;
+        color: var(--muted);
+    }
+
+        .topbar-crumb em {
+            color: var(--text);
+            font-style: normal;
+        }
+
+    .topbar-back {
+        margin-left: auto;
+        font-size: 0.7rem;
+        color: var(--muted);
+        text-decoration: none;
+        letter-spacing: 0.08em;
+        transition: color 0.15s;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+
+        .topbar-back:hover {
+            color: var(--gold);
+            text-decoration: none;
+        }
+
+    /* ── SHELL ────────────────────────────── */
+    .shell {
+        max-width: 580px;
+        margin: 3rem auto;
+        padding: 0 1.5rem 5rem;
+    }
+
+    /* ── PAGE HEADER ──────────────────────── */
+    .page-header {
+        margin-bottom: 2.25rem;
+        animation: fadeDown 0.45s ease both;
+    }
+
+    .page-kicker {
+        font-family: 'DM Mono', monospace;
+        font-size: 0.62rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--gold-dim);
+        margin-bottom: 0.35rem;
+    }
+
+    .page-h1 {
+        font-size: clamp(1.8rem, 5vw, 2.6rem);
+        font-weight: 800;
+        line-height: 1.1;
+        color: var(--text);
+    }
+
+        .page-h1 em {
+            font-style: italic;
+            color: var(--gold);
+            font-weight: 400;
+        }
+
+    /* ── CARD ─────────────────────────────── */
+    .form-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        padding: 2rem 2rem;
+        margin-bottom: 1.25rem;
+        animation: fadeUp 0.45s ease both;
+    }
+
+        .form-card:nth-child(2) {
+            animation-delay: 0.08s;
+        }
+
+    .card-label {
+        font-size: 0.58rem;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--gold);
+        font-weight: 700;
+        padding-bottom: 0.7rem;
+        margin-bottom: 1.4rem;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    /* ── FIELDS ───────────────────────────── */
+    .field {
+        margin-bottom: 1.25rem;
+    }
+
+        .field:last-child {
+            margin-bottom: 0;
+        }
+
+        .field label {
+            display: block;
+            font-family: 'DM Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: white;
+            margin-bottom: 0.45rem;
+        }
+
+        .field input {
+            width: 100%;
+            padding: 0.7rem 0.95rem;
+            background: var(--surface2);
+            border: 4px solid black;
+            border-radius: 5px;
+            color: wheat;
+            font-family: 'DM Mono', monospace;
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+        }
+
+            .field input:focus {
+                border-color: var(--gold);
+                box-shadow: 0 0 0 3px rgba(212,168,67,0.12);
+                background: #1e1e27;
+            }
+
+            .field input::placeholder {
+                color: #42404f;
+            }
+
+            .field input.input-validation-error {
+                border-color: var(--danger);
+            }
+
+    .field-validation-error {
+        display: block;
+        font-size: 0.72rem;
+        color: var(--danger);
+        margin-top: 0.3rem;
+        font-family: 'DM Mono', monospace;
+    }
+
+    .field-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    /* ── AVATAR PREVIEW ───────────────────── */
+    .avatar-preview {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background: var(--gold);
+        color: var(--bg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.3rem;
+        font-weight: 800;
+        flex-shrink: 0;
+        transition: letter-spacing 0.2s;
+        margin-bottom: 1.25rem;
+        letter-spacing: -0.02em;
+    }
+
+    /* ── ACTIONS ──────────────────────────── */
+    .form-actions {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border);
+        animation: fadeUp 0.45s 0.16s ease both;
+        flex-wrap: wrap;
+    }
+
+    .btn-submit {
+        background: var(--gold);
+        color: #0f0f12;
+        border: none;
+        padding: 0.78rem 2.25rem;
+        font-family: 'Syne', sans-serif;
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        border-radius: 3px;
+        cursor: pointer;
+        transition: background 0.2s, transform 0.15s;
+    }
+
+        .btn-submit:hover {
+            background: #e6ba55;
+            transform: translateY(-1px);
+        }
+
+    .btn-cancel {
+        font-family: 'DM Mono', monospace;
+        font-size: 0.72rem;
+        color: var(--muted);
+        text-decoration: none;
+        letter-spacing: 0.06em;
+        transition: color 0.2s;
+    }
+
+        .btn-cancel:hover {
+            color: var(--text);
+            text-decoration: none;
+        }
+
+    /* ── ANIMATIONS ───────────────────────── */
+    @@keyframes fadeDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@keyframes fadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(12px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@media (max-width: 480px) {
+        .field-row {
+            grid-template-columns: 1fr;
+        }
+
+        .form-card {
+            padding: 1.5rem 1.1rem;
+        }
+    }
+</style>
+
+<div class="topbar">
+    <div class="topbar-brand">Hotel System Industry</div>
+    <div class="topbar-sep"></div>
+    <div class="topbar-crumb">Nowy gość &rsaquo; <em>@Model.HotelName</em></div>
+    <a asp-controller="Hotels" asp-action="Calendar" asp-route-id="@Model.HotelId"
+       class="topbar-back">&#8592; Kalendarz</a>
+</div>
+
+<div class="shell">
+
+    <div class="page-header">
+        <p class="page-kicker">&#9670; Rejestracja gościa</p>
+        <h1 class="page-h1">Nowy <em>gość</em></h1>
+    </div>
+
+    @using (Html.BeginForm("Create", "Guests", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.HotelId)
+        @Html.HiddenFor(m => m.HotelName)
+
+        <div class="form-card">
+            <div class="card-label">👤 Dane osobowe</div>
+            <div class="avatar-preview" id="avatarPreview">?</div>
+
+            <div class="field-row">
+                <div class="field">
+                    @Html.LabelFor(m => m.FirstName, "Imię")
+                    @Html.TextBoxFor(m => m.FirstName, new { placeholder = "Jan", id = "firstName" })
+                    @Html.ValidationMessageFor(m => m.FirstName)
+                </div>
+                <div class="field">
+                    @Html.LabelFor(m => m.LastName, "Nazwisko")
+                    @Html.TextBoxFor(m => m.LastName, new { placeholder = "Kowalski", id = "lastName" })
+                    @Html.ValidationMessageFor(m => m.LastName)
+                </div>
+            </div>
+
+            <div class="field">
+                @Html.LabelFor(m => m.Email, "Adres e-mail")
+                @Html.TextBoxFor(m => m.Email, new { type = "email", placeholder = "jan.kowalski@example.com" })
+                @Html.ValidationMessageFor(m => m.Email)
+            </div>
+
+            <div class="field">
+                @Html.LabelFor(m => m.PhoneNumber, "Numer telefonu")
+                @Html.TextBoxFor(m => m.PhoneNumber, new { type = "tel", placeholder = "+48 600 000 000" })
+                @Html.ValidationMessageFor(m => m.PhoneNumber)
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn-submit">&#43; Zarejestruj gościa</button>
+            <a asp-controller="Hotels" asp-action="Calendar"
+               asp-route-id="@Model.HotelId" class="btn-cancel">&#8592; Anuluj</a>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        // Live avatar initials
+        const fn  = document.getElementById('firstName');
+        const ln  = document.getElementById('lastName');
+        const av  = document.getElementById('avatarPreview');
+
+        function updateAvatar() {
+            const f = fn.value.trim()[0] || '';
+            const l = ln.value.trim()[0] || '';
+            av.textContent = (f + l).toUpperCase() || '?';
+        }
+
+        fn.addEventListener('input', updateAvatar);
+        ln.addEventListener('input', updateAvatar);
+        updateAvatar();
+    </script>
+}

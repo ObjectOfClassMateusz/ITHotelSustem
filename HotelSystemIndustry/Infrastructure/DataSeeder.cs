@@ -2,9 +2,9 @@ using HotelSystemIndustry.Models.Events;
 using HotelSystemIndustry.Models.Kitchen;
 using HotelSystemIndustry.Models.Trading;
 using Microsoft.AspNetCore.Identity;
+using HotelSystemIndustry.Models;
 
 namespace HotelSystemIndustry.Infrastructure;
-
 
 public class DataSeeder
 {
@@ -20,18 +20,17 @@ public class DataSeeder
         {
             logger.LogInformation("Upewnianie się, że baza danych jest stworzona");
             await context.Database.EnsureCreatedAsync();
-
             await SeedRolesAndUsers(roleManager, userManager);
-
             await SeedEvents(context);
             await SeedKitchen(context);
             await SeedTrading(context);
+            await SeedHotel(context);
 
             await context.SaveChangesAsync();
         }
         catch (Exception e)
         {
-            logger.LogError(e, "Wystąpił błąd przy seedowaniu bazy danych");
+            logger.LogError(e.InnerException, "Wystąpił błąd przy seedowaniu bazy danych");
         }
     }
 
@@ -1099,6 +1098,49 @@ public class DataSeeder
                 ItemId = context.SaleItems.FirstOrDefault(si => si.Name == "Monthly parking slot")!.Id,
                 MagazineId = context.ShopMagazines.FirstOrDefault(m => m.Location == "Garage")!.Id,
             });
+        }
+    }
+
+    private static async Task SeedHotel(HotelDbContext context)
+    {
+        var hotel = new Hotel() 
+        { 
+            Id = Guid.NewGuid(),
+            Name = "Hotel Alfa Dominicana",
+            Description = "Hotel jest idealnie położony, zaledwie kilka kroków od Pałacu Branickich i jego barokowych ogrodów, co zapewnia łatwy dostęp do atrakcji miasta.",
+            Email = "alfadominicana@tutanota.com"
+        };
+        var address = new Address()
+        {
+            Id = Guid.NewGuid(),
+            Hotel = hotel,
+            HotelId = hotel.Id,
+            Street = "ul. Zwierzyniecka 14",
+            Country = "Polska",
+            PostalCode = "15-333",
+            City = "Białystok"
+        };
+        hotel.Address = address;
+        var phone = new Phone()
+        { 
+            HotelId = hotel.Id,
+            Hotel = hotel,
+            Id = Guid.NewGuid(),
+            PhoneNumber = "+48 856 521 182"
+        };
+        hotel.PhoneNumbers.Add(phone);
+
+        if (context.Hotels.Count() == 0)
+        {
+            context.Hotels.Add(hotel);
+        }
+        if (context.Addresses.Count() == 0) 
+        {
+            context.Addresses.Add(address);
+        }
+        if (context.Phones.Count() == 0)
+        {
+            context.Phones.Add(phone);
         }
     }
 }

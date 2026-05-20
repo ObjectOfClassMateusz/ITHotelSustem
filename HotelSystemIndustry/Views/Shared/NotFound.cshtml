@@ -1,0 +1,265 @@
+﻿@{
+    ViewData["Title"] = "404 – Nie znaleziono strony";
+    Layout = "_Layout";
+}
+
+<style>
+    import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400&display=swap');
+
+    :root {
+        --bg: #0d0d0d;
+        --surface: #141414;
+        --gold: #c9a84c;
+        --gold-dim: #7a5f28;
+        --white: #f0ece3;
+        --muted: #555046;
+        --border: #2a2720;
+    }
+
+    .notfound-page {
+        background: var(--bg);
+        color: var(--white);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 3rem 1.5rem;
+        position: relative;
+        overflow: hidden;
+        font-family: 'DM Sans', sans-serif;
+    }
+
+        /* Animated grid background */
+        .notfound-page::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px);
+            background-size: 60px 60px;
+            animation: gridDrift 20s linear infinite;
+            opacity: 0.6;
+        }
+
+    @@keyframes gridDrift {
+        from {
+            background-position: 0 0;
+        }
+
+        to {
+            background-position: 60px 60px;
+        }
+    }
+
+    /* Radial vignette overlay */
+    .notfound-page::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(ellipse 70% 60% at 50% 50%, transparent 30%, #0d0d0d 100%);
+        pointer-events: none;
+    }
+
+    .notfound-inner {
+        position: relative;
+        z-index: 2;
+        max-width: 620px;
+    }
+
+    /* The big 404 */
+    .notfound-code {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: clamp(8rem, 22vw, 16rem);
+        line-height: 0.9;
+        color: transparent;
+        -webkit-text-stroke: 1px var(--gold-dim);
+        letter-spacing: 0.04em;
+        animation: fadeDown 0.8s ease both;
+        position: relative;
+    }
+
+        .notfound-code::after {
+            content: '404';
+            position: absolute;
+            inset: 0;
+            color: var(--gold);
+            -webkit-text-stroke: 0;
+            opacity: 0.08;
+            filter: blur(18px);
+        }
+
+    /* Divider */
+    .notfound-rule {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        margin: 1.5rem auto;
+        width: 220px;
+        animation: fadeUp 0.8s 0.2s ease both;
+    }
+
+    .notfound-rule-line {
+        flex: 1;
+        height: 1px;
+        background: var(--gold-dim);
+    }
+
+    .notfound-rule-dot {
+        width: 5px;
+        height: 5px;
+        background: var(--gold);
+        transform: rotate(45deg);
+        flex-shrink: 0;
+    }
+
+    /* Heading */
+    .notfound-heading {
+        font-family: 'DM Serif Display', Georgia, serif;
+        font-size: clamp(1.4rem, 4vw, 2rem);
+        font-weight: 400;
+        color: var(--white);
+        margin: 0 0 0.75rem;
+        animation: fadeUp 0.8s 0.3s ease both;
+    }
+
+        .notfound-heading em {
+            font-style: italic;
+            color: var(--gold);
+        }
+
+    /* Description */
+    .notfound-desc {
+        font-size: 0.92rem;
+        color: var(--muted);
+        line-height: 1.75;
+        font-weight: 300;
+        margin: 0 auto 2.5rem;
+        max-width: 420px;
+        animation: fadeUp 0.8s 0.4s ease both;
+    }
+
+    /* Buttons */
+    .notfound-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+        animation: fadeUp 0.8s 0.5s ease both;
+    }
+
+    .btn-primary-404 {
+        background: var(--gold);
+        color: var(--bg);
+        border: none;
+        padding: 0.75rem 2rem;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 0.8rem;
+        font-weight: 400;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        text-decoration: none;
+        border-radius: 2px;
+        cursor: pointer;
+        transition: background 0.2s, transform 0.15s;
+        display: inline-block;
+    }
+
+        .btn-primary-404:hover {
+            background: #e0be70;
+            transform: translateY(-2px);
+            color: var(--bg);
+            text-decoration: none;
+        }
+
+    .btn-ghost-404 {
+        background: transparent;
+        color: var(--muted);
+        border: 1px solid var(--border);
+        padding: 0.75rem 2rem;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 0.8rem;
+        font-weight: 400;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        text-decoration: none;
+        border-radius: 2px;
+        cursor: pointer;
+        transition: border-color 0.2s, color 0.2s, transform 0.15s;
+        display: inline-block;
+    }
+
+        .btn-ghost-404:hover {
+            border-color: var(--gold-dim);
+            color: var(--white);
+            transform: translateY(-2px);
+            text-decoration: none;
+        }
+
+    /* Footer note */
+    .notfound-footer {
+        position: absolute;
+        bottom: 2rem;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 0.7rem;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: var(--muted);
+        z-index: 2;
+        white-space: nowrap;
+        animation: fadeUp 0.8s 0.7s ease both;
+    }
+
+    /* Animations */
+    @@keyframes fadeDown {
+        from {
+            opacity: 0;
+            transform: translateY(-30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@keyframes fadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+<center>
+
+<div class="notfound-inner">
+
+    <div class="notfound-code">404</div>
+
+    <div class="notfound-rule">
+        <div class="notfound-rule-line"></div>
+        <div class="notfound-rule-dot"></div>
+        <div class="notfound-rule-line"></div>
+    </div>
+
+    <h1 class="notfound-heading">Nie znaleziono <em>zasobu</em></h1>
+
+    <p class="notfound-desc">
+        Strona, której szukasz, zmieniła adres lub nie istnieje.
+    </p>
+
+    <div class="notfound-actions">
+        <a href="/" class="btn-primary-404">Strona główna</a>
+        <a href="javascript:history.back()" class="btn-ghost-404">&#8592; Wróć</a>
+    </div>
+
+</div>
+
+<div class="notfound-footer">Hotel System Industry &nbsp;·&nbsp; Błąd 404</div>
+</center>

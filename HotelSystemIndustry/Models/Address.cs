@@ -1,18 +1,15 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace HotelSystemIndustry.Models
 {
-    [PrimaryKey(nameof(Street), nameof(City), nameof(PostalCode))]
     public class Address
     {
-        [Required]
-        public string Street { get; set; } = string.Empty;//PK
-        [Required]
-        public string City { get; set; } = string.Empty;//PK
-        [Required]
-        public string PostalCode { get; set; } = string.Empty;//PK
-        [Required]
+        [Key]
+        public Guid Id { get; set; }
+        public string Street { get; set; } = string.Empty;
+        public string City { get; set; } = string.Empty;
+        public string PostalCode { get; set; } = string.Empty;
         public string Country { get; set; } = string.Empty;
 
         public Guid HotelId { get; set; }

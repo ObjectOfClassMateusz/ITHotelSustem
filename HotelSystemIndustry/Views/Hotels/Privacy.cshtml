@@ -1,0 +1,411 @@
+﻿@{
+    ViewData["Title"] = "Polityka Prywatności";
+}
+
+<style>
+    import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Source+Serif+4:wght@300;400;600&display=swap');
+
+    :root {
+        --ink: #1c1c1c;
+        --paper: #f5f2eb;
+        --cream: #ede9de;
+        --gold: #b8924a;
+        --gold-pale: #e8d9bc;
+        --muted: #6b6456;
+        --rule: #d6cfbe;
+    }
+
+    .privacy-page {
+        background: var(--paper);
+        font-family: 'Source Serif 4', Georgia, serif;
+        color: var(--ink);
+        min-height: 100vh;
+    }
+
+    /* Hero header */
+    .privacy-hero {
+        background: var(--ink);
+        color: var(--paper);
+        padding: 4rem 2rem 3.5rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .privacy-hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient( 0deg, transparent, transparent 39px, rgba(255,255,255,0.03) 39px, rgba(255,255,255,0.03) 40px ), repeating-linear-gradient( 90deg, transparent, transparent 39px, rgba(255,255,255,0.03) 39px, rgba(255,255,255,0.03) 40px );
+        }
+
+    .privacy-hero-inner {
+        position: relative;
+        z-index: 1;
+        max-width: 640px;
+        margin: 0 auto;
+    }
+
+    .privacy-eyebrow {
+        font-family: 'Source Serif 4', serif;
+        font-size: 0.7rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--gold);
+        margin-bottom: 1rem;
+        font-weight: 600;
+    }
+
+    .privacy-title {
+        font-family: 'Playfair Display', Georgia, serif;
+        font-size: clamp(2.2rem, 5vw, 3.5rem);
+        font-weight: 700;
+        line-height: 1.15;
+        margin: 0 0 1.25rem;
+        letter-spacing: -0.01em;
+    }
+
+    .privacy-subtitle {
+        font-size: 0.9rem;
+        color: rgba(245, 242, 235, 0.6);
+        letter-spacing: 0.03em;
+        font-weight: 300;
+    }
+
+    /* Gold rule ornament */
+    .ornament {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin: 2.5rem 0;
+    }
+
+    .ornament-line {
+        flex: 1;
+        height: 1px;
+        background: var(--rule);
+    }
+
+    .ornament-diamond {
+        width: 8px;
+        height: 8px;
+        background: var(--gold);
+        transform: rotate(45deg);
+        flex-shrink: 0;
+    }
+
+    /* Content layout */
+    .privacy-container {
+        max-width: 740px;
+        margin: 0 auto;
+        padding: 3rem 2rem 5rem;
+    }
+
+    .privacy-intro {
+        font-size: 1.05rem;
+        line-height: 1.8;
+        color: var(--muted);
+        margin-bottom: 3rem;
+        font-weight: 300;
+        font-style: italic;
+    }
+
+    /* Section cards */
+    .privacy-section {
+        margin-bottom: 2.5rem;
+        padding-bottom: 2.5rem;
+        border-bottom: 1px solid var(--rule);
+    }
+
+        .privacy-section:last-of-type {
+            border-bottom: none;
+        }
+
+    .section-number {
+        font-family: 'Playfair Display', serif;
+        font-size: 0.7rem;
+        color: var(--gold);
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        display: block;
+        margin-bottom: 0.4rem;
+        font-weight: 400;
+    }
+
+    .section-heading {
+        font-family: 'Playfair Display', Georgia, serif;
+        font-size: 1.35rem;
+        font-weight: 700;
+        color: var(--ink);
+        margin: 0 0 1rem;
+        line-height: 1.3;
+    }
+
+    .privacy-section p {
+        font-size: 0.95rem;
+        line-height: 1.85;
+        color: #3a3530;
+        margin-bottom: 0.85rem;
+    }
+
+        .privacy-section p:last-child {
+            margin-bottom: 0;
+        }
+
+    .privacy-list {
+        list-style: none;
+        padding: 0;
+        margin: 0.75rem 0 0.85rem;
+    }
+
+        .privacy-list li {
+            font-size: 0.95rem;
+            line-height: 1.75;
+            color: #3a3530;
+            padding: 0.3rem 0 0.3rem 1.4rem;
+            position: relative;
+            border-bottom: 1px dashed var(--rule);
+        }
+
+            .privacy-list li:last-child {
+                border-bottom: none;
+            }
+
+            .privacy-list li::before {
+                content: '◆';
+                position: absolute;
+                left: 0;
+                color: var(--gold);
+                font-size: 0.45rem;
+                top: 0.65rem;
+            }
+
+    /* Contact callout */
+    .contact-callout {
+        background: var(--cream);
+        border-left: 3px solid var(--gold);
+        padding: 1.25rem 1.5rem;
+        margin-top: 1rem;
+        border-radius: 0 2px 2px 0;
+    }
+
+        .contact-callout p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: var(--muted);
+        }
+
+        .contact-callout a {
+            color: var(--gold);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+            .contact-callout a:hover {
+                text-decoration: underline;
+            }
+
+    /* Updated date stamp */
+    .date-stamp {
+        display: inline-block;
+        background: var(--gold-pale);
+        color: var(--muted);
+        font-size: 0.75rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        padding: 0.3rem 0.75rem;
+        border-radius: 2px;
+        margin-bottom: 2rem;
+        font-family: 'Source Serif 4', serif;
+    }
+
+    /* Back link */
+    .back-nav {
+        margin-top: 3rem;
+        padding-top: 2rem;
+        border-top: 1px solid var(--rule);
+        text-align: center;
+    }
+
+        .back-nav a {
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.82rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            transition: color 0.2s;
+        }
+
+            .back-nav a:hover {
+                color: var(--gold);
+            }
+
+    @@media (max-width: 580px) {
+        .privacy-hero {
+            padding: 3rem 1.25rem 2.5rem;
+        }
+
+        .privacy-container {
+            padding: 2rem 1.25rem 3rem;
+        }
+    }
+</style>
+
+<div class="privacy-page">
+
+    <div class="privacy-hero">
+        <div class="privacy-hero-inner">
+            <p class="privacy-eyebrow">Hotel System Industry</p>
+            <h1 class="privacy-title">Polityka<br><em>Prywatności</em></h1>
+            <p class="privacy-subtitle">Jak dbamy o Twoje dane osobowe</p>
+        </div>
+    </div>
+
+    <div class="privacy-container">
+
+        <span class="date-stamp">Ostatnia aktualizacja: Maj 2025</span>
+
+        <p class="privacy-intro">
+            Niniejsza Polityka Prywatności opisuje, w jaki sposób zbieramy,
+            wykorzystujemy i chronimy Twoje dane osobowe w związku z korzystaniem
+            z naszego systemu rezerwacji hotelowych. Prosimy o uważne zapoznanie
+            się z poniższymi informacjami.
+        </p>
+
+        <div class="ornament">
+            <div class="ornament-line"></div>
+            <div class="ornament-diamond"></div>
+            <div class="ornament-line"></div>
+        </div>
+
+        {{-- Section 1 --}}
+        <div class="privacy-section">
+            <span class="section-number">§ 01</span>
+            <h2 class="section-heading">Administrator Danych Osobowych</h2>
+            <p>
+                Administratorem Twoich danych osobowych jest Hotel System Industry,
+                z siedzibą w Polsce. Możesz skontaktować się z nami w każdej sprawie
+                dotyczącej przetwarzania Twoich danych.
+            </p>
+            <div class="contact-callout">
+                <p>Kontakt w sprawach ochrony danych: <a href="mailto:privacy@hotelsystem.pl">privacy@hotelsystem.pl</a></p>
+            </div>
+        </div>
+
+        {{-- Section 2 --}}
+        <div class="privacy-section">
+            <span class="section-number">§ 02</span>
+            <h2 class="section-heading">Jakie dane zbieramy</h2>
+            <p>W ramach świadczenia usług możemy zbierać następujące kategorie danych:</p>
+            <ul class="privacy-list">
+                <li>Dane identyfikacyjne – imię, nazwisko, adres e-mail</li>
+                <li>Dane kontaktowe – numer telefonu, adres korespondencyjny</li>
+                <li>Dane rezerwacyjne – daty pobytu, preferencje pokojowe, historia rezerwacji</li>
+                <li>Dane płatnicze – informacje niezbędne do realizacji transakcji (nie przechowujemy numerów kart)</li>
+                <li>Dane techniczne – adres IP, pliki cookie, dane przeglądarki</li>
+            </ul>
+        </div>
+
+        {{-- Section 3 --}}
+        <div class="privacy-section">
+            <span class="section-number">§ 03</span>
+            <h2 class="section-heading">Cel i podstawa przetwarzania</h2>
+            <p>Twoje dane przetwarzamy wyłącznie w określonych celach i na właściwych podstawach prawnych:</p>
+            <ul class="privacy-list">
+                <li>Realizacja rezerwacji i umów hotelowych (art. 6 ust. 1 lit. b RODO)</li>
+                <li>Wypełnienie obowiązków prawnych, np. podatkowych (art. 6 ust. 1 lit. c RODO)</li>
+                <li>Nasz prawnie uzasadniony interes – obsługa klienta, bezpieczeństwo systemu (art. 6 ust. 1 lit. f RODO)</li>
+                <li>Marketing i newsletter – wyłącznie na podstawie Twojej zgody (art. 6 ust. 1 lit. a RODO)</li>
+            </ul>
+            <p>Twoje dane są chronione przez rozporządzenie o ochronie danych osobowych GDPR 
+                (General Data Protection Regulation). Jest najbardziej rygorystycznym prawem 
+                dotyczącym prywatności i bezpieczeństwa na świecie.<br/><br/>
+                Przepisy ogólne i Akty prawne:
+            </p>
+            <ul class="privacy-list">
+                <li> Przepisy ogólne (art.1-4)</li>
+                <li> Artykuł 9 – Przetwarzanie szczególnych kategorii danych osobowych</li>
+                <li> Artykuł 16 – Prawo do sprostowania danych</li>
+                <li> Ustawa o ochronie danych osobowych z dnia 10 maja 2018 r.</li>
+                <li>
+                    Rozporządzenie Rady Ministrów z 20 marca 2019 r. w sprawie wzoru legitymacji służbowej pracownika Urzędu Ochrony Danych Osobowych.
+                </li>
+            </ul>
+        </div>
+
+        {{-- Section 4 --}}
+        <div class="privacy-section">
+            <span class="section-number">§ 04</span>
+            <h2 class="section-heading">Okres przechowywania danych</h2>
+            <p>
+                Dane osobowe przechowujemy przez okres niezbędny do realizacji celów,
+                w których zostały zebrane, a następnie przez czas wymagany przepisami prawa
+                (np. dokumentacja księgowa – 5 lat).
+            </p>
+            <p>
+                Dane przetwarzane na podstawie zgody usuwamy niezwłocznie po jej cofnięciu,
+                chyba że inny przepis prawa nakazuje ich dalsze przechowywanie.
+            </p>
+        </div>
+
+        {{-- Section 5 --}}
+        <div class="privacy-section">
+            <span class="section-number">§ 05</span>
+            <h2 class="section-heading">Twoje prawa</h2>
+            <p>Na podstawie RODO przysługują Ci następujące prawa:</p>
+            <ul class="privacy-list">
+                <li>Prawo dostępu do swoich danych oraz otrzymania ich kopii</li>
+                <li>Prawo do sprostowania (poprawiania) danych</li>
+                <li>Prawo do usunięcia danych („prawo do bycia zapomnianym")</li>
+                <li>Prawo do ograniczenia przetwarzania danych</li>
+                <li>Prawo do przenoszenia danych</li>
+                <li>Prawo do wniesienia sprzeciwu wobec przetwarzania</li>
+                <li>Prawo do cofnięcia zgody w dowolnym momencie</li>
+                <li>Prawo wniesienia skargi do Prezesa UODO (uodo.gov.pl)</li>
+            </ul>
+        </div>
+
+        {{-- Section 6 --}}
+        <div class="privacy-section">
+            <span class="section-number">§ 06</span>
+            <h2 class="section-heading">Pliki cookie</h2>
+            <p>
+                Nasza witryna korzysta z plików cookie w celu zapewnienia prawidłowego
+                działania serwisu, analizy ruchu oraz personalizacji treści. Możesz
+                w dowolnym momencie zmienić ustawienia cookie w przeglądarce.
+            </p>
+            <p>
+                Szczegółowe informacje o stosowanych przez nas plikach cookie znajdziesz
+                w naszej Polityce Cookie dostępnej na stronie głównej.
+            </p>
+        </div>
+
+        {{-- Section 7 --}}
+        <div class="privacy-section">
+            <span class="section-number">§ 07</span>
+            <h2 class="section-heading">Kontakt</h2>
+            <p>
+                W razie jakichkolwiek pytań dotyczących niniejszej polityki prywatności
+                lub sposobu przetwarzania Twoich danych, skontaktuj się z nami:
+            </p>
+            <div class="contact-callout">
+                <p>
+                    ✉ E-mail: <a href="mailto:privacy@hotelsystem.pl">privacy@hotelsystem.pl</a><br>
+                    ☎ Telefon: +48 22 000 00 00<br>
+                    ✦ Godziny pracy: pon.–pt. 9:00–17:00
+                </p>
+            </div>
+        </div>
+
+        <div class="ornament">
+            <div class="ornament-line"></div>
+            <div class="ornament-diamond"></div>
+            <div class="ornament-line"></div>
+        </div>
+
+        <div class="back-nav">
+            <a asp-action="Index" asp-controller="Hotels">&#8592; Powrót do strony głównej</a>
+        </div>
+
+    </div>
+</div>

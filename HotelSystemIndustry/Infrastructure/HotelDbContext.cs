@@ -17,36 +17,25 @@ namespace HotelSystemIndustry.Infrastructure
         {
             _configuration = conf;
         }
-
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             base.OnConfiguring(optionsBuilder);
+            Console.WriteLine(_configuration.GetConnectionString("HotelConnection"));
             optionsBuilder.UseNpgsql(_configuration.GetConnectionString("HotelConnection"));
 
             //Add-Migration InitialCreate
             //Update-Database
         }
-
-
         public virtual DbSet<Hotel> Hotels { get; set; }
         public virtual DbSet<Address> Addresses { get; set; }
         public virtual DbSet<Reservation> Reservations { get; set; } = default!;
         public virtual DbSet<EmployeeProfile> EmployeeProfiles { get; set; }
-
         public virtual DbSet<Guest> Guests { get; set; }
-
         public virtual DbSet<Invoice> Invoices { get; set; }
-
         public virtual DbSet<Payment> Payments { get; set; }
-
         public virtual DbSet<Phone> Phones { get; set; }
-
         public virtual DbSet<Raport> Raports { get; set; }
-
         public virtual DbSet<RaportPayment> RaportPayments { get; set; }
-
-
-
         public virtual DbSet<Room> Rooms { get; set; }
 
 
