@@ -14,7 +14,8 @@ namespace HotelSystemIndustry.Models.Trading
 
         public virtual SaleItem? Item { get; set; }
 
-        public Guid? MagazineId { get; set; }
+        [Required]
+        public Guid MagazineId { get; set; }
         public virtual ShopMagazine? Magazine { get; set; }
 
 
@@ -23,6 +24,11 @@ namespace HotelSystemIndustry.Models.Trading
 
         [Required, Range(typeof(uint), "0", "10000")]
         public uint Count { get; set; }
+
+        [DataType(DataType.Currency)]
+        [DisplayFormat(DataFormatString="{0:C2}")]
+        [Range(typeof(decimal), "0", "10000")]
+        public decimal Price { get; set; }
 
         [DataType(DataType.Date)]
         public DateTime? ExpireDate { get; set; } = null;

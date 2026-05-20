@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 
 namespace HotelSystemIndustry.Models.Kitchen
 {
@@ -10,6 +11,24 @@ namespace HotelSystemIndustry.Models.Kitchen
         * - ROOM_ORDER,
         * - TAKEAWAY_ORDER
         */
+    }
+
+
+    [PrimaryKey("OrderId", "ProductId")]
+    public class OrderProduct
+    {
+        [Required]
+        public Guid OrderId { get; set; }
+
+        public virtual Order? Order { get; set; }
+
+        [Required]
+        public Guid ProductId { get; set; }
+
+        public virtual KitchenProduct? Product { get; set; }
+
+
+        public int Count { get; set; }
     }
 
 
@@ -35,7 +54,7 @@ namespace HotelSystemIndustry.Models.Kitchen
         [Required, MaxLength(100, ErrorMessage = "Opis miejsca docelowego dostawy jest zbyt długi")]
         public required string DeliveryDestination { get; set; }
 
-        public virtual ICollection<KitchenProduct>? Products { get; set; }
+        public virtual ICollection<OrderProduct>? Products { get; set; }
     }
 
 }

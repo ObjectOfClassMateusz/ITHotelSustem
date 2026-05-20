@@ -4,3 +4,51 @@
     ViewBag.LowerNavPartial = "_TradingNavPartial";
 }
 
+
+<h1>Shop</h1>
+
+
+<div class="row justify-content-center my-4">
+
+    <div class="col-md-4 text-center my-2">
+        <a class="page-link text-dark" asp-action="SellOrRentItemsView">Sell/rent items</a>
+    </div>
+
+    <div class="col-md-4 text-center my-2">
+        <a class="page-link text-dark" asp-action="AcceptReturnView">Accept return</a>
+    </div>
+
+    <div class="col-md-4 text-center my-2">
+        <a class="page-link text-dark" asp-action="AcceptDeliveryView">Accept delivery</a>
+    </div>
+
+    <div class="col-md-4 text-center my-2">
+        <a class="page-link text-dark" asp-action="PruneExpiredItems">Prune expired items</a>
+    </div>
+
+</div>
+
+
+<h2>Management</h2>
+
+<hr />
+
+
+<ul>
+    <li>
+        <a asp-controller="SaleItemType" asp-action="Index">Types of items to sell</a>
+    </li>
+
+    <li>
+        <a asp-controller="SaleItem" asp-action="Index">Items to sell</a>
+    </li>
+
+    <li>
+        <a asp-controller="SaleItemInstance" asp-action="Index">Instances of items to sell</a>
+    </li>
+    
+    <li>
+        <a asp-controller="Purchase" asp-action="Index">Purchases</a>
+    </li>
+</ul>
+

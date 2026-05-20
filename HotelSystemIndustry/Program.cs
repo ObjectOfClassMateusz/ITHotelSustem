@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using System.Text.Json.Serialization;
 using HotelSystemIndustry.Infrastructure;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
@@ -7,6 +8,9 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+builder.Services.AddControllers().AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve);
+
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<HotelDbContext>();
 
@@ -45,6 +49,10 @@ builder.Services.AddSession();
 builder.Services.AddRazorPages();
 
 
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+
 var app = builder.Build();
 
 await DataSeeder.SeedDatabase(app.Services);
@@ -79,6 +87,13 @@ app.MapGet("users/me", async (ClaimsPrincipal claims, HotelDbContext context) =>
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Hotels}/{action=Index}/{id?}");
+
+app.UseSwagger();
+app.UseCors(options => options
+    .AllowAnyOrigin()
+    .AllowAnyMethod()
+    .AllowAnyHeader());
+app.UseSwaggerUI();
 
 app.MapRazorPages();
 

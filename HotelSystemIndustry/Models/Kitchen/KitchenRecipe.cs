@@ -23,8 +23,6 @@ namespace HotelSystemIndustry.Models.Kitchen
         * Dla artykułów dyskretnych można przechować po prostu liczbę całkowitą.
         */
         public decimal Count { get; set; }
-
-        public ArticleUnit Unit { get; set; }
     }
 
 

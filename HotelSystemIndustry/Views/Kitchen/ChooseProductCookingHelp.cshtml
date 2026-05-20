@@ -1,0 +1,81 @@
+@using HotelSystemIndustry.Models.Kitchen
+@using HotelSystemIndustry.ViewModels.Kitchen
+@model KitchenDeliveryArticleViewModel
+
+@{
+    ViewData["Title"] = "Cooking help";
+    ViewBag.LowerNavPartial = "_KitchenNavPartial";
+
+    var productsWithRecipes = (IList<ChooseProductCookingHelpViewModel>)ViewBag.ProductRecipes;
+}
+
+<h1>Cooking help</h1>
+<hr />
+
+<div class="container">
+
+    <form method="get">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Kitchen product</th>
+                    <th>Available recipes</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+            @foreach (var prod in productsWithRecipes)
+            {
+                <tr>
+                    <td>
+                        @prod.ProductName
+                    </td>
+                    <td>
+                        @for (var i = 0; i < prod.ProductRecipes.Count; i++)
+                        {
+                            var recipe = prod.ProductRecipes[i];
+
+                            <div class="row">
+                                <div class="col-md-3">
+                                    Recipe:
+                                    <ul>
+                                        @foreach (var ing in recipe.Ingredients!)
+                                        {
+                                            <li>@ing.Article!.Name</li>
+                                        }
+                                    </ul>
+                                </div>
+
+                                <div class="col-md-3 text-end my-auto">
+                                    <input type="submit" asp-action="CookWithRecipe" asp-route-id="@recipe.Id" class="btn btn-success my-2" value="Cook" />
+                                </div>
+
+                                @if (i+1 < prod.ProductRecipes.Count) {
+                                    <hr />
+                                }
+                            </div>
+                        }
+                    </td>
+                </tr>
+            }
+
+            </tbody>
+
+        </table>
+    </form>
+
+
+    <a asp-action="Index" asp-controller="Kitchen" class="btn btn-primary">Back</a> 
+
+</div>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial.cshtml");
+    }
+}
+

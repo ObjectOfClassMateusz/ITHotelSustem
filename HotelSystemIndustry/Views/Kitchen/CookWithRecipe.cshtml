@@ -1,0 +1,87 @@
+@using HotelSystemIndustry.Models.Kitchen
+@using HotelSystemIndustry.ViewModels.Kitchen
+@model KitchenRecipe
+
+@{
+    ViewData["Title"] = "Cook with recipe";
+    ViewBag.LowerNavPartial = "_KitchenNavPartial";
+}
+
+<h1>Cooking help for @Model.OutcomeProduct!.Name</h1>
+<hr />
+
+<div class="container">
+    <h2>Ingredients</h2>
+
+    
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Ingredient</th>
+                <th>Count</th>
+                <th>Storage</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+        @foreach (var ing in Model.Ingredients!)
+        {
+            <tr>
+                <td>
+                    @ing.Article!.Name
+                </td>
+                <td>
+                    @ing.Count @Html.DisplayFor(m => ing.Article.Unit)
+                </td>
+                <td>
+                    @for (var i = 0; i < ing.Article.Instances!.Count; i++) {
+                        var instance = ing.Article.Instances[i];
+
+                        var subviewData = new ViewDataDictionary(ViewData);
+                        subviewData.Add("RecipeId", Model.Id);
+                        subviewData.Add("Ingredient", ing);
+                        subviewData.Add("Instance", instance);
+                        await Html.RenderPartialAsync("CookWithRecipeInstancePartial", new CookWithRecipeTakeArticleViewModel{}, subviewData);
+
+                        @if (i + 1 < ing.Article!.Instances!.Count) {
+                            <hr />
+                        }
+                    }
+                </td>
+            </tr>
+        }
+
+        </tbody>
+    </table>
+
+    @if (!string.IsNullOrEmpty(ViewBag.ResultMessage)) {
+        <div class="text-danger my-4">@ViewBag.ResultMessage</div>
+    }
+
+
+    <h2>Recipe</h2>
+
+    <div class="panel panel-default my-4">
+        <div class="panel-body">
+            @Model.Content
+        </div>
+    </div>
+
+
+    <div class="my-4">
+        <a asp-action="ChooseProductCookingHelp" asp-controller="Kitchen" class="btn btn-primary">Ready</a> 
+    </div>
+
+</div>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial.cshtml");
+    }
+}
+
+
+

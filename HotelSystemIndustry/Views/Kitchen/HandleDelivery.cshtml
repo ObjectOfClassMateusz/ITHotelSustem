@@ -1,0 +1,86 @@
+@using HotelSystemIndustry.Models.Kitchen
+@using HotelSystemIndustry.ViewModels.Kitchen
+@model KitchenDeliveryArticleViewModel
+
+@{
+    ViewData["Title"] = "Handle Kitchen Articles Delivery";
+    ViewBag.LowerNavPartial = "_KitchenNavPartial";
+}
+
+<h1>Handle Kitchen Articles Delivery</h1>
+<hr />
+
+<div class="container">
+
+    <form method="post">
+
+        @for (int i = 0; i < Model.DeliveredArticles.Count; i++){
+            @Html.HiddenFor(m => m.DeliveredArticles[i].ArticleId)
+            @Html.HiddenFor(m => m.DeliveredArticles[i].ToStorageId)
+            @Html.HiddenFor(m => m.DeliveredArticles[i].AddCount)
+
+            var articleId = Model.DeliveredArticles[i].ArticleId;
+            var article = ((List<KitchenArticle>)ViewBag.Articles).FirstOrDefault(a => a.Id == articleId);
+            var articleName = article?.Name ?? "Invalid";
+            var articleUnit = article?.Unit ?? ArticleUnit.Pieces;
+            var storageId = Model.DeliveredArticles[i].ToStorageId;
+            var storageName = ((List<Storage>)ViewBag.Storages).FirstOrDefault(s => s.Id == storageId)?.Name ?? "Invalid";
+
+            <dl>
+                <dt>
+                    @Html.LabelFor(m => m.DeliveredArticles[i].ArticleId)
+                </dt>
+                <dd>
+                    @articleName
+                </dd>
+                <dt>
+                    @Html.LabelFor(m => m.DeliveredArticles[i].ToStorageId)
+                </dt>
+                <dd>
+                    @storageName
+                </dd>
+                <dt>
+                    @Html.LabelFor(m => m.DeliveredArticles[i].AddCount)
+                </dt>
+                <dd>
+                    @Model.DeliveredArticles[i].AddCount @articleUnit
+                </dd>
+            </dl>
+            <hr />
+        }
+
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <div class="form-group row align-items-center my-2">
+            <div class="col-md-2"><label asp-for="ToAdd.ArticleId" class="control-label"></label></div>
+            <div class="col-md-4"><select asp-for="ToAdd.ArticleId" asp-items="ViewBag.ArticlesSelectList" class="form-control"></select></div>
+            <span asp-validation-for="ToAdd.ArticleId" class="text-danger"></span>
+        </div>
+
+        <div class="form-group row align-items-center my-2">
+            <div class="col-md-2"><label asp-for="ToAdd.ToStorageId" class="control-label"></label></div>
+            <div class="col-md-4"><select asp-for="ToAdd.ToStorageId" asp-items="ViewBag.StorageSelectList" class="form-control"></select></div>
+            <span asp-validation-for="ToAdd.ToStorageId" class="text-danger"></span>
+        </div>
+
+        <div class="form-group row align-items-center my-2">
+            <div class="col-md-2"><label asp-for="ToAdd.AddCount" class="control-label"></label></div>
+            <div class="col-md-4"><input asp-for="ToAdd.AddCount" type="number" min="0" class="form-control" /></div>
+            <span asp-validation-for="ToAdd.AddCount" class="text-danger"></span>
+        </div>
+
+        <input type="submit" asp-action="AddDeliveryArticle" class="btn btn-primary" value="Register article" /><br />
+
+        <input type="submit" asp-action="RegisterDeliveredArticles" class="btn btn-success my-2" value="Finish" />
+    </form>
+
+</div>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial.cshtml");
+    }
+}
+

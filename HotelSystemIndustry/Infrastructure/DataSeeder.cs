@@ -51,6 +51,16 @@ public class DataSeeder
         await AddUserAsync(userManager, "maintainanceguy@maintainance.com", "Marek Niedzielski", "admin123$N", "MaintainanceEmployee");
         await AddUserAsync(userManager, "tradingperson@trading.com", "Orestes Niedzielski", "admin123$N", "TradingEmployee");
         await AddUserAsync(userManager, "recreationguy@recreation.com", "Sławomir Niedzielski", "admin123$N", "RecreationEmployee");
+
+        await AddUserAsync(userManager, "malwiech@wp.pl", "Małgorzata Wiech", "admin123$N", "HotelEmployee");
+        var malwiech = await userManager.FindByEmailAsync("malwiech@wp.pl");
+        if (malwiech != null)
+        {
+            await userManager.AddToRoleAsync(malwiech, "KitchenEmployee");
+            await userManager.AddToRoleAsync(malwiech, "MaintainanceEmployee");
+            await userManager.AddToRoleAsync(malwiech, "TradingEmployee");
+            await userManager.AddToRoleAsync(malwiech, "RecreationEmployee");
+        }
     }
 
 
@@ -114,6 +124,182 @@ public class DataSeeder
             {
                 Id = Guid.NewGuid(), Name = "Microphone", Value = "microphone", IsActive = true
             });
+
+            await context.SaveChangesAsync();
+        }
+
+        if (context.Equipment.Count() == 0)
+        {
+            context.Equipment.Add(new Equipment
+            {
+                Id = Guid.NewGuid(), Name = "MinBieda Video Projector", TypeId = context.EquipmentTypes.FirstOrDefault(t => t.Value == "video-projector")!.Id
+            });
+            context.Equipment.Add(new Equipment
+            {
+                Id = Guid.NewGuid(), Name = "MaxPro Video Projector", TypeId = context.EquipmentTypes.FirstOrDefault(t => t.Value == "video-projector")!.Id
+            });
+            context.Equipment.Add(new Equipment
+            {
+                Id = Guid.NewGuid(), Name = "AvgJoe Video Projector", TypeId = context.EquipmentTypes.FirstOrDefault(t => t.Value == "video-projector")!.Id
+            });
+            context.Equipment.Add(new Equipment
+            {
+                Id = Guid.NewGuid(), Name = "Harmann-Kardon Speaker", TypeId = context.EquipmentTypes.FirstOrDefault(t => t.Value == "hifi-speaker")!.Id
+            });
+            context.Equipment.Add(new Equipment
+            {
+                Id = Guid.NewGuid(), Name = "JBL Speaker", TypeId = context.EquipmentTypes.FirstOrDefault(t => t.Value == "hifi-speaker")!.Id
+            });
+            context.Equipment.Add(new Equipment
+            {
+                Id = Guid.NewGuid(), Name = "Universal temperature controller", TypeId = context.EquipmentTypes.FirstOrDefault(t => t.Value == "temperature-controller")!.Id
+            });
+            context.Equipment.Add(new Equipment
+            {
+                Id = Guid.NewGuid(), Name = "Bluetooth microphone", TypeId = context.EquipmentTypes.FirstOrDefault(t => t.Value == "microphone")!.Id
+            });
+            context.Equipment.Add(new Equipment
+            {
+                Id = Guid.NewGuid(), Name = "Cable microphone", TypeId = context.EquipmentTypes.FirstOrDefault(t => t.Value == "microphone")!.Id
+            });
+
+            await context.SaveChangesAsync();
+        }
+
+
+        if (context.EventHalls.Count() == 0)
+        {
+            context.EventHalls.Add(new EventHall
+            {
+                Id = Guid.NewGuid(), Name = "Conference Hall", NumMaxGuests = 300, ReservationPrice = 200.0m
+            });
+            context.EventHalls.Add(new EventHall
+            {
+                Id = Guid.NewGuid(), Name = "Banquette Hall", NumMaxGuests = 150, ReservationPrice = 150.0m
+            });
+            context.EventHalls.Add(new EventHall
+            {
+                Id = Guid.NewGuid(), Name = "Main Assembly Hall", NumMaxGuests = 500, ReservationPrice = 300.0m
+            });
+
+            await context.SaveChangesAsync();
+        }
+
+
+        if (context.EquipmentInstances.Count() == 0)
+        {
+            context.EquipmentInstances.Add(new EquipmentInstance
+            {
+                Id = Guid.NewGuid(), EquipmentId = context.Equipment.FirstOrDefault(e => e.Name == "MinBieda Video Projector")!.Id,
+                EventHallId = context.EventHalls.FirstOrDefault(eh => eh.Name == "Banquette Hall")!.Id, ReservationPrice = 10.0m
+            });
+            context.EquipmentInstances.Add(new EquipmentInstance
+            {
+                Id = Guid.NewGuid(), EquipmentId = context.Equipment.FirstOrDefault(e => e.Name == "MinBieda Video Projector")!.Id,
+                EventHallId = context.EventHalls.FirstOrDefault(eh => eh.Name == "Conference Hall")!.Id, ReservationPrice = 10.0m
+            });
+            context.EquipmentInstances.Add(new EquipmentInstance
+            {
+                Id = Guid.NewGuid(), EquipmentId = context.Equipment.FirstOrDefault(e => e.Name == "MaxPro Video Projector")!.Id,
+                EventHallId = context.EventHalls.FirstOrDefault(eh => eh.Name == "Conference Hall")!.Id, ReservationPrice = 60.0m
+            });
+            context.EquipmentInstances.Add(new EquipmentInstance
+            {
+                Id = Guid.NewGuid(), EquipmentId = context.Equipment.FirstOrDefault(e => e.Name == "AvgJoe Video Projector")!.Id,
+                EventHallId = context.EventHalls.FirstOrDefault(eh => eh.Name == "Main Assembly Hall")!.Id, ReservationPrice = 30.0m
+            });
+            context.EquipmentInstances.Add(new EquipmentInstance
+            {
+                Id = Guid.NewGuid(), EquipmentId = context.Equipment.FirstOrDefault(e => e.Name == "MaxPro Video Projector")!.Id,
+                EventHallId = context.EventHalls.FirstOrDefault(eh => eh.Name == "Main Assembly Hall")!.Id, ReservationPrice = 60.0m
+            });
+            context.EquipmentInstances.Add(new EquipmentInstance
+            {
+                Id = Guid.NewGuid(), EquipmentId = context.Equipment.FirstOrDefault(e => e.Name == "Harmann-Kardon Speaker")!.Id,
+                EventHallId = context.EventHalls.FirstOrDefault(eh => eh.Name == "Banquette Hall")!.Id, ReservationPrice = 50.0m
+            });
+            context.EquipmentInstances.Add(new EquipmentInstance
+            {
+                Id = Guid.NewGuid(), EquipmentId = context.Equipment.FirstOrDefault(e => e.Name == "Harmann-Kardon Speaker")!.Id,
+                EventHallId = context.EventHalls.FirstOrDefault(eh => eh.Name == "Banquette Hall")!.Id, ReservationPrice = 50.0m
+            });
+            context.EquipmentInstances.Add(new EquipmentInstance
+            {
+                Id = Guid.NewGuid(), EquipmentId = context.Equipment.FirstOrDefault(e => e.Name == "Harmann-Kardon Speaker")!.Id,
+                EventHallId = context.EventHalls.FirstOrDefault(eh => eh.Name == "Main Assembly Hall")!.Id, ReservationPrice = 50.0m
+            });
+            context.EquipmentInstances.Add(new EquipmentInstance
+            {
+                Id = Guid.NewGuid(), EquipmentId = context.Equipment.FirstOrDefault(e => e.Name == "Harmann-Kardon Speaker")!.Id,
+                EventHallId = context.EventHalls.FirstOrDefault(eh => eh.Name == "Main Assembly Hall")!.Id, ReservationPrice = 50.0m
+            });
+            context.EquipmentInstances.Add(new EquipmentInstance
+            {
+                Id = Guid.NewGuid(), EquipmentId = context.Equipment.FirstOrDefault(e => e.Name == "Harmann-Kardon Speaker")!.Id,
+                EventHallId = context.EventHalls.FirstOrDefault(eh => eh.Name == "Main Assembly Hall")!.Id, ReservationPrice = 60.0m
+            });
+            context.EquipmentInstances.Add(new EquipmentInstance
+            {
+                Id = Guid.NewGuid(), EquipmentId = context.Equipment.FirstOrDefault(e => e.Name == "Harmann-Kardon Speaker")!.Id,
+                EventHallId = context.EventHalls.FirstOrDefault(eh => eh.Name == "Main Assembly Hall")!.Id, ReservationPrice = 60.0m
+            });
+            context.EquipmentInstances.Add(new EquipmentInstance
+            {
+                Id = Guid.NewGuid(), EquipmentId = context.Equipment.FirstOrDefault(e => e.Name == "JBL Speaker")!.Id,
+                EventHallId = context.EventHalls.FirstOrDefault(eh => eh.Name == "Conference Hall")!.Id, ReservationPrice = 40.0m
+            });
+            context.EquipmentInstances.Add(new EquipmentInstance
+            {
+                Id = Guid.NewGuid(), EquipmentId = context.Equipment.FirstOrDefault(e => e.Name == "JBL Speaker")!.Id,
+                EventHallId = context.EventHalls.FirstOrDefault(eh => eh.Name == "Conference Hall")!.Id, ReservationPrice = 40.0m
+            });
+            context.EquipmentInstances.Add(new EquipmentInstance
+            {
+                Id = Guid.NewGuid(), EquipmentId = context.Equipment.FirstOrDefault(e => e.Name == "Universal temperature controller")!.Id,
+                EventHallId = context.EventHalls.FirstOrDefault(eh => eh.Name == "Conference Hall")!.Id, ReservationPrice = 15.0m
+            });
+            context.EquipmentInstances.Add(new EquipmentInstance
+            {
+                Id = Guid.NewGuid(), EquipmentId = context.Equipment.FirstOrDefault(e => e.Name == "Universal temperature controller")!.Id,
+                EventHallId = context.EventHalls.FirstOrDefault(eh => eh.Name == "Banquette Hall")!.Id, ReservationPrice = 25.0m
+            });
+            context.EquipmentInstances.Add(new EquipmentInstance
+            {
+                Id = Guid.NewGuid(), EquipmentId = context.Equipment.FirstOrDefault(e => e.Name == "Universal temperature controller")!.Id,
+                EventHallId = context.EventHalls.FirstOrDefault(eh => eh.Name == "Main Assembly Hall")!.Id, ReservationPrice = 20.0m
+            });
+            context.EquipmentInstances.Add(new EquipmentInstance
+            {
+                Id = Guid.NewGuid(), EquipmentId = context.Equipment.FirstOrDefault(e => e.Name == "Cable microphone")!.Id,
+                EventHallId = context.EventHalls.FirstOrDefault(eh => eh.Name == "Conference Hall")!.Id, ReservationPrice = 5.99m
+            });
+            context.EquipmentInstances.Add(new EquipmentInstance
+            {
+                Id = Guid.NewGuid(), EquipmentId = context.Equipment.FirstOrDefault(e => e.Name == "Cable microphone")!.Id,
+                EventHallId = context.EventHalls.FirstOrDefault(eh => eh.Name == "Main Assembly Hall")!.Id, ReservationPrice = 5.99m
+            });
+            context.EquipmentInstances.Add(new EquipmentInstance
+            {
+                Id = Guid.NewGuid(), EquipmentId = context.Equipment.FirstOrDefault(e => e.Name == "Bluetooth microphone")!.Id,
+                EventHallId = context.EventHalls.FirstOrDefault(eh => eh.Name == "Banquette Hall")!.Id, ReservationPrice = 7.99m
+            });
+            context.EquipmentInstances.Add(new EquipmentInstance
+            {
+                Id = Guid.NewGuid(), EquipmentId = context.Equipment.FirstOrDefault(e => e.Name == "Bluetooth microphone")!.Id,
+                EventHallId = context.EventHalls.FirstOrDefault(eh => eh.Name == "Main Assembly Hall")!.Id, ReservationPrice = 7.99m
+            });
+            context.EquipmentInstances.Add(new EquipmentInstance
+            {
+                Id = Guid.NewGuid(), EquipmentId = context.Equipment.FirstOrDefault(e => e.Name == "Bluetooth microphone")!.Id,
+                EventHallId = context.EventHalls.FirstOrDefault(eh => eh.Name == "Conference Hall")!.Id, ReservationPrice = 7.99m
+            });
+            context.EquipmentInstances.Add(new EquipmentInstance
+            {
+                Id = Guid.NewGuid(), EquipmentId = context.Equipment.FirstOrDefault(e => e.Name == "Bluetooth microphone")!.Id,
+                EventHallId = context.EventHalls.FirstOrDefault(eh => eh.Name == "Conference Hall")!.Id, ReservationPrice = 7.99m
+            });
+
+            await context.SaveChangesAsync();
         }
 
 
@@ -139,6 +325,8 @@ public class DataSeeder
             {
                 Id = Guid.NewGuid(), Name = "Finished", Value = "finished", IsActive = true
             });
+
+            await context.SaveChangesAsync();
         }
 
         if (context.EventTypes.Count() == 0)
@@ -171,6 +359,8 @@ public class DataSeeder
             {
                 Id = Guid.NewGuid(), Name = "Name day", Value = "name-day", IsActive = true
             });
+
+            await context.SaveChangesAsync();
         }
     }
 
@@ -188,6 +378,10 @@ public class DataSeeder
             });
             context.KitchenArticleTypes.Add(new KitchenArticleType
             {
+                Id = Guid.NewGuid(), Name = "Discrete article", Value = "discrete", IsActive = true
+            });
+            context.KitchenArticleTypes.Add(new KitchenArticleType
+            {
                 Id = Guid.NewGuid(), Name = "Liquid", Value = "liquid", IsActive = true
             });
             context.KitchenArticleTypes.Add(new KitchenArticleType
@@ -202,10 +396,8 @@ public class DataSeeder
             {
                 Id = Guid.NewGuid(), Name = "Meat", Value = "meat", IsActive = true
             });
-            context.KitchenArticleTypes.Add(new KitchenArticleType
-            {
-                Id = Guid.NewGuid(), Name = "Mushroom", Value = "mushroom", IsActive = true
-            });
+
+            await context.SaveChangesAsync();
         }
 
         if (context.KitchenOrderTypes.Count() == 0)
@@ -223,6 +415,450 @@ public class DataSeeder
                 Id = Guid.NewGuid(), Name = "Takeaway order", Value = "takeaway-order", IsActive = true
             });
         }
+
+        if (context.KitchenArticles.Count() == 0)
+        {
+            context.KitchenArticles.Add(new KitchenArticle
+            {
+                Id = Guid.NewGuid(), Name = "Chicken meat", TypeId = context.KitchenArticleTypes.FirstOrDefault(t => t.Value == "meat")!.Id, Unit = ArticleUnit.Kg
+            });
+            context.KitchenArticles.Add(new KitchenArticle
+            {
+                Id = Guid.NewGuid(), Name = "Beef", TypeId = context.KitchenArticleTypes.FirstOrDefault(t => t.Value == "meat")!.Id, Unit = ArticleUnit.Kg
+            });
+            context.KitchenArticles.Add(new KitchenArticle
+            {
+                Id = Guid.NewGuid(), Name = "Pork", TypeId = context.KitchenArticleTypes.FirstOrDefault(t => t.Value == "meat")!.Id, Unit = ArticleUnit.Kg
+            });
+            context.KitchenArticles.Add(new KitchenArticle
+            {
+                Id = Guid.NewGuid(), Name = "Chickpea", TypeId = context.KitchenArticleTypes.FirstOrDefault(t => t.Value == "loose")!.Id, Unit = ArticleUnit.Kg
+            });
+            context.KitchenArticles.Add(new KitchenArticle
+            {
+                Id = Guid.NewGuid(), Name = "Italian wine", TypeId = context.KitchenArticleTypes.FirstOrDefault(t => t.Value == "liquid")!.Id, Unit = ArticleUnit.Liters
+            });
+            context.KitchenArticles.Add(new KitchenArticle
+            {
+                Id = Guid.NewGuid(), Name = "Olive oil", TypeId = context.KitchenArticleTypes.FirstOrDefault(t => t.Value == "liquid")!.Id, Unit = ArticleUnit.Liters
+            });
+            context.KitchenArticles.Add(new KitchenArticle
+            {
+                Id = Guid.NewGuid(), Name = "Beer", TypeId = context.KitchenArticleTypes.FirstOrDefault(t => t.Value == "liquid")!.Id, Unit = ArticleUnit.Liters
+            });
+            context.KitchenArticles.Add(new KitchenArticle
+            {
+                Id = Guid.NewGuid(), Name = "Powder of beer flavour", TypeId = context.KitchenArticleTypes.FirstOrDefault(t => t.Value == "loose")!.Id, Unit = ArticleUnit.Kg
+            });
+            context.KitchenArticles.Add(new KitchenArticle
+            {
+                Id = Guid.NewGuid(), Name = "Egg", TypeId = context.KitchenArticleTypes.FirstOrDefault(t => t.Value == "discrete")!.Id, Unit = ArticleUnit.Pieces
+            });
+            context.KitchenArticles.Add(new KitchenArticle
+            {
+                Id = Guid.NewGuid(), Name = "Salad", TypeId = context.KitchenArticleTypes.FirstOrDefault(t => t.Value == "vegetable")!.Id, Unit = ArticleUnit.Pieces
+            });
+            context.KitchenArticles.Add(new KitchenArticle
+            {
+                Id = Guid.NewGuid(), Name = "Apple", TypeId = context.KitchenArticleTypes.FirstOrDefault(t => t.Value == "fruit")!.Id, Unit = ArticleUnit.Pieces
+            });
+            context.KitchenArticles.Add(new KitchenArticle
+            {
+                Id = Guid.NewGuid(), Name = "Wheat", TypeId = context.KitchenArticleTypes.FirstOrDefault(t => t.Value == "loose")!.Id, Unit = ArticleUnit.Kg
+            });
+            context.KitchenArticles.Add(new KitchenArticle
+            {
+                Id = Guid.NewGuid(), Name = "Potato", TypeId = context.KitchenArticleTypes.FirstOrDefault(t => t.Value == "vegetable")!.Id, Unit = ArticleUnit.Pieces
+            });
+            context.KitchenArticles.Add(new KitchenArticle
+            {
+                Id = Guid.NewGuid(), Name = "Pack of nuddles", TypeId = context.KitchenArticleTypes.FirstOrDefault(t => t.Value == "packed")!.Id, Unit = ArticleUnit.Pieces
+            });
+
+            await context.SaveChangesAsync();
+        }
+
+        if (context.KitchenStorages.Count() == 0)
+        {
+            context.KitchenStorages.Add(new Storage
+            {
+                Id = Guid.NewGuid(), Name = "Fridge", Location = "Kitchen"
+            });
+            context.KitchenStorages.Add(new Storage
+            {
+                Id = Guid.NewGuid(), Name = "Basement Storage", Location = "Hotel basement"
+            });
+
+            await context.SaveChangesAsync();
+        }
+
+        if (context.KitchenArticleInstances.Count() == 0)
+        {
+            context.KitchenArticleInstances.Add(new ArticleInstance
+            {
+                Id = Guid.NewGuid(),
+                ArticleId = context.KitchenArticles.FirstOrDefault(a => a.Name == "Chicken meat")!.Id,
+                StorageId = context.KitchenStorages.FirstOrDefault(s => s.Name == "Fridge")!.Id,
+                Count = 3
+            });
+            context.KitchenArticleInstances.Add(new ArticleInstance
+            {
+                Id = Guid.NewGuid(),
+                ArticleId = context.KitchenArticles.FirstOrDefault(a => a.Name == "Beef")!.Id,
+                StorageId = context.KitchenStorages.FirstOrDefault(s => s.Name == "Fridge")!.Id,
+                Count = 2
+            });
+            context.KitchenArticleInstances.Add(new ArticleInstance
+            {
+                Id = Guid.NewGuid(),
+                ArticleId = context.KitchenArticles.FirstOrDefault(a => a.Name == "Pork")!.Id,
+                StorageId = context.KitchenStorages.FirstOrDefault(s => s.Name == "Fridge")!.Id,
+                Count = 2
+            });
+            context.KitchenArticleInstances.Add(new ArticleInstance
+            {
+                Id = Guid.NewGuid(),
+                ArticleId = context.KitchenArticles.FirstOrDefault(a => a.Name == "Olive oil")!.Id,
+                StorageId = context.KitchenStorages.FirstOrDefault(s => s.Name == "Fridge")!.Id,
+                Count = 4
+            });
+            context.KitchenArticleInstances.Add(new ArticleInstance
+            {
+                Id = Guid.NewGuid(),
+                ArticleId = context.KitchenArticles.FirstOrDefault(a => a.Name == "Egg")!.Id,
+                StorageId = context.KitchenStorages.FirstOrDefault(s => s.Name == "Fridge")!.Id,
+                Count = 36
+            });
+            context.KitchenArticleInstances.Add(new ArticleInstance
+            {
+                Id = Guid.NewGuid(),
+                ArticleId = context.KitchenArticles.FirstOrDefault(a => a.Name == "Salad")!.Id,
+                StorageId = context.KitchenStorages.FirstOrDefault(s => s.Name == "Fridge")!.Id,
+                Count = 4
+            });
+            context.KitchenArticleInstances.Add(new ArticleInstance
+            {
+                Id = Guid.NewGuid(),
+                ArticleId = context.KitchenArticles.FirstOrDefault(a => a.Name == "Beer")!.Id,
+                StorageId = context.KitchenStorages.FirstOrDefault(s => s.Name == "Fridge")!.Id,
+                Count = 24
+            });
+            context.KitchenArticleInstances.Add(new ArticleInstance
+            {
+                Id = Guid.NewGuid(),
+                ArticleId = context.KitchenArticles.FirstOrDefault(a => a.Name == "Chickpea")!.Id,
+                StorageId = context.KitchenStorages.FirstOrDefault(s => s.Name == "Fridge")!.Id,
+                Count = 10
+            });
+
+            context.KitchenArticleInstances.Add(new ArticleInstance
+            {
+                Id = Guid.NewGuid(),
+                ArticleId = context.KitchenArticles.FirstOrDefault(a => a.Name == "Wheat")!.Id,
+                StorageId = context.KitchenStorages.FirstOrDefault(s => s.Name == "Basement Storage")!.Id,
+                Count = 40
+            });
+            context.KitchenArticleInstances.Add(new ArticleInstance
+            {
+                Id = Guid.NewGuid(),
+                ArticleId = context.KitchenArticles.FirstOrDefault(a => a.Name == "Egg")!.Id,
+                StorageId = context.KitchenStorages.FirstOrDefault(s => s.Name == "Basement Storage")!.Id,
+                Count = 100
+            });
+            context.KitchenArticleInstances.Add(new ArticleInstance
+            {
+                Id = Guid.NewGuid(),
+                ArticleId = context.KitchenArticles.FirstOrDefault(a => a.Name == "Italian wine")!.Id,
+                StorageId = context.KitchenStorages.FirstOrDefault(s => s.Name == "Basement Storage")!.Id,
+                Count = 25
+            });
+            context.KitchenArticleInstances.Add(new ArticleInstance
+            {
+                Id = Guid.NewGuid(),
+                ArticleId = context.KitchenArticles.FirstOrDefault(a => a.Name == "Pack of nuddles")!.Id,
+                StorageId = context.KitchenStorages.FirstOrDefault(s => s.Name == "Basement Storage")!.Id,
+                Count = 15
+            });
+            context.KitchenArticleInstances.Add(new ArticleInstance
+            {
+                Id = Guid.NewGuid(),
+                ArticleId = context.KitchenArticles.FirstOrDefault(a => a.Name == "Potato")!.Id,
+                StorageId = context.KitchenStorages.FirstOrDefault(s => s.Name == "Basement Storage")!.Id,
+                Count = 42
+            });
+            context.KitchenArticleInstances.Add(new ArticleInstance
+            {
+                Id = Guid.NewGuid(),
+                ArticleId = context.KitchenArticles.FirstOrDefault(a => a.Name == "Olive oil")!.Id,
+                StorageId = context.KitchenStorages.FirstOrDefault(s => s.Name == "Basement Storage")!.Id,
+                Count = 8
+            });
+            context.KitchenArticleInstances.Add(new ArticleInstance
+            {
+                Id = Guid.NewGuid(),
+                ArticleId = context.KitchenArticles.FirstOrDefault(a => a.Name == "Apple")!.Id,
+                StorageId = context.KitchenStorages.FirstOrDefault(s => s.Name == "Basement Storage")!.Id,
+                Count = 12
+            });
+            context.KitchenArticleInstances.Add(new ArticleInstance
+            {
+                Id = Guid.NewGuid(),
+                ArticleId = context.KitchenArticles.FirstOrDefault(a => a.Name == "Chickpea")!.Id,
+                StorageId = context.KitchenStorages.FirstOrDefault(s => s.Name == "Basement Storage")!.Id,
+                Count = 15
+            });
+            context.KitchenArticleInstances.Add(new ArticleInstance
+            {
+                Id = Guid.NewGuid(),
+                ArticleId = context.KitchenArticles.FirstOrDefault(a => a.Name == "Powder of beer flavour")!.Id,
+                StorageId = context.KitchenStorages.FirstOrDefault(s => s.Name == "Basement Storage")!.Id,
+                Count = 30
+            });
+            context.KitchenArticleInstances.Add(new ArticleInstance
+            {
+                Id = Guid.NewGuid(),
+                ArticleId = context.KitchenArticles.FirstOrDefault(a => a.Name == "Pork")!.Id,
+                StorageId = context.KitchenStorages.FirstOrDefault(s => s.Name == "Basement Storage")!.Id,
+                Count = 7
+            });
+            context.KitchenArticleInstances.Add(new ArticleInstance
+            {
+                Id = Guid.NewGuid(),
+                ArticleId = context.KitchenArticles.FirstOrDefault(a => a.Name == "Beef")!.Id,
+                StorageId = context.KitchenStorages.FirstOrDefault(s => s.Name == "Basement Storage")!.Id,
+                Count = 6
+            });
+            context.KitchenArticleInstances.Add(new ArticleInstance
+            {
+                Id = Guid.NewGuid(),
+                ArticleId = context.KitchenArticles.FirstOrDefault(a => a.Name == "Chicken meat")!.Id,
+                StorageId = context.KitchenStorages.FirstOrDefault(s => s.Name == "Basement Storage")!.Id,
+                Count = 22
+            });
+
+            await context.SaveChangesAsync();
+        }
+
+        if (context.KitchenProducts.Count() == 0 &&
+            context.KitchenRecipes.Count() == 0)
+        {
+            Guid chickenSoupId = Guid.NewGuid();
+            Guid porkchopId = Guid.NewGuid();
+            Guid chickpeaSaladId = Guid.NewGuid();
+            Guid burgerId = Guid.NewGuid();
+            Guid friesId = Guid.NewGuid();
+            Guid waterId = Guid.NewGuid();
+            Guid wineId = Guid.NewGuid();
+            Guid pancakesId = Guid.NewGuid();
+            Guid pancakes0RecipeId = Guid.NewGuid();
+            Guid pancakes1RecipeId = Guid.NewGuid();
+
+            context.KitchenProducts.Add(new KitchenProduct
+            {
+                Id = chickenSoupId, Name = "Chicken Soup", ContainsAlcohol = false, Price = 9.0m
+            });
+            context.KitchenProducts.Add(new KitchenProduct
+            {
+                Id = porkchopId, Name = "Pork chop", ContainsAlcohol = false, Price = 23.0m
+            });
+            context.KitchenProducts.Add(new KitchenProduct
+            {
+                Id = chickpeaSaladId, Name = "Chickpea Salad", ContainsAlcohol = false, Price = 14.0m
+            });
+            context.KitchenProducts.Add(new KitchenProduct
+            {
+                Id = burgerId, Name = "Burger", ContainsAlcohol = false, Price = 19.99m
+            });
+            context.KitchenProducts.Add(new KitchenProduct
+            {
+                Id = friesId, Name = "Fries", ContainsAlcohol = false, Price = 9.99m
+            });
+            context.KitchenProducts.Add(new KitchenProduct
+            {
+                Id = waterId, Name = "Water", ContainsAlcohol = false, Price = 5.99m
+            });
+            context.KitchenProducts.Add(new KitchenProduct
+            {
+                Id = wineId, Name = "Wine", ContainsAlcohol = true, Price = 22.99m
+            });
+            context.KitchenProducts.Add(new KitchenProduct
+            {
+                Id = pancakesId, Name = "Pancakes with beer", ContainsAlcohol = true, Price = 14.99m
+            });
+
+            context.KitchenRecipes.Add(new KitchenRecipe
+            {
+                Id = Guid.NewGuid(), Content = "Wrzucić kurę do garnka i gotować przez 40 minut.", OutcomeProductId = chickenSoupId
+            });
+            context.KitchenRecipes.Add(new KitchenRecipe
+            {
+                Id = Guid.NewGuid(), Content = "Woźmie zimnioki, a obierze je. Woźmie umyje. Na ruszt wrzuci i upiecze, a miukkie budo. Podowat' z widłami do jezenia dla ślachcica.", OutcomeProductId = porkchopId
+            });
+            context.KitchenRecipes.Add(new KitchenRecipe
+            {
+                Id = Guid.NewGuid(), Content = "Niech kret ugotuje Ci kapustę. Zawijaj masę ziemną w liście i gotuj w garnku przez 2 godziny.", OutcomeProductId = chickpeaSaladId
+            });
+            context.KitchenRecipes.Add(new KitchenRecipe
+            {
+                Id = Guid.NewGuid(), Content = "Zamknąć w bułkę smażony kotlet.", OutcomeProductId = burgerId
+            });
+            context.KitchenRecipes.Add(new KitchenRecipe
+            {
+                Id = Guid.NewGuid(), Content = "Pokroić zimnioki. Zasmażać zanużone w oleju palmowym.", OutcomeProductId = friesId
+            });
+            context.KitchenRecipes.Add(new KitchenRecipe
+            {
+                Id = Guid.NewGuid(), Content = "Nalać wina do lampki.", OutcomeProductId = wineId
+            });
+            context.KitchenRecipes.Add(new KitchenRecipe
+            {
+                Id = pancakes0RecipeId, Content = "Smażyć ciasto na oleju z piwem", OutcomeProductId = pancakesId
+            });
+            context.KitchenRecipes.Add(new KitchenRecipe
+            {
+                Id = pancakes1RecipeId, Content = "Dodać sproszkowane piwo do ciasta. Dokładnie wymieszać. Smażyć pół godziny.", OutcomeProductId = pancakesId
+            });
+
+
+            await context.SaveChangesAsync();
+
+
+            context.KitchenRecipeIngredients.Add(new KitchenRecipeIngredient
+            {
+                RecipeId = context.KitchenRecipes.FirstOrDefault(r => r.OutcomeProductId == chickenSoupId)!.Id,
+                ArticleId = context.KitchenArticles.FirstOrDefault(a => a.Name == "Chicken meat")!.Id,
+                Count = 0.5m
+            });
+            context.KitchenRecipeIngredients.Add(new KitchenRecipeIngredient
+            {
+                RecipeId = context.KitchenRecipes.FirstOrDefault(r => r.OutcomeProductId == chickenSoupId)!.Id,
+                ArticleId = context.KitchenArticles.FirstOrDefault(a => a.Name == "Pack of nuddles")!.Id,
+                Count = 1
+            });
+            context.KitchenRecipeIngredients.Add(new KitchenRecipeIngredient
+            {
+                RecipeId = context.KitchenRecipes.FirstOrDefault(r => r.OutcomeProductId == chickenSoupId)!.Id,
+                ArticleId = context.KitchenArticles.FirstOrDefault(a => a.Name == "Olive oil")!.Id,
+                Count = 0.1m
+            });
+
+            context.KitchenRecipeIngredients.Add(new KitchenRecipeIngredient
+            {
+                RecipeId = context.KitchenRecipes.FirstOrDefault(r => r.OutcomeProductId == porkchopId)!.Id,
+                ArticleId = context.KitchenArticles.FirstOrDefault(a => a.Name == "Beef")!.Id,
+                Count = 1.5m
+            });
+            context.KitchenRecipeIngredients.Add(new KitchenRecipeIngredient
+            {
+                RecipeId = context.KitchenRecipes.FirstOrDefault(r => r.OutcomeProductId == porkchopId)!.Id,
+                ArticleId = context.KitchenArticles.FirstOrDefault(a => a.Name == "Potato")!.Id,
+                Count = 3
+            });
+            context.KitchenRecipeIngredients.Add(new KitchenRecipeIngredient
+            {
+                RecipeId = context.KitchenRecipes.FirstOrDefault(r => r.OutcomeProductId == porkchopId)!.Id,
+                ArticleId = context.KitchenArticles.FirstOrDefault(a => a.Name == "Olive oil")!.Id,
+                Count = 0.1m
+            });
+
+            context.KitchenRecipeIngredients.Add(new KitchenRecipeIngredient
+            {
+                RecipeId = context.KitchenRecipes.FirstOrDefault(r => r.OutcomeProductId == chickpeaSaladId)!.Id,
+                ArticleId = context.KitchenArticles.FirstOrDefault(a => a.Name == "Chickpea")!.Id,
+                Count = 0.4m
+            });
+            context.KitchenRecipeIngredients.Add(new KitchenRecipeIngredient
+            {
+                RecipeId = context.KitchenRecipes.FirstOrDefault(r => r.OutcomeProductId == chickpeaSaladId)!.Id,
+                ArticleId = context.KitchenArticles.FirstOrDefault(a => a.Name == "Salad")!.Id,
+                Count = 1
+            });
+
+            context.KitchenRecipeIngredients.Add(new KitchenRecipeIngredient
+            {
+                RecipeId = context.KitchenRecipes.FirstOrDefault(r => r.OutcomeProductId == burgerId)!.Id,
+                ArticleId = context.KitchenArticles.FirstOrDefault(a => a.Name == "Beef")!.Id,
+                Count = 0.4m
+            });
+            context.KitchenRecipeIngredients.Add(new KitchenRecipeIngredient
+            {
+                RecipeId = context.KitchenRecipes.FirstOrDefault(r => r.OutcomeProductId == burgerId)!.Id,
+                ArticleId = context.KitchenArticles.FirstOrDefault(a => a.Name == "Salad")!.Id,
+                Count = 1
+            });
+
+            context.KitchenRecipeIngredients.Add(new KitchenRecipeIngredient
+            {
+                RecipeId = context.KitchenRecipes.FirstOrDefault(r => r.OutcomeProductId == friesId)!.Id,
+                ArticleId = context.KitchenArticles.FirstOrDefault(a => a.Name == "Potato")!.Id,
+                Count = 3
+            });
+            context.KitchenRecipeIngredients.Add(new KitchenRecipeIngredient
+            {
+                RecipeId = context.KitchenRecipes.FirstOrDefault(r => r.OutcomeProductId == friesId)!.Id,
+                ArticleId = context.KitchenArticles.FirstOrDefault(a => a.Name == "Olive oil")!.Id,
+                Count = 0.1m
+            });
+
+            context.KitchenRecipeIngredients.Add(new KitchenRecipeIngredient
+            {
+                RecipeId = context.KitchenRecipes.FirstOrDefault(r => r.OutcomeProductId == wineId)!.Id,
+                ArticleId = context.KitchenArticles.FirstOrDefault(a => a.Name == "Italian wine")!.Id,
+                Count = 0.25m
+            });
+
+            context.KitchenRecipeIngredients.Add(new KitchenRecipeIngredient
+            {
+                 RecipeId = pancakes0RecipeId,
+                 ArticleId = context.KitchenArticles.FirstOrDefault(a => a.Name == "Egg")!.Id,
+                 Count = 2
+            });
+            context.KitchenRecipeIngredients.Add(new KitchenRecipeIngredient
+            {
+                 RecipeId = pancakes0RecipeId,
+                 ArticleId = context.KitchenArticles.FirstOrDefault(a => a.Name == "Wheat")!.Id,
+                 Count = 0.5m
+            });
+            context.KitchenRecipeIngredients.Add(new KitchenRecipeIngredient
+            {
+                 RecipeId = pancakes0RecipeId,
+                 ArticleId = context.KitchenArticles.FirstOrDefault(a => a.Name == "Beer")!.Id,
+                 Count = 0.1m
+            });
+            context.KitchenRecipeIngredients.Add(new KitchenRecipeIngredient
+            {
+                 RecipeId = pancakes0RecipeId,
+                 ArticleId = context.KitchenArticles.FirstOrDefault(a => a.Name == "Olive oil")!.Id,
+                 Count = 0.1m
+            });
+
+            context.KitchenRecipeIngredients.Add(new KitchenRecipeIngredient
+            {
+                 RecipeId = pancakes1RecipeId,
+                 ArticleId = context.KitchenArticles.FirstOrDefault(a => a.Name == "Egg")!.Id,
+                 Count = 2
+            });
+            context.KitchenRecipeIngredients.Add(new KitchenRecipeIngredient
+            {
+                 RecipeId = pancakes1RecipeId,
+                 ArticleId = context.KitchenArticles.FirstOrDefault(a => a.Name == "Wheat")!.Id,
+                 Count = 0.5m
+            });
+            context.KitchenRecipeIngredients.Add(new KitchenRecipeIngredient
+            {
+                 RecipeId = pancakes1RecipeId,
+                 ArticleId = context.KitchenArticles.FirstOrDefault(a => a.Name == "Powder of beer flavour")!.Id,
+                 Count = 0.1m
+            });
+            context.KitchenRecipeIngredients.Add(new KitchenRecipeIngredient
+            {
+                 RecipeId = pancakes1RecipeId,
+                 ArticleId = context.KitchenArticles.FirstOrDefault(a => a.Name == "Olive oil")!.Id,
+                 Count = 0.1m
+            });
+
+            await context.SaveChangesAsync();
+        }
     }
 
     private static async Task SeedTrading(HotelDbContext context)
@@ -231,15 +867,237 @@ public class DataSeeder
         {
             context.SaleItemTypes.Add(new SaleItemType
             {
-                Id = Guid.NewGuid(), Name = "To buy", Value = "to-buy", IsActive = true
+                Id = Guid.NewGuid(), Name = "To buy", Value = "to-buy", IsActive = true, IsForRent = false
             });
             context.SaleItemTypes.Add(new SaleItemType
             {
-                Id = Guid.NewGuid(), Name = "For daily lease", Value = "for-daily-lease", IsActive = true
+                Id = Guid.NewGuid(), Name = "For daily lease", Value = "for-daily-lease", IsActive = true, IsForRent = true
             });
             context.SaleItemTypes.Add(new SaleItemType
             {
-                Id = Guid.NewGuid(), Name = "For monthly lease", Value = "for-monthly-lease", IsActive = true
+                Id = Guid.NewGuid(), Name = "For monthly lease", Value = "for-monthly-lease", IsActive = true, IsForRent = true
+            });
+
+            await context.SaveChangesAsync();
+        }
+
+        if (context.ShopMagazines.Count() == 0)
+        {
+            context.ShopMagazines.Add(new ShopMagazine
+            {
+                Id = Guid.NewGuid(), Location = "Souvenir shop facilities"
+            });
+            context.ShopMagazines.Add(new ShopMagazine
+            {
+                Id = Guid.NewGuid(), Location = "Supermarket facilities"
+            });
+            context.ShopMagazines.Add(new ShopMagazine
+            {
+                Id = Guid.NewGuid(), Location = "Hotel basement"
+            });
+            context.ShopMagazines.Add(new ShopMagazine
+            {
+                Id = Guid.NewGuid(), Location = "Garage"
+            });
+
+            await context.SaveChangesAsync();
+        }
+
+        if (context.ShopPoints.Count() == 0)
+        {
+            context.ShopPoints.Add(new ShopPoint
+            {
+                Id = Guid.NewGuid(), Location = "Souvenir shop in hotel lobby"
+            });
+            context.ShopPoints.Add(new ShopPoint
+            {
+                Id = Guid.NewGuid(), Location = "Supermarket after the hall"
+            });
+            context.ShopPoints.Add(new ShopPoint
+            {
+                Id = Guid.NewGuid(), Location = "Kiosk near guest rooms"
+            });
+
+            await context.SaveChangesAsync();
+        }
+
+        if (context.SaleItems.Count() == 0)
+        {
+            var toBuyType = context.SaleItemTypes.Single(t => t.Value == "to-buy");
+            var forDailyLeaseType = context.SaleItemTypes.Single(t => t.Value == "for-daily-lease");
+            var forMonthlyLeaseType = context.SaleItemTypes.Single(t => t.Value == "for-monthly-lease");
+
+            context.SaleItems.Add(new SaleItem
+            {
+                Id = Guid.NewGuid(), Name = "Bread", ContainsAlcohol = false, TypeId = toBuyType.Id, Type = toBuyType
+            });
+            context.SaleItems.Add(new SaleItem
+            {
+                Id = Guid.NewGuid(), Name = "Greek wine", ContainsAlcohol = true, TypeId = toBuyType.Id, Type = toBuyType
+            });
+            context.SaleItems.Add(new SaleItem
+            {
+                Id = Guid.NewGuid(), Name = "Can of tuna", ContainsAlcohol = false, TypeId = toBuyType.Id, Type = toBuyType
+            });
+            context.SaleItems.Add(new SaleItem
+            {
+                Id = Guid.NewGuid(), Name = "Mini hotel model", ContainsAlcohol = false, TypeId = toBuyType.Id, Type = toBuyType
+            });
+            context.SaleItems.Add(new SaleItem
+            {
+                Id = Guid.NewGuid(), Name = "Hotel puzzle set", ContainsAlcohol = false, TypeId = toBuyType.Id, Type = toBuyType
+            });
+            context.SaleItems.Add(new SaleItem
+            {
+                Id = Guid.NewGuid(), Name = "Official pancakes set", ContainsAlcohol = true, TypeId = toBuyType.Id, Type = toBuyType
+            });
+            context.SaleItems.Add(new SaleItem
+            {
+                Id = Guid.NewGuid(), Name = "Tourist car", ContainsAlcohol = false, TypeId = forDailyLeaseType.Id, Type = forDailyLeaseType
+            });
+            context.SaleItems.Add(new SaleItem
+            {
+                Id = Guid.NewGuid(), Name = "Blu-ray movie rental", ContainsAlcohol = false, TypeId = forDailyLeaseType.Id, Type = forDailyLeaseType
+            });
+            context.SaleItems.Add(new SaleItem
+            {
+                Id = Guid.NewGuid(), Name = "Parking slot", ContainsAlcohol = false, TypeId = forDailyLeaseType.Id, Type = forDailyLeaseType
+            });
+            context.SaleItems.Add(new SaleItem
+            {
+                Id = Guid.NewGuid(), Name = "Monthly parking slot", ContainsAlcohol = false, TypeId = forMonthlyLeaseType.Id, Type = forMonthlyLeaseType
+            });
+
+            await context.SaveChangesAsync();
+        }
+
+        if (context.SaleItemInstances.Count() == 0)
+        {
+            context.SaleItemInstances.Add(new SaleItemInstance
+            {
+                Id = Guid.NewGuid(), Variant = "Normal bread", Count = 12, ExpireDate = DateTime.UtcNow.AddDays(10).Date, Price = 3.99m,
+                ItemId = context.SaleItems.FirstOrDefault(si => si.Name == "Bread")!.Id,
+                MagazineId = context.ShopMagazines.FirstOrDefault(m => m.Location == "Supermarket facilities")!.Id,
+            });
+            context.SaleItemInstances.Add(new SaleItemInstance
+            {
+                Id = Guid.NewGuid(), Variant = "Portobello", Count = 5, ExpireDate = DateTime.UtcNow.AddYears(10).Date, Price = 89.95m,
+                ItemId = context.SaleItems.FirstOrDefault(si => si.Name == "Greek wine")!.Id,
+                MagazineId = context.ShopMagazines.FirstOrDefault(m => m.Location == "Supermarket facilities")!.Id,
+            });
+            context.SaleItemInstances.Add(new SaleItemInstance
+            {
+                Id = Guid.NewGuid(), Variant = "With vegetables", Count = 23, ExpireDate = DateTime.UtcNow.AddYears(4).Date, Price = 3.99m,
+                ItemId = context.SaleItems.FirstOrDefault(si => si.Name == "Can of tuna")!.Id,
+                MagazineId = context.ShopMagazines.FirstOrDefault(m => m.Location == "Supermarket facilities")!.Id,
+            });
+            context.SaleItemInstances.Add(new SaleItemInstance
+            {
+                Id = Guid.NewGuid(), Variant = "Deluxe", Count = 4, ExpireDate = null, Price = 60.25m,
+                ItemId = context.SaleItems.FirstOrDefault(si => si.Name == "Mini hotel model")!.Id,
+                MagazineId = context.ShopMagazines.FirstOrDefault(m => m.Location == "Souvenir shop facilities")!.Id,
+            });
+            context.SaleItemInstances.Add(new SaleItemInstance
+            {
+                Id = Guid.NewGuid(), Variant = "Exclusive", Count = 6, ExpireDate = null, Price = 35.99m,
+                ItemId = context.SaleItems.FirstOrDefault(si => si.Name == "Hotel puzzle set")!.Id,
+                MagazineId = context.ShopMagazines.FirstOrDefault(m => m.Location == "Souvenir shop facilities")!.Id,
+            });
+            context.SaleItemInstances.Add(new SaleItemInstance
+            {
+                Id = Guid.NewGuid(), Variant = "With some ingredients packaged", Count = 5, ExpireDate = DateTime.UtcNow.AddMonths(5).Date, Price = 20.15m,
+                ItemId = context.SaleItems.FirstOrDefault(si => si.Name == "Official pancakes set")!.Id,
+                MagazineId = context.ShopMagazines.FirstOrDefault(m => m.Location == "Souvenir shop facilities")!.Id,
+            });
+            context.SaleItemInstances.Add(new SaleItemInstance
+            {
+                Id = Guid.NewGuid(), Variant = "Fiat 126p", Count = 2, ExpireDate = null, Price = 100.0m,
+                ItemId = context.SaleItems.FirstOrDefault(si => si.Name == "Tourist car")!.Id,
+                MagazineId = context.ShopMagazines.FirstOrDefault(m => m.Location == "Garage")!.Id,
+            });
+            context.SaleItemInstances.Add(new SaleItemInstance
+            {
+                Id = Guid.NewGuid(), Variant = "Fiat 500", Count = 3, ExpireDate = null, Price = 500.0m,
+                ItemId = context.SaleItems.FirstOrDefault(si => si.Name == "Tourist car")!.Id,
+                MagazineId = context.ShopMagazines.FirstOrDefault(m => m.Location == "Garage")!.Id,
+            });
+            context.SaleItemInstances.Add(new SaleItemInstance
+            {
+                Id = Guid.NewGuid(), Variant = "VW Beetle", Count = 5, ExpireDate = null, Price = 300.0m,
+                ItemId = context.SaleItems.FirstOrDefault(si => si.Name == "Tourist car")!.Id,
+                MagazineId = context.ShopMagazines.FirstOrDefault(m => m.Location == "Garage")!.Id,
+            });
+            context.SaleItemInstances.Add(new SaleItemInstance
+            {
+                Id = Guid.NewGuid(), Variant = "Lody na patyku", Count = 1, ExpireDate = null, Price = 10.99m,
+                ItemId = context.SaleItems.FirstOrDefault(si => si.Name == "Blu-ray movie rental")!.Id,
+                MagazineId = context.ShopMagazines.FirstOrDefault(m => m.Location == "Hotel basement")!.Id,
+            });
+            context.SaleItemInstances.Add(new SaleItemInstance
+            {
+                Id = Guid.NewGuid(), Variant = "Melancholia", Count = 3, ExpireDate = null, Price = 10.99m,
+                ItemId = context.SaleItems.FirstOrDefault(si => si.Name == "Blu-ray movie rental")!.Id,
+                MagazineId = context.ShopMagazines.FirstOrDefault(m => m.Location == "Hotel basement")!.Id,
+            });
+            context.SaleItemInstances.Add(new SaleItemInstance
+            {
+                Id = Guid.NewGuid(), Variant = "Breaking Bad", Count = 1, ExpireDate = null, Price = 15.99m,
+                ItemId = context.SaleItems.FirstOrDefault(si => si.Name == "Blu-ray movie rental")!.Id,
+                MagazineId = context.ShopMagazines.FirstOrDefault(m => m.Location == "Hotel basement")!.Id,
+            });
+            context.SaleItemInstances.Add(new SaleItemInstance
+            {
+                Id = Guid.NewGuid(), Variant = "Heated Rivalry", Count = 2, ExpireDate = null, Price = 12.99m,
+                ItemId = context.SaleItems.FirstOrDefault(si => si.Name == "Blu-ray movie rental")!.Id,
+                MagazineId = context.ShopMagazines.FirstOrDefault(m => m.Location == "Hotel basement")!.Id,
+            });
+            context.SaleItemInstances.Add(new SaleItemInstance
+            {
+                Id = Guid.NewGuid(), Variant = "Slot #1", Count = 1, ExpireDate = null, Price = 29.99m,
+                ItemId = context.SaleItems.FirstOrDefault(si => si.Name == "Parking slot")!.Id,
+                MagazineId = context.ShopMagazines.FirstOrDefault(m => m.Location == "Garage")!.Id,
+            });
+            context.SaleItemInstances.Add(new SaleItemInstance
+            {
+                Id = Guid.NewGuid(), Variant = "Slot #2", Count = 1, ExpireDate = null, Price = 29.99m,
+                ItemId = context.SaleItems.FirstOrDefault(si => si.Name == "Parking slot")!.Id,
+                MagazineId = context.ShopMagazines.FirstOrDefault(m => m.Location == "Garage")!.Id,
+            });
+            context.SaleItemInstances.Add(new SaleItemInstance
+            {
+                Id = Guid.NewGuid(), Variant = "Slot #3", Count = 1, ExpireDate = null, Price = 29.99m,
+                ItemId = context.SaleItems.FirstOrDefault(si => si.Name == "Parking slot")!.Id,
+                MagazineId = context.ShopMagazines.FirstOrDefault(m => m.Location == "Garage")!.Id,
+            });
+            context.SaleItemInstances.Add(new SaleItemInstance
+            {
+                Id = Guid.NewGuid(), Variant = "Slot #4", Count = 1, ExpireDate = null, Price = 29.99m,
+                ItemId = context.SaleItems.FirstOrDefault(si => si.Name == "Parking slot")!.Id,
+                MagazineId = context.ShopMagazines.FirstOrDefault(m => m.Location == "Garage")!.Id,
+            });
+            context.SaleItemInstances.Add(new SaleItemInstance
+            {
+                Id = Guid.NewGuid(), Variant = "Monthly slot #1", Count = 1, ExpireDate = null, Price = 300.99m,
+                ItemId = context.SaleItems.FirstOrDefault(si => si.Name == "Monthly parking slot")!.Id,
+                MagazineId = context.ShopMagazines.FirstOrDefault(m => m.Location == "Garage")!.Id,
+            });
+            context.SaleItemInstances.Add(new SaleItemInstance
+            {
+                Id = Guid.NewGuid(), Variant = "Monthly slot #2", Count = 1, ExpireDate = null, Price = 300.99m,
+                ItemId = context.SaleItems.FirstOrDefault(si => si.Name == "Monthly parking slot")!.Id,
+                MagazineId = context.ShopMagazines.FirstOrDefault(m => m.Location == "Garage")!.Id,
+            });
+            context.SaleItemInstances.Add(new SaleItemInstance
+            {
+                Id = Guid.NewGuid(), Variant = "Monthly slot #3", Count = 1, ExpireDate = null, Price = 300.99m,
+                ItemId = context.SaleItems.FirstOrDefault(si => si.Name == "Monthly parking slot")!.Id,
+                MagazineId = context.ShopMagazines.FirstOrDefault(m => m.Location == "Garage")!.Id,
+            });
+            context.SaleItemInstances.Add(new SaleItemInstance
+            {
+                Id = Guid.NewGuid(), Variant = "Monthly slot #4", Count = 1, ExpireDate = null, Price = 300.99m,
+                ItemId = context.SaleItems.FirstOrDefault(si => si.Name == "Monthly parking slot")!.Id,
+                MagazineId = context.ShopMagazines.FirstOrDefault(m => m.Location == "Garage")!.Id,
             });
         }
     }

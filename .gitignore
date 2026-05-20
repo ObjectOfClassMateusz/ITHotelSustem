@@ -38,3 +38,7 @@ publish/
 # NuGet
 *.nupkg
 packages/
+
+# Submitted documents
+HotelSystemIndustry/wwwroot/EventAgreements/
+

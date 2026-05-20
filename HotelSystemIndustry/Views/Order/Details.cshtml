@@ -14,13 +14,19 @@
             @Html.DisplayNameFor(model => model.SubmissionTime)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.SubmissionTime)
+            @{ var submissionTime = Model.SubmissionTime.ToLocalTime(); }
+            @Html.DisplayFor(modelItem => submissionTime)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.RealisedTime)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.RealisedTime)
+            @{
+                var realisedTime = Model.RealisedTime;
+                if (realisedTime != null)
+                    realisedTime = realisedTime.Value.ToLocalTime();
+            }
+            @Html.DisplayFor(model => realisedTime)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Type)
@@ -35,6 +41,10 @@
             @Html.DisplayFor(model => model.DeliveryDestination)
         </dd>
     </dl>
+
+    <h5>Products</h5>
+    <hr />
+    @Html.DisplayFor(model => model.Products)
 </div>
 <div>
     <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |

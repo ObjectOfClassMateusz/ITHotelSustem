@@ -1,0 +1,86 @@
+@using HotelSystemIndustry.Models.Kitchen
+@using HotelSystemIndustry.ViewModels.Kitchen
+@model NewOrderViewModel
+
+@{
+    ViewData["Title"] = "Place an Order - Verify Order";
+    @if (User.IsInRole("KitchenEmployee"))
+    {
+        ViewBag.LowerNavPartial = "_KitchenNavPartial";
+    }
+
+    var Products = (IList<KitchenProduct>)ViewBag.Products;
+    var OrderTypes = (IList<OrderType>)ViewBag.OrderTypes;
+}
+
+
+<h1>Verify your order</h1>
+<hr />
+
+
+<form method="post">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+
+    @Html.HiddenFor(m => m.Type)
+    @Html.HiddenFor(m => m.Destination)
+
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.LabelFor(m => m.Type, "Order type: ")
+        </dt>
+        <dd class="col-sm-10">
+            @OrderTypes.Single(ot => ot.Id == Model.Type).Name
+        </dd>
+
+        <dt class="col-sm-2">
+            @Html.LabelFor(m => m.Destination, "Delivery destination: ")
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(m => m.Destination)
+        </dd>
+    </dl>
+
+    @{ decimal totalPrice = 0; }
+
+    <ul>
+        @for (var i = 0; i < Model.Products.Count; i++) {
+            <li>
+                @Html.HiddenFor(m => m.Products[i].ProductId)
+                @Html.HiddenFor(m => m.Products[i].Count)
+                @{
+                    var id = Model.Products[i].ProductId;
+                    var count = Model.Products[i].Count;
+                    var product = Products.Single(p => p.Id == id);
+
+                    var productPrice = product.Price*count;
+                    totalPrice += productPrice;
+
+                    <div class="row">
+                        <div class="col-md-8 text-start">@product.Name x @count</div> <div class="col-md-2 text-end">@productPrice.ToString("C2")</div>
+                    </div>
+                }
+            </li>
+        }
+    </ul>
+
+    <hr />
+    <div class="row mx-2 my-4">
+        <div class="col-md-7 text-start">Total: </div> <div class="col-md-3 text-end">@totalPrice.ToString("C2")</div>
+    </div>
+    
+    <input type="submit" value="Submit" asp-action="SubmitOrder" class="btn btn-success" />
+
+    <input type="submit" value="Back" asp-action="ChooseOrderProducts" class="btn btn-primary" />
+
+    <a asp-action="PlaceOrder" class="btn btn-primary">Cancel</a>
+
+</form>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial.cshtml");
+    }
+}
+

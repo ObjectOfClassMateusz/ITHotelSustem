@@ -1,0 +1,25 @@
+
+
+@{
+    ViewData["Title"] = "Event Management";
+    @if (User.IsInRole("HotelEmployee"))
+    {
+        ViewBag.LowerNavPartial = "_HotelManagementNavPartial";
+    } else {
+        ViewBag.LowerNavPartial = "_CustomerNavPartial";
+    }
+}
+
+
+<h1>Event Management</h1>
+<hr />
+
+
+<div class="row justify-content-center my-4">
+
+    <div class="text-center col-md-8 my-2">
+        <a class="page-link text-dark" asp-action="StartMakingReservation">Create a new event reservation</a>
+    </div>
+
+</div>
+

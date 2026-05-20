@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace HotelSystemIndustry.Models.Kitchen
@@ -10,6 +11,17 @@ namespace HotelSystemIndustry.Models.Kitchen
         * - LOOSE_ARTICLE,
         * - LIQUID
         */
+    }
+
+
+    public enum ArticleUnit
+    {
+        [Display(Name="Pieces")]
+        Pieces,
+        [Display(Name="kg")]
+        Kg,
+        [Display(Name="l")]
+        Liters
     }
 
 
@@ -26,6 +38,13 @@ namespace HotelSystemIndustry.Models.Kitchen
         public Guid TypeId { get; set; }
 
         public virtual KitchenArticleType? Type { get; set; }
+
+
+        [Required]
+        public ArticleUnit Unit { get; set; }
+
+
+        public virtual IList<ArticleInstance>? Instances { get; set; }
     }
 
 }

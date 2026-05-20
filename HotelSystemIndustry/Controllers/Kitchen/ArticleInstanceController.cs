@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace HotelSystemIndustry.Controllers.Kitchen
 {
+    [Authorize(Roles="KitchenEmployee,MaintainanceEmployee,Admin")]
     public class ArticleInstanceController : Controller
     {
         private readonly HotelDbContext _context;
@@ -48,10 +49,9 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         }
 
         // GET: ArticleInstance/Create
-        [Authorize(Roles = "Admin,KitchenEmployee,MaintainanceEmployee")]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            ViewData["ArticleId"] = new SelectList(_context.KitchenArticles, "Id", "Name");
+            ViewData["ArticleId"] = await GetArticlesSelectList();
             ViewData["StorageId"] = new SelectList(_context.KitchenStorages, "Id", "Name");
             return View();
         }
@@ -61,28 +61,21 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin,KitchenEmployee,MaintainanceEmployee")]
-        public async Task<IActionResult> Create([Bind("Id,ArticleId,StorageId,Count,Unit")] ArticleInstance articleInstance)
+        public async Task<IActionResult> Create([Bind("Id,ArticleId,StorageId,Count")] ArticleInstance articleInstance)
         {
-            if (ModelState.IsValid &&
-                articleInstance.ArticleId != Guid.Empty &&
-                articleInstance.StorageId != Guid.Empty)
+            if (ModelState.IsValid)
             {
-                articleInstance.Article = _context.KitchenArticles.Where(a => a.Id == articleInstance.ArticleId).Single();
-                articleInstance.Storage = _context.KitchenStorages.Where(s => s.Id == articleInstance.StorageId).Single();
-
                 articleInstance.Id = Guid.NewGuid();
                 _context.Add(articleInstance);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ArticleId"] = new SelectList(_context.KitchenArticles, "Id", "Name", articleInstance.ArticleId);
+            ViewData["ArticleId"] = await GetArticlesSelectList(articleInstance.ArticleId);
             ViewData["StorageId"] = new SelectList(_context.KitchenStorages, "Id", "Name", articleInstance.StorageId);
             return View(articleInstance);
         }
 
         // GET: ArticleInstance/Edit/5
-        [Authorize(Roles = "Admin,KitchenEmployee,MaintainanceEmployee")]
         public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null)
@@ -90,12 +83,12 @@ namespace HotelSystemIndustry.Controllers.Kitchen
                 return NotFound();
             }
 
-            var articleInstance = await _context.KitchenArticleInstances.FindAsync(id);
+            var articleInstance = await _context.KitchenArticleInstances.Include(a => a.Article).FirstOrDefaultAsync(a => a.Id == id);
             if (articleInstance == null)
             {
                 return NotFound();
             }
-            ViewData["ArticleId"] = new SelectList(_context.KitchenArticles, "Id", "Name", articleInstance.ArticleId);
+            ViewData["ArticleId"] = await GetArticlesSelectList(articleInstance.ArticleId);
             ViewData["StorageId"] = new SelectList(_context.KitchenStorages, "Id", "Name", articleInstance.StorageId);
             return View(articleInstance);
         }
@@ -105,8 +98,7 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin,KitchenEmployee,MaintainanceEmployee")]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Id,ArticleId,StorageId,Count,Unit")] ArticleInstance articleInstance)
+        public async Task<IActionResult> Edit(Guid id, [Bind("Id,ArticleId,StorageId,Count")] ArticleInstance articleInstance)
         {
             if (id != articleInstance.Id)
             {
@@ -115,9 +107,6 @@ namespace HotelSystemIndustry.Controllers.Kitchen
 
             if (ModelState.IsValid)
             {
-                articleInstance.Article = _context.KitchenArticles.Where(a => a.Id == articleInstance.ArticleId).Single();
-                articleInstance.Storage = _context.KitchenStorages.Where(s => s.Id == articleInstance.StorageId).Single();
-
                 try
                 {
                     _context.Update(articleInstance);
@@ -136,13 +125,12 @@ namespace HotelSystemIndustry.Controllers.Kitchen
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ArticleId"] = new SelectList(_context.KitchenArticles, "Id", "Name", articleInstance.ArticleId);
+            ViewData["ArticleId"] = await GetArticlesSelectList(articleInstance.ArticleId);
             ViewData["StorageId"] = new SelectList(_context.KitchenStorages, "Id", "Name", articleInstance.StorageId);
             return View(articleInstance);
         }
 
         // GET: ArticleInstance/Delete/5
-        [Authorize(Roles = "Admin,KitchenEmployee,MaintainanceEmployee")]
         public async Task<IActionResult> Delete(Guid? id)
         {
             if (id == null)
@@ -165,7 +153,6 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         // POST: ArticleInstance/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin,KitchenEmployee,MaintainanceEmployee")]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
             var articleInstance = await _context.KitchenArticleInstances.FindAsync(id);
@@ -181,6 +168,39 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         private bool ArticleInstanceExists(Guid id)
         {
             return _context.KitchenArticleInstances.Any(e => e.Id == id);
+        }
+
+
+        private async Task<SelectList> GetArticlesSelectList(Guid? articleId = null)
+        {
+            var articles = await _context.KitchenArticles
+                .AsNoTracking()
+                .ToListAsync();
+
+            var articlesSelList = new List<SelectListItem>();
+            foreach (var article in articles)
+            {
+                string unitText = string.Empty;
+                switch (article.Unit)
+                {
+                    case ArticleUnit.Pieces:
+                        unitText = "Pieces";
+                        break;
+                    case ArticleUnit.Kg:
+                        unitText = "kg";
+                        break;
+                    case ArticleUnit.Liters:
+                        unitText = "l";
+                        break;
+                }
+
+                articlesSelList.Add(new SelectListItem(article.Name + " (" + unitText + ")", article.Id.ToString()));
+            }
+
+            if (articleId != null)
+                return new SelectList(articlesSelList, "Value", "Text", articleId);
+            else
+                return new SelectList(articlesSelList, "Value", "Text");
         }
     }
 }
