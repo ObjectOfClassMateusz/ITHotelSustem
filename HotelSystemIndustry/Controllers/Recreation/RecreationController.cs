@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HotelSystemIndustry.Controllers.Recreation
 {
+    [Authorize(Roles = "RecreationEmployee")]
     public class RecreationController : Controller
     {
         private readonly HotelDbContext _context;
@@ -50,7 +51,7 @@ namespace HotelSystemIndustry.Controllers.Recreation
             // do testów -> dodanie gościa
             if (!await _context.Guests.AnyAsync())
             {
-                _context.Guests.Add(new Guest { Id = Guid.NewGuid(), FirstName = "Jan", LastName = "Kowalski" });
+                _context.Guests.Add(new Guest { Id = Guid.NewGuid(), FirstName = "Jan", LastName = "Kowalski"});
                 await _context.SaveChangesAsync();
             }
 
@@ -60,7 +61,7 @@ namespace HotelSystemIndustry.Controllers.Recreation
                                                                  Id = g.Id,
                                                                  FullName = g.FirstName + " " + g.LastName}).ToListAsync();
 
-            ViewBag.GuestsSelectList = new SelectList(guestsList, "Id", "FullName");
+            ViewBag.GuestsSelectList = new SelectList(guestsList,"Id","FullName");
 
             var bookingModel = new RecreationBooking
             {
@@ -81,32 +82,55 @@ namespace HotelSystemIndustry.Controllers.Recreation
             ModelState.Remove("Facility");
             ModelState.Remove("Guest");
 
-            if (ModelState.IsValid)
+            booking.StartTime = DateTime.SpecifyKind(booking.StartTime, DateTimeKind.Utc);
+            booking.EndTime = DateTime.SpecifyKind(booking.EndTime, DateTimeKind.Utc);
+
+            if (booking.StartTime < DateTime.UtcNow)
             {
-                booking.Status = BookingStatus.SCHEDULED;
-                //specyfikacja daty dla postgresql
-                booking.StartTime = DateTime.SpecifyKind(booking.StartTime, DateTimeKind.Utc);
-                booking.EndTime = DateTime.SpecifyKind(booking.EndTime, DateTimeKind.Utc);
+                ModelState.AddModelError("StartTime","Nie można dokonać rezerwacji w przeszłości.");
+            }
 
-                _context.RecreationBookings.Add(booking);
-                await _context.SaveChangesAsync();
-
-                return RedirectToAction(nameof(FacilityList));
+            if (booking.EndTime <= booking.StartTime)
+            {
+                ModelState.AddModelError("EndTime","Czas zakończenia musi być późniejszy niż czas rozpoczęcia.");
             }
 
             var facility = await _context.RecreationFacilities.FindAsync(booking.FacilityId);
-            ViewBag.FacilityName = facility?.Name;
+            if (facility == null) return NotFound();
+
+            if (ModelState.IsValid)
+            {
+                //sprawdzamy maxcapacity w danym czasie, za każdą nakładającą sie rezerwacje zwiększamy zmienną
+                var overlappingBookingsCount = await _context.RecreationBookings
+                    .Where(b => b.FacilityId == booking.FacilityId &&
+                                b.Status == BookingStatus.SCHEDULED &&
+                                b.StartTime < booking.EndTime &&
+                                b.EndTime > booking.StartTime)
+                    .CountAsync();
+
+                if (overlappingBookingsCount + 1 > facility.MaxCapacity)
+                {
+                    ModelState.AddModelError(string.Empty,"Brak miejsc w wybranym przedziale czasowym.");
+                }
+            }
+
+            if (ModelState.IsValid)
+            {
+                booking.Status = BookingStatus.SCHEDULED;
+                _context.RecreationBookings.Add(booking);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(FacilityList));
+            }
+
+            ViewBag.FacilityName = facility.Name;
             ViewBag.FacilityId = booking.FacilityId;
 
             var guestsList = await _context.Guests
                 .AsNoTracking()
-                .Select(g => new {
-                    Id = g.Id,
-                    FullName = g.FirstName + " " + g.LastName
-                })
+                .Select(g => new {Id = g.Id, FullName = g.FirstName + " " + g.LastName})
                 .ToListAsync();
 
-            ViewBag.GuestsSelectList = new SelectList(guestsList, "Id", "FullName", booking.GuestId);
+            ViewBag.GuestsSelectList = new SelectList(guestsList,"Id","FullName", booking.GuestId);
 
             return View(booking);
         }
