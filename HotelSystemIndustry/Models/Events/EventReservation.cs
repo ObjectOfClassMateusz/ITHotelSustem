@@ -62,13 +62,12 @@ namespace HotelSystemIndustry.Models.Events
         public uint NumGuests { get; set; }
 
 
+        public string AgreementDocumentPath { get; set; } = string.Empty;
+
+
         public virtual ICollection<EventHall>? Halls { get; set; }
 
         public virtual ICollection<EquipmentInstance>? Equipment { get; set; }
-
-        public virtual ICollection<Room>? Rooms { get; set; }
-
-        public virtual ICollection<KitchenProduct>? Food { get; set; }
     }
 
 }

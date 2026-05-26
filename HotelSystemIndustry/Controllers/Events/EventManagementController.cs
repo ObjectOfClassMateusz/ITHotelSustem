@@ -1,6 +1,10 @@
+using System.Collections.ObjectModel;
 using HotelSystemIndustry.Infrastructure;
+using HotelSystemIndustry.Models;
 using HotelSystemIndustry.Models.Events;
+using HotelSystemIndustry.Models.Kitchen;
 using HotelSystemIndustry.ViewModels.Events;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -189,10 +193,9 @@ namespace HotelSystemIndustry.Controllers.Events
 
 
 
-            // TODO: submitting to database
-            var savedPath = await SaveAgreementFile(model);
+            var result = await SaveReservationInDatabase(model);
 
-            if (string.IsNullOrEmpty(savedPath))
+            if (result == ReservationUploadResult.FileUploadingError)
             {
                 ModelState.AddModelError("AgreementFile", "Error while uploading the agreement document!");
 
@@ -216,6 +219,94 @@ namespace HotelSystemIndustry.Controllers.Events
         public async Task<IActionResult> EventReservationSuccess()
         {
             return View();
+        }
+
+
+
+        [HttpGet]
+        [Authorize(Roles="HotelEmployee")]
+        public async Task<IActionResult> EventChoosing()
+        {
+            var currentTimeMinusWeek = DateTime.UtcNow.AddDays(-7);
+
+            var eventReservs = await _context.EventReservations
+                .AsNoTracking()
+                .Where(er => er.EndTime >= currentTimeMinusWeek)
+                .Include(er => er.EventType)
+                .Include(er => er.Status)
+                .ToListAsync();
+
+            ViewBag.EventReservations = eventReservs;
+            return View();
+        }
+
+
+        [HttpGet]
+        [Authorize(Roles="HotelEmployee")]
+        public async Task<IActionResult> EventRealisation([FromRoute] Guid id)
+        {
+            var reservation = await _context.EventReservations
+                .AsNoTracking()
+                .Include(r => r.EventType)
+                .Include(r => r.Status)
+                .Include(r => r.Halls)
+                .Include(r => r.Equipment)
+                    !.ThenInclude(e => e.Equipment)
+                .FirstOrDefaultAsync(r => r.Id == id);
+
+            if (reservation == null)
+                return BadRequest("Invalid event reservation ID!");
+
+            ViewBag.StatusList = new SelectList(_context.EventReservationStatuses, "Id", "Name", reservation.StatusId);
+            return View(reservation);
+        }
+
+        
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles="HotelEmployee")]
+        public async Task<IActionResult> EventUpdateStatus(Guid id, Guid statusId)
+        {
+            var reservation = await _context.EventReservations
+                .Include(r => r.EventType)
+                .Include(r => r.Halls)
+                .Include(r => r.Equipment)
+                    !.ThenInclude(e => e.Equipment)
+                .FirstOrDefaultAsync(r => r.Id == id);
+
+            var status = await _context.EventReservationStatuses
+                .FirstOrDefaultAsync(s => s.Id == statusId);
+
+            if (reservation == null)
+                return BadRequest("Invalid event reservation ID!");
+
+            if (status == null)
+                return BadRequest("Invalid event status ID!");
+
+            reservation.StatusId = statusId;
+            reservation.Status = status;
+            _context.EventReservations.Update(reservation);
+            await _context.SaveChangesAsync();
+
+            ViewBag.StatusList = new SelectList(_context.EventReservationStatuses, "Id", "Name", reservation.StatusId);
+            return View("EventRealisation");
+        }
+
+
+        [HttpGet]
+        [Authorize(Roles="HotelEmployee")]
+        public async Task<IActionResult> GetEventAgreementDocument(Guid id)
+        {
+            var reservation = await _context.EventReservations
+                .FirstOrDefaultAsync(r => r.Id == id);
+
+            if (reservation == null)
+                return BadRequest("Invalid event reservation ID!");
+
+            string fullPath = Path.Combine(_appEnvironment.WebRootPath, "EventAgreements", reservation.AgreementDocumentPath);
+            
+            var stream = new FileStream(fullPath, FileMode.Open);
+            return new FileStreamResult(stream, "application/pdf");
         }
 
 
@@ -262,6 +353,86 @@ namespace HotelSystemIndustry.Controllers.Events
             }
 
             return filePath;
+        }
+
+        private enum ReservationUploadResult
+        {
+            Success,
+            InvalidDataError,
+            DatabaseSavingError,
+            FileUploadingError
+        }
+
+        private async Task<ReservationUploadResult> SaveReservationInDatabase(BookingEventViewModel model)
+        {
+            var status = await _context.EventReservationStatuses.FirstOrDefaultAsync(s => s.Value == "booked");
+            if (status == null)
+            {
+                status = new EventReservationStatus
+                {
+                    Id = Guid.NewGuid(), Name = "Booked", Value = "booked", IsActive = true
+                };
+                _context.Add(status);
+            }
+
+
+            var eventType = await _context.EventTypes.FirstOrDefaultAsync(t => t.Id == model.EventTypeId);
+            if (eventType == null)
+                return ReservationUploadResult.InvalidDataError;
+            
+
+            EventReservation reservation = new EventReservation
+            {
+                Id = Guid.NewGuid(),
+                StatusId = status.Id,
+                Status = status,
+                EventTypeId = eventType.Id,
+                EventType = eventType,
+                StartTime = model.StartTime.ToUniversalTime(),
+                EndTime = model.EndTime.ToUniversalTime(),
+                NumRequiredStaff = model.NumServantStuff,
+                NumGuests = model.NumGuests,
+                Halls = new Collection<EventHall>(),
+                Equipment = new Collection<EquipmentInstance>()
+            };
+
+            foreach (var hallReservation in model.Halls)
+            {
+                if (!hallReservation.Selected)
+                    continue;
+
+                EventHall? eventHall = await _context.EventHalls
+                    .Include(eh => eh.Equipment)
+                    .FirstOrDefaultAsync(h => h.Id == hallReservation.HallId);
+                if (eventHall == null)
+                    return ReservationUploadResult.InvalidDataError;
+
+                reservation.Halls.Add(eventHall);
+
+                foreach (var equipmentReservation in hallReservation.Equipment)
+                {
+                    if (!equipmentReservation.Selected)
+                        continue;
+
+                    var equipmentInstance = eventHall.Equipment!.FirstOrDefault(e => e.Id == equipmentReservation.EquipmentInstanceId);
+                    if (equipmentInstance == null)
+                        return ReservationUploadResult.InvalidDataError;
+
+                    reservation.Equipment.Add(equipmentInstance);
+                }
+            }
+
+            var savedPath = await SaveAgreementFile(model);
+
+            if (string.IsNullOrEmpty(savedPath))
+                return ReservationUploadResult.FileUploadingError;
+
+            reservation.AgreementDocumentPath = Path.GetFileName(savedPath);
+
+            _context.EventReservations.Add(reservation);
+            await _context.SaveChangesAsync();
+
+            return ReservationUploadResult.Success;
         }
 
     }

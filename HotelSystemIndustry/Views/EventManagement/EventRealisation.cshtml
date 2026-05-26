@@ -1,0 +1,83 @@
+@using HotelSystemIndustry.Models.Events
+@model EventReservation
+
+@{
+    ViewData["Title"] = "Manage event";
+    ViewBag.LowerNavPartial = "_HotelManagementNavPartial";
+}
+
+
+<h1>Event management</h1>
+
+<h2>@Model.EventType?.Name from @Model.StartTime.ToLocalTime() to @Model.EndTime.ToLocalTime()</h2>
+
+<hr />
+
+<div class="container">
+    <form method="post" asp-action="EventUpdateStatus">
+        @Html.AntiForgeryToken()
+
+        <input type="hidden" name="id" value="@Model.Id" />
+
+        <div class="row form-group">
+            <div class="col-md-3">
+                <label class="control-label fs-6" for="statusId">Edit status:</label>
+            </div>
+            <div class="col-md-4">
+                <select asp-items="ViewBag.StatusList" id="statusId" name="statusId" class="form-control"></select>
+            </div>
+        </div>
+
+        <div class="row form-group">
+            <div class="col-md-3">
+                <label class="control-label fs-6">Agreement document:</label>
+            </div>
+            <div class="col-md-4">
+                <a asp-action="GetEventAgreementDocument" asp-route-id="@Model.Id">download PDF</a>
+            </div>
+        </div>
+
+        <div class="my-4">
+            <input type="submit" class="btn btn-success" value="Save" />
+        </div>
+
+    </form>
+
+    <div class="container fs-5 my-2">
+        Number of guests: <span class="fw-bold">@Model.NumGuests</span>
+    </div>
+    <div class="container fs-5 my-2">
+        Number of servant stuff: <span class="fw-bold">@Model.NumRequiredStaff</span>
+    </div>
+
+    <h3>Halls</h3>
+    <ul>
+        @foreach (var hall in Model.Halls!) {
+            <li class="fs-5 fw-bold">
+                @hall.Name
+            </li>
+        }
+    </ul>
+
+    <h3>Equipment</h3>
+    <ul>
+        @foreach (var equipment in Model.Equipment!) {
+            var eqHall = Model.Halls.FirstOrDefault(h => h.Id == equipment.EventHallId);
+
+            <li class="fs-5">
+                <span class="fw-bold">@equipment.Equipment!.Name</span> from @eqHall?.Name
+            </li>
+        }
+    </ul>
+</div>
+
+<div class="my-4">
+    <a class="btn btn-primary" asp-action="EventChoosing">Back</a>
+</div>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial.cshtml");
+    }
+}

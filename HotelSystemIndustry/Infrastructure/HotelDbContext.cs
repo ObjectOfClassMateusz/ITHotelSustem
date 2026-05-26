@@ -184,17 +184,11 @@ namespace HotelSystemIndustry.Infrastructure
 
             modelBuilder.Entity<EventReservation>()
                 .HasMany(er => er.Halls)
-                .WithMany(eh => eh.EventReservations)
-                .UsingEntity(
-                    r => r.HasOne(typeof(EventHall)).WithMany().HasForeignKey("EventHallsId").OnDelete(DeleteBehavior.Restrict),
-                    l => l.HasOne(typeof(EventReservation)).WithMany().HasForeignKey("EventReservationsId").OnDelete(DeleteBehavior.Restrict));
+                .WithMany(eh => eh.EventReservations);
 
             modelBuilder.Entity<EventReservation>()
-                .HasMany(e => e.Rooms)
-                .WithMany(r => r.EventReservations)
-                .UsingEntity(
-                    r => r.HasOne(typeof(Room)).WithMany().HasForeignKey("RoomsId").OnDelete(DeleteBehavior.Restrict),
-                    l => l.HasOne(typeof(EventReservation)).WithMany().HasForeignKey("EventReservationsId").OnDelete(DeleteBehavior.Restrict));
+                .HasMany(er => er.Equipment)
+                .WithMany();
 
 
             modelBuilder.Entity<Order>()
