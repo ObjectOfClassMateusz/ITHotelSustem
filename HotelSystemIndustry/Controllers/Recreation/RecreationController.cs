@@ -49,11 +49,11 @@ namespace HotelSystemIndustry.Controllers.Recreation
             if (facility == null) return NotFound();
 
             // do testów -> dodanie gościa
-            if (!await _context.Guests.AnyAsync())
-            {
-                _context.Guests.Add(new Guest { Id = Guid.NewGuid(), FirstName = "Jan", LastName = "Kowalski"});
-                await _context.SaveChangesAsync();
-            }
+            //if (!await _context.Guests.AnyAsync())
+            //{
+            //    _context.Guests.Add(new Guest { Id = Guid.NewGuid(), FirstName = "Jan", LastName = "Kowalski" });
+            //    await _context.SaveChangesAsync();
+            //}
 
             ViewBag.FacilityName = facility.Name;
             ViewBag.FacilityId = facility.Id;
@@ -196,6 +196,29 @@ namespace HotelSystemIndustry.Controllers.Recreation
                 .ToList();
 
             return View(activeBookings);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteFacility(Guid id)
+        {
+            var facility = await _context.RecreationFacilities
+                .Include(f => f.Bookings)
+                .FirstOrDefaultAsync(f => f.Id == id);
+
+            if (facility == null)
+            {
+                return NotFound();
+            }
+            //usuwamy powiązane rezerwacje aby móc usunąć facility
+            if (facility.Bookings != null && facility.Bookings.Any())
+            {
+                _context.RecreationBookings.RemoveRange(facility.Bookings);
+            }
+
+            _context.RecreationFacilities.Remove(facility);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(FacilityList));
         }
     }
 }
