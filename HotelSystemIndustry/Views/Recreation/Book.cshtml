@@ -1,0 +1,53 @@
+﻿@model HotelSystemIndustry.Models.Recreation.RecreationBooking
+
+@{
+    ViewData["Title"] = "Book Facility";
+    ViewBag.LowerNavPartial = "_RecreationNavPartial";
+}
+
+<div class="container mt-4">
+    <div class="card shadow-sm col-md-8 mx-auto">
+        <div class="card-body p-4">
+            <h3 class="text-center mb-4"> Book Facility: <span class="text-primary">@ViewBag.FacilityName</span></h3>
+            <hr />
+
+            <form asp-action="Book" method="post">
+                <input type="hidden" asp-for="FacilityId" value="@ViewBag.FacilityId" />
+
+                <div class="form-group mb-3">
+                    <label asp-for="GuestId" class="control-label font-weight-bold">Select Guest</label>
+                    <select asp-for="GuestId" class="form-control" asp-items="ViewBag.GuestsSelectList">
+                        <option value="">-- Choose a Guest --</option>
+                    </select>
+                    <span asp-validation-for="GuestId" class="text-danger"></span>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 form-group mb-3">
+                        <label asp-for="StartTime" class="control-label font-weight-bold">Start Time</label>
+                        @* datetime-local -> kalendarz z zegarem *@
+                        <input asp-for="StartTime" class="form-control" type="datetime-local" />
+                        <span asp-validation-for="StartTime" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6 form-group mb-4">
+                        <label asp-for="EndTime" class="control-label font-weight-bold">End Time</label>
+                        <input asp-for="EndTime" class="form-control" type="datetime-local" />
+                        <span asp-validation-for="EndTime" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between mt-4">
+                    <a asp-action="FacilityList" class="btn btn-outline-secondary">Back to List</a>
+                    <button type="submit" class="btn btn-success px-4">Confirm Booking</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
