@@ -25,6 +25,7 @@
     @Html.HiddenFor(m => m.EventTypeId)
     @Html.HiddenFor(m => m.StartTime)
     @Html.HiddenFor(m => m.EndTime)
+    @Html.HiddenFor(m => m.Name)
     @Html.HiddenFor(m => m.NumGuests)
     @Html.HiddenFor(m => m.NumServantStuff)
 
@@ -102,7 +103,7 @@
     <div class="my-4 row fs-5">
         <label asp-for="AgreementFile" class="control-label col-md-4">Submit agreement document (PDF):</label>
         <span class="col-md-4"><input asp-for="AgreementFile" type="file" accept="application/pdf" class="btn" onchange="AJAXSubmitAgreementDocument(this)" /></span>
-        <span asp-validation-for="AgreementFile" class="text-danger"></span>
+        <span asp-validation-for="AgreementFile" class="text-danger fs-5"></span>
     </div>
 
     <div class="my-4">

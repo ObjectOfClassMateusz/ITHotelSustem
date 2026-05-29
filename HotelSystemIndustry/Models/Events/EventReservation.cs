@@ -53,6 +53,10 @@ namespace HotelSystemIndustry.Models.Events
 
         [DataType(DataType.DateTime)]
         public DateTime EndTime { get; set; }
+
+
+        [MaxLength(30)]
+        public string Name { get; set; } = string.Empty;
         
 
         [Range(typeof(uint), "0", "500")]

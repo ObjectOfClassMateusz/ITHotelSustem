@@ -1,4 +1,7 @@
+@using HotelSystemIndustry.Infrastructure
+@using Microsoft.AspNetCore.Identity
 
+@inject SignInManager<User> SignInManager
 
 @{
     ViewData["Title"] = "Event Management";
@@ -21,9 +24,52 @@
         <a class="page-link text-dark" asp-action="StartMakingReservation">Create a new event reservation</a>
     </div>
 
-    <div class="text-center col-md-6 my-2">
-        <a class="page-link text-dark" asp-action="EventChoosing">Manage events</a>
-    </div>
+    @if (User.IsInRole("HotelEmployee")) {
+        <div class="text-center col-md-6 my-2">
+            <a class="page-link text-dark" asp-action="EventChoosing">Manage events</a>
+        </div>
+    }
 
 </div>
+
+
+@if (User.IsInRole("HotelEmployee")) {
+
+    <h2>
+    Management
+    </h2>
+
+    <hr />
+
+    <ul>
+        <li>
+            <a asp-controller="EventType" asp-action="Index">Types of events</a>
+        </li>
+
+        <li>
+            <a asp-controller="EventReservationStatus" asp-action="Index">Event statuses</a>
+        </li>
+
+        <li>
+            <a asp-controller="EquipmentType" asp-action="Index">Types of equipment</a>
+        </li>
+
+        <li>
+            <a asp-controller="Equipment" asp-action="Index">Equipment</a>
+        </li>
+
+        <li>
+            <a asp-controller="EquipmentInstance" asp-action="Index">Equipment instances</a>
+        </li>
+
+        <li>
+            <a asp-controller="EventHall" asp-action="Index">Event halls</a>
+        </li>
+
+        <li>
+            <a asp-controller="EventReservation" asp-action="Index">Reservations</a>
+        </li>
+    </ul>
+}
+
 

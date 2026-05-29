@@ -65,49 +65,17 @@ namespace HotelSystemIndustry.Controllers.Events
             }
 
 
-            var reservedHalls = await _context.EventReservations
-                .AsNoTracking()
-                .Where(er => er.EndTime >= model.StartTime && er.StartTime <= model.EndTime)
-                .Include(er => er.Halls)
-                .Select(eh => eh.Halls)
-                .ToListAsync();
-
-            var allHalls = await _context.EventHalls
-                .AsNoTracking()
-                .Include(eh => eh.Equipment)
-                    !.ThenInclude(ei => ei.Equipment)
-                        .ThenInclude(e => e!.Type)
-                .ToListAsync();
-
-            IList<EventHall> freeHalls = new List<EventHall>();
+            var freeHalls = await GetApiController().GetAvailableEventHalls(model.StartTime,
+                                                                            model.EndTime);
 
             model.Halls.Clear();
-
-            foreach (var hall in allHalls)
+            foreach (var hall in freeHalls)
             {
-                foreach (var reservationHallList in reservedHalls)
-                {
-                    if (reservationHallList == null)
-                        continue;
-
-                    foreach (var reservedHall in reservationHallList)
-                    {
-                        if (reservedHall == null)
-                            continue;
-
-                        if (reservedHall.Id == hall.Id)
-                            goto hall_end;
-                    }
-                }
-
-                freeHalls.Add(hall);
                 model.Halls.Add(new BookingEventViewModel.HallSelection{ HallId = hall.Id, Selected = false });
-
-                hall_end:;
             }
 
             ViewBag.FreeHalls = freeHalls;
-            
+
             return View(model);
         }
 
@@ -144,7 +112,14 @@ namespace HotelSystemIndustry.Controllers.Events
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> FillEventDetails(BookingEventViewModel model)
         {
-            ViewBag.NumMaxGuests = await CalcMaxGuestCount(model);
+            var selectedHallIds = new List<Guid>();
+            foreach (var hall in model.Halls)
+            {
+                if (hall.Selected)
+                    selectedHallIds.Add(hall.HallId);
+            }
+
+            ViewBag.NumMaxGuests = await GetApiController().CalcMaxGuestCount(selectedHallIds);
 
             return View(model);
         }
@@ -153,7 +128,14 @@ namespace HotelSystemIndustry.Controllers.Events
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> VerifyAndRetrieveAgreement(BookingEventViewModel model)
         {
-            uint numMaxGuests = await CalcMaxGuestCount(model);
+            var selectedHallIds = new List<Guid>();
+            foreach (var hall in model.Halls)
+            {
+                if (hall.Selected)
+                    selectedHallIds.Add(hall.HallId);
+            }
+
+            uint numMaxGuests = await GetApiController().CalcMaxGuestCount(selectedHallIds);
             if (model.NumGuests > numMaxGuests)
             {
                 ModelState.AddModelError("NumGuests", $"Number of guests can't exceed {numMaxGuests} with the chosen halls.");
@@ -179,7 +161,7 @@ namespace HotelSystemIndustry.Controllers.Events
         {
             if (!ModelState.IsValid)
             {
-                var eventHalls = await _context.EventHalls
+                var halls = await _context.EventHalls
                     .AsNoTracking()
                     .Include(eh => eh.Equipment)
                         !.ThenInclude(ei => ei.Equipment)
@@ -187,31 +169,31 @@ namespace HotelSystemIndustry.Controllers.Events
                     .ToListAsync();
 
                 ViewBag.TypeName = (await _context.EventTypes.FirstOrDefaultAsync(t => t.Id == model.EventTypeId))!.Name;
-                ViewBag.EventHalls = eventHalls;
+                ViewBag.EventHalls = halls;
                 return View("VerifyAndRetrieveAgreement", model);
             }
 
+            var result = await GetApiController().SubmitReservation(model);
 
-
-            var result = await SaveReservationInDatabase(model);
+            if (result == ReservationUploadResult.Success)
+                return RedirectToAction("EventReservationSuccess");
+            
 
             if (result == ReservationUploadResult.FileUploadingError)
-            {
                 ModelState.AddModelError("AgreementFile", "Error while uploading the agreement document!");
+            else
+                ModelState.AddModelError(string.Empty, "Error while making a reservation!");
 
-                var eventHalls = await _context.EventHalls
-                    .AsNoTracking()
-                    .Include(eh => eh.Equipment)
-                        !.ThenInclude(ei => ei.Equipment)
-                            .ThenInclude(e => e!.Type)
-                    .ToListAsync();
+            var eventHalls = await _context.EventHalls
+                .AsNoTracking()
+                .Include(eh => eh.Equipment)
+                    !.ThenInclude(ei => ei.Equipment)
+                        .ThenInclude(e => e!.Type)
+                .ToListAsync();
 
-                ViewBag.TypeName = (await _context.EventTypes.FirstOrDefaultAsync(t => t.Id == model.EventTypeId))!.Name;
-                ViewBag.EventHalls = eventHalls;
-                return View("VerifyAndRetrieveAgreement", model);
-            }
-
-            return RedirectToAction("EventReservationSuccess");
+            ViewBag.TypeName = (await _context.EventTypes.FirstOrDefaultAsync(t => t.Id == model.EventTypeId))!.Name;
+            ViewBag.EventHalls = eventHalls;
+            return View("VerifyAndRetrieveAgreement", model);
         }
 
 
@@ -229,12 +211,7 @@ namespace HotelSystemIndustry.Controllers.Events
         {
             var currentTimeMinusWeek = DateTime.UtcNow.AddDays(-7);
 
-            var eventReservs = await _context.EventReservations
-                .AsNoTracking()
-                .Where(er => er.EndTime >= currentTimeMinusWeek)
-                .Include(er => er.EventType)
-                .Include(er => er.Status)
-                .ToListAsync();
+            var eventReservs = await GetApiController().GetEventReservations(currentTimeMinusWeek);
 
             ViewBag.EventReservations = eventReservs;
             return View();
@@ -288,8 +265,8 @@ namespace HotelSystemIndustry.Controllers.Events
             _context.EventReservations.Update(reservation);
             await _context.SaveChangesAsync();
 
-            ViewBag.StatusList = new SelectList(_context.EventReservationStatuses, "Id", "Name", reservation.StatusId);
-            return View("EventRealisation");
+            ViewBag.StatusList = new SelectList(_context.EventReservationStatuses, "Id", "Name", statusId);
+            return View("EventRealisation", reservation);
         }
 
 
@@ -297,142 +274,46 @@ namespace HotelSystemIndustry.Controllers.Events
         [Authorize(Roles="HotelEmployee")]
         public async Task<IActionResult> GetEventAgreementDocument(Guid id)
         {
+            return RedirectToAction("GetEventAgreementDocument", "EventManagementApi", new {Id = id});
+        }
+
+
+        [HttpGet]
+        [Authorize(Roles="HotelEmployee")]
+        public async Task<IActionResult> CancelEventView(Guid id)
+        {
             var reservation = await _context.EventReservations
+                .Include(r => r.EventType)
+                .Include(r => r.Status)
                 .FirstOrDefaultAsync(r => r.Id == id);
 
             if (reservation == null)
                 return BadRequest("Invalid event reservation ID!");
 
-            string fullPath = Path.Combine(_appEnvironment.WebRootPath, "EventAgreements", reservation.AgreementDocumentPath);
-            
-            var stream = new FileStream(fullPath, FileMode.Open);
-            return new FileStreamResult(stream, "application/pdf");
+            return View(reservation);
         }
 
 
-        private async Task<uint> CalcMaxGuestCount(BookingEventViewModel model)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles="HotelEmployee")]
+        public async Task<IActionResult> ConfirmEventCancelation(Guid id)
         {
-            uint numMaxGuests = 0;
+            var result = await GetApiController().CancelEvent(id);
+            if (!result)
+                return BadRequest("Invalid event reservation ID!");
 
-            foreach (var hallSelection in model.Halls)
-            {
-                if (!hallSelection.Selected)
-                    continue;
-
-                var eventHall = await _context.EventHalls
-                    .AsNoTracking()
-                    .FirstOrDefaultAsync(eh => eh.Id == hallSelection.HallId);
-                numMaxGuests += eventHall!.NumMaxGuests;
-            }
-
-            return numMaxGuests;
+            return RedirectToAction("EventChoosing");
         }
 
-        private async Task<string> SaveAgreementFile(BookingEventViewModel model)
+        
+        private EventManagementApiController GetApiController()
         {
-            if (model.AgreementFile == null)
-                return string.Empty;
-
-            var extension = Path.GetExtension(model.AgreementFile.FileName).ToLowerInvariant();
-
-            if (string.IsNullOrEmpty(extension) || extension != ".pdf")
-                return string.Empty;
-
-            var directoryPath = Path.Combine(_appEnvironment.WebRootPath, "EventAgreements");
-
-            if (!Directory.Exists(directoryPath))
-                Directory.CreateDirectory(directoryPath);
-
-
-            string targetFileName = Path.GetRandomFileName() + ".pdf";
-            var filePath = Path.Combine(directoryPath, targetFileName);
-
-            using (var stream = System.IO.File.Create(filePath))
+            EventManagementApiController apiController = new EventManagementApiController(_context, _appEnvironment)
             {
-                await model.AgreementFile.CopyToAsync(stream);
-            }
-
-            return filePath;
-        }
-
-        private enum ReservationUploadResult
-        {
-            Success,
-            InvalidDataError,
-            DatabaseSavingError,
-            FileUploadingError
-        }
-
-        private async Task<ReservationUploadResult> SaveReservationInDatabase(BookingEventViewModel model)
-        {
-            var status = await _context.EventReservationStatuses.FirstOrDefaultAsync(s => s.Value == "booked");
-            if (status == null)
-            {
-                status = new EventReservationStatus
-                {
-                    Id = Guid.NewGuid(), Name = "Booked", Value = "booked", IsActive = true
-                };
-                _context.Add(status);
-            }
-
-
-            var eventType = await _context.EventTypes.FirstOrDefaultAsync(t => t.Id == model.EventTypeId);
-            if (eventType == null)
-                return ReservationUploadResult.InvalidDataError;
-            
-
-            EventReservation reservation = new EventReservation
-            {
-                Id = Guid.NewGuid(),
-                StatusId = status.Id,
-                Status = status,
-                EventTypeId = eventType.Id,
-                EventType = eventType,
-                StartTime = model.StartTime.ToUniversalTime(),
-                EndTime = model.EndTime.ToUniversalTime(),
-                NumRequiredStaff = model.NumServantStuff,
-                NumGuests = model.NumGuests,
-                Halls = new Collection<EventHall>(),
-                Equipment = new Collection<EquipmentInstance>()
+                ControllerContext = this.ControllerContext
             };
-
-            foreach (var hallReservation in model.Halls)
-            {
-                if (!hallReservation.Selected)
-                    continue;
-
-                EventHall? eventHall = await _context.EventHalls
-                    .Include(eh => eh.Equipment)
-                    .FirstOrDefaultAsync(h => h.Id == hallReservation.HallId);
-                if (eventHall == null)
-                    return ReservationUploadResult.InvalidDataError;
-
-                reservation.Halls.Add(eventHall);
-
-                foreach (var equipmentReservation in hallReservation.Equipment)
-                {
-                    if (!equipmentReservation.Selected)
-                        continue;
-
-                    var equipmentInstance = eventHall.Equipment!.FirstOrDefault(e => e.Id == equipmentReservation.EquipmentInstanceId);
-                    if (equipmentInstance == null)
-                        return ReservationUploadResult.InvalidDataError;
-
-                    reservation.Equipment.Add(equipmentInstance);
-                }
-            }
-
-            var savedPath = await SaveAgreementFile(model);
-
-            if (string.IsNullOrEmpty(savedPath))
-                return ReservationUploadResult.FileUploadingError;
-
-            reservation.AgreementDocumentPath = Path.GetFileName(savedPath);
-
-            _context.EventReservations.Add(reservation);
-            await _context.SaveChangesAsync();
-
-            return ReservationUploadResult.Success;
+            return apiController;
         }
 
     }

@@ -25,6 +25,7 @@
     @Html.HiddenFor(m => m.EventTypeId)
     @Html.HiddenFor(m => m.StartTime)
     @Html.HiddenFor(m => m.EndTime)
+    @Html.HiddenFor(m => m.Name)
 
     @if (freeHalls.Count == 0) {
         <span>Sorry! There are no free event halls in the given time span.</span>
