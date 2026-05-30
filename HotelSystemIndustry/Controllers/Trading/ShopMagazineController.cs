@@ -23,7 +23,8 @@ namespace HotelSystemIndustry.Controllers.Trading
         // GET: ShopMagazine
         public async Task<IActionResult> Index()
         {
-            return View(await _context.ShopMagazines.ToListAsync());
+            var hotelDbContext = _context.ShopMagazines.Include(s => s.Hotel);
+            return View(await hotelDbContext.ToListAsync());
         }
 
         // GET: ShopMagazine/Details/5
@@ -35,6 +36,7 @@ namespace HotelSystemIndustry.Controllers.Trading
             }
 
             var shopMagazine = await _context.ShopMagazines
+                .Include(s => s.Hotel)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (shopMagazine == null)
             {
@@ -48,6 +50,7 @@ namespace HotelSystemIndustry.Controllers.Trading
         [Authorize(Roles = "Admin,TradingEmployee,MaintainanceEmployee")]
         public IActionResult Create()
         {
+            ViewData["HotelId"] = new SelectList(_context.Hotels, "Id", "Description");
             return View();
         }
 
@@ -57,7 +60,7 @@ namespace HotelSystemIndustry.Controllers.Trading
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin,TradingEmployee,MaintainanceEmployee")]
-        public async Task<IActionResult> Create([Bind("Id,Location")] ShopMagazine shopMagazine)
+        public async Task<IActionResult> Create([Bind("Id,Location,HotelId")] ShopMagazine shopMagazine)
         {
             if (ModelState.IsValid)
             {
@@ -66,6 +69,7 @@ namespace HotelSystemIndustry.Controllers.Trading
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["HotelId"] = new SelectList(_context.Hotels, "Id", "Name", shopMagazine.HotelId);
             return View(shopMagazine);
         }
 
@@ -83,6 +87,7 @@ namespace HotelSystemIndustry.Controllers.Trading
             {
                 return NotFound();
             }
+            ViewData["HotelId"] = new SelectList(_context.Hotels, "Id", "Name", shopMagazine.HotelId);
             return View(shopMagazine);
         }
 
@@ -92,7 +97,7 @@ namespace HotelSystemIndustry.Controllers.Trading
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin,TradingEmployee,MaintainanceEmployee")]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Id,Location")] ShopMagazine shopMagazine)
+        public async Task<IActionResult> Edit(Guid id, [Bind("Id,Location,HotelId")] ShopMagazine shopMagazine)
         {
             if (id != shopMagazine.Id)
             {
@@ -119,6 +124,7 @@ namespace HotelSystemIndustry.Controllers.Trading
                 }
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["HotelId"] = new SelectList(_context.Hotels, "Id", "Name", shopMagazine.HotelId);
             return View(shopMagazine);
         }
 
@@ -132,6 +138,7 @@ namespace HotelSystemIndustry.Controllers.Trading
             }
 
             var shopMagazine = await _context.ShopMagazines
+                .Include(s => s.Hotel)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (shopMagazine == null)
             {

@@ -23,7 +23,6 @@ builder.Services.AddAntiforgery();
 
 builder.Services.AddIdentity<User, IdentityRole>(options =>
     {
-        options.SignIn.RequireConfirmedAccount = true;
         options.Password.RequireDigit = true;
         options.Password.RequiredLength = 8;
         options.Password.RequireNonAlphanumeric = false;
@@ -42,8 +41,13 @@ builder.Services.ConfigureApplicationCookie(options =>
 });
 
 
-builder.Services.AddMemoryCache();
-builder.Services.AddSession();
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(60);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 
 
 builder.Services.AddRazorPages();

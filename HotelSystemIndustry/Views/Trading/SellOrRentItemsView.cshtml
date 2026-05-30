@@ -18,9 +18,21 @@
 
     <div class="form-group row">
         <div class="col-md-4">
+            @Html.LabelFor(m => m.Items.MagazineId, "Magazine: ", new {@class = "control-label"})
+        </div>
+        <div class="col-md-4">
+            @Html.DropDownListFor(m => m.Items.MagazineId, (IEnumerable<SelectListItem>)ViewBag.MagazineList, new {@class = "form-control"})
+        </div>
+        <div class="col-md-1">
+            <input type="submit" asp-action="RefreshSaleOrRentItemsView" class="btn btn-primary text-end" value="Change" />
+        </div>
+        <span asp-validation-for="Items.MagazineId" class="text-danger"></span>
+    </div>
+    <div class="form-group row">
+        <div class="col-md-4">
             @Html.LabelFor(m => m.Items.ShopPointId, "Shop point: ", new {@class = "control-label"})
         </div>
-        <div class="col-md-6">
+        <div class="col-md-5">
             @Html.DropDownListFor(m => m.Items.ShopPointId, (IEnumerable<SelectListItem>)ViewBag.ShopPointList, new {@class = "form-control"})
         </div>
         <span asp-validation-for="Items.ShopPointId" class="text-danger"></span>
@@ -30,6 +42,9 @@
         <div class="col-md-8">
             <div class="form-group row justify-content-center my-4">
                 @foreach (var item in Items) {
+                    if (item.MagazineId != Model.Items.MagazineId)
+                        continue;
+                    
                     var countAfterPurchase = (int)item.Count;
                     var currentItem = Model.Items.Items.FirstOrDefault(a => a.SaleItemInstanceId == item.Id);
                     if (currentItem != null)
@@ -51,9 +66,8 @@
                         <label for="Item(@item.Id)" class="row mx-0">
                             <div class="col-md-3 text-start">@item.Item!.Name</div>
                             <div class="col-md-3 text-start">@item.Variant</div>
-                            <div class="col-md-2 text-start">@item.Magazine!.Location</div>
                             <div class="col-md-2 text-start">x @countAfterPurchase</div>
-                            <div class="col-md-2 text-end">@Html.DisplayFor(m => item.Price)</div>
+                            <div class="col-md-12 text-end">@Html.DisplayFor(m => item.Price)</div>
                         </label>
                         <span asp-validation-for="NewItemId" class="text-danger"></span>
                     </div>
@@ -112,7 +126,9 @@
 
 </form>
 
-<a asp-action="Index">Back</a>
+<div class="my-4">
+    <a asp-action="Index">Back</a>
+</div>
 
 
 

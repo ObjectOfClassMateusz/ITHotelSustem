@@ -12,7 +12,9 @@ namespace HotelSystemIndustry.ViewModels.Trading
 
     public class SellOrRentItems
     {
-        public Guid? ShopPointId { get; set; }
+        public Guid ShopPointId { get; set; }
+
+        public Guid MagazineId { get; set; }
 
         public IList<SaleItemAndCount> Items { get; set; } = new List<SaleItemAndCount>();
     }

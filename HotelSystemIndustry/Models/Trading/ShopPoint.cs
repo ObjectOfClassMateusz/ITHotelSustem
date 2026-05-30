@@ -10,6 +10,12 @@ namespace HotelSystemIndustry.Models.Trading
 
         [Required, MaxLength(50, ErrorMessage = "Opis lokalizacji jest zbyt długi")]
         public virtual required string Location { get; set; }
+
+
+        [Required]
+        public Guid HotelId { get; set; }
+
+        public Hotel? Hotel { get; set; }
     }
 
 }

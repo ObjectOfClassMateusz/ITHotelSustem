@@ -33,7 +33,7 @@
                         <td>@item.SaleItem!.Name</td>
                         <td>@item.Variant</td>
                         <td>@item.Count</td>
-                        <td>@item.UnitPrice</td>
+                        <td>@item.UnitPrice.ToString("C2")</td>
                         <td>
                             
                             <form method="get" asp-action="ReturnItemMenu" asp-route-purchaseItemId="@item.Id" >

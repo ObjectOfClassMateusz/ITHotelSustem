@@ -23,6 +23,9 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         [Authorize(Roles="KitchenEmployee")]
         public async Task<IActionResult> Index()
         {
+            Guid currentHotel = await GetCurrentHotelId();
+
+            ViewBag.HotelChangePartialHotelList = new SelectList(_context.Hotels, "Id", "Name", currentHotel);
             return View();
         }
 
@@ -31,7 +34,11 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         {
             ViewBag.OrderTypes = new SelectList(_context.KitchenOrderTypes, "Id", "Name");
 
-            return View();
+            NewOrderViewModel model = new()
+            {
+                HotelId = await GetCurrentHotelId()
+            };
+            return View(model);
         }
 
         [HttpPost]
@@ -115,6 +122,12 @@ namespace HotelSystemIndustry.Controllers.Kitchen
             var products = await _context.KitchenProducts.AsNoTracking().ToListAsync();
             ViewBag.Products = products;
 
+            var hotel = await _context.Hotels.AsNoTracking().FirstOrDefaultAsync(h => h.Id == model.Order.HotelId);
+            if (hotel == null)
+                return BadRequest("Invalid hotel ID!");
+
+            ViewBag.HotelName = hotel.Name;
+
             return View(model.Order);
         }
 
@@ -150,9 +163,11 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         [Authorize(Roles="KitchenEmployee")]
         public async Task<IActionResult> RealiseOrderView()
         {
+            Guid currentHotel = await GetCurrentHotelId();
+
             var unrealisedOrders = await _context.KitchenOrders
                 .AsNoTracking()
-                .Where(p => p.RealisedTime == null)
+                .Where(p => p.RealisedTime == null && p.HotelId == currentHotel)
                 .Include(p => p.Type)
                 .Include(p => p.Products)
                     !.ThenInclude(op => op.Product)
@@ -185,9 +200,11 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         [Authorize(Roles="KitchenEmployee")]
         public async Task<IActionResult> CancelOrderView()
         {
+            Guid currentHotel = await GetCurrentHotelId();
+
             var unrealisedOrders = await _context.KitchenOrders
                 .AsNoTracking()
-                .Where(p => p.RealisedTime == null)
+                .Where(p => p.RealisedTime == null && p.HotelId == currentHotel)
                 .Include(p => p.Type)
                 .Include(p => p.Products)
                     !.ThenInclude(op => op.Product)
@@ -237,11 +254,15 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         [Authorize(Roles="KitchenEmployee")]
         public async Task<IActionResult> HandleDelivery()
         {
+            Guid currentHotel = await GetCurrentHotelId();
+
             var articles = await _context.KitchenArticles.AsNoTracking().ToListAsync();
+            var storages = await _context.KitchenStorages.AsNoTracking().Where(s => s.HotelId == currentHotel).ToListAsync();
+
             ViewBag.Articles = articles;
-            ViewBag.Storages = await _context.KitchenStorages.AsNoTracking().ToListAsync();
+            ViewBag.Storages = storages;
             ViewBag.ArticlesSelectList = await GetArticlesSelectList(articles);
-            ViewBag.StorageSelectList = new SelectList(_context.KitchenStorages, "Id", "Name");
+            ViewBag.StorageSelectList = new SelectList(storages, "Id", "Name");
             return View(new KitchenDeliveryArticleViewModel());
         }
 
@@ -258,11 +279,15 @@ namespace HotelSystemIndustry.Controllers.Kitchen
 
             ModelState.Clear();
 
+            Guid currentHotel = await GetCurrentHotelId();
+
             var articles = await _context.KitchenArticles.AsNoTracking().ToListAsync();
+            var storages = await _context.KitchenStorages.AsNoTracking().Where(s => s.HotelId == currentHotel).ToListAsync();
+
             ViewBag.Articles = articles;
-            ViewBag.Storages = await _context.KitchenStorages.AsNoTracking().ToListAsync();
+            ViewBag.Storages = storages;
             ViewBag.ArticlesSelectList = await GetArticlesSelectList(articles);
-            ViewBag.StorageSelectList = new SelectList(_context.KitchenStorages, "Id", "Name");
+            ViewBag.StorageSelectList = new SelectList(storages, "Id", "Name");
             return View("HandleDelivery", model);
         }
 
@@ -340,15 +365,8 @@ namespace HotelSystemIndustry.Controllers.Kitchen
             if (id == Guid.Empty)
                 return BadRequest("CookWithRecipe: invalid recipe ID!");
 
-            var recipe = await _context.KitchenRecipes
-                .AsNoTracking()
-                .Where(kr => kr.Id == id)
-                .Include(kr => kr.OutcomeProduct)
-                .Include(kr => kr.Ingredients)
-                    !.ThenInclude(kri => kri.Article)
-                    .ThenInclude(ka => ka!.Instances)
-                    !.ThenInclude(ai => ai.Storage)
-                .FirstOrDefaultAsync();
+            Guid currentHotel = await GetCurrentHotelId();
+            var recipe = await GetRecipeWithArticleInstances(currentHotel, id);
             
             if (recipe == null)
                 return BadRequest("CookWithRecipe: there's no recipe with given ID!");
@@ -386,15 +404,8 @@ namespace HotelSystemIndustry.Controllers.Kitchen
                 ViewBag.ResultMessage = "Not enough article in storage!";
 
 
-            var recipe = await _context.KitchenRecipes
-                .AsNoTracking()
-                .Where(kr => kr.Id == model.RecipeId)
-                .Include(kr => kr.OutcomeProduct)
-                .Include(kr => kr.Ingredients)
-                    !.ThenInclude(kri => kri.Article)
-                    .ThenInclude(ka => ka!.Instances)
-                    !.ThenInclude(ai => ai.Storage)
-                .FirstOrDefaultAsync();
+            Guid currentHotel = await GetCurrentHotelId();
+            var recipe = await GetRecipeWithArticleInstances(currentHotel, model.RecipeId);
             
             if (recipe == null)
                 return BadRequest("CookWithRecipeTakeArticle: there's no recipe with given ID!");
@@ -425,6 +436,50 @@ namespace HotelSystemIndustry.Controllers.Kitchen
                 articlesSelList.Add(new SelectListItem(article.Name + " (" + unitText + ")", article.Id.ToString()));
             }
             return articlesSelList;
+        }
+
+
+        private async Task<KitchenRecipe?> GetRecipeWithArticleInstances(Guid hotelId, Guid recipeId)
+        {
+            var recipe = await _context.KitchenRecipes
+                .AsNoTracking()
+                .Where(kr => kr.Id == recipeId)
+                .Include(kr => kr.OutcomeProduct)
+                .Include(kr => kr.Ingredients)
+                    !.ThenInclude(kri => kri.Article)
+                    .ThenInclude(ka => ka!.Instances)
+                    !.ThenInclude(ai => ai.Storage)
+                .FirstOrDefaultAsync();
+            
+            if (recipe == null)
+                return null;
+
+            ViewBag.ResultMessage = string.Empty;
+
+            // Pozbywamy się artykułów przechowywanych poza hotelem
+
+            foreach (var ing in recipe.Ingredients!)
+            {
+                for (int i = 0; i < ing.Article!.Instances!.Count;)
+                {
+                    if (ing.Article.Instances[i].Storage!.HotelId != hotelId)
+                        ing.Article.Instances.RemoveAt(i);
+                    else
+                        i++;
+                }
+            }
+
+            return recipe;
+        }
+
+
+        private async Task<Guid> GetCurrentHotelId()
+        {
+            HotelChangeController hotelChangeController = new HotelChangeController(_context)
+            {
+                ControllerContext = this.ControllerContext
+            };
+            return await hotelChangeController.GetCurrentHotel();
         }
     }
 

@@ -84,6 +84,7 @@ namespace HotelSystemIndustry.Controllers.Events
                 .Include(eh => eh.Equipment)
                     !.ThenInclude(ei => ei.Equipment)
                         .ThenInclude(e => e!.Type)
+                .Include(eh => eh.Hotel)
                 .ToListAsync();
 
             IList<EventHall> freeHalls = new List<EventHall>();

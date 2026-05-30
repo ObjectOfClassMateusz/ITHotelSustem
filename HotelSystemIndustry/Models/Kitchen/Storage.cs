@@ -14,6 +14,12 @@ namespace HotelSystemIndustry.Models.Kitchen
         public required string Location { get; set; }
 
 
+        [Required]
+        public Guid HotelId { get; set; }
+
+        public Hotel? Hotel { get; set; }
+
+
         public virtual ICollection<ArticleInstance>? Articles { get; set; }
     }
 }

@@ -136,6 +136,10 @@ namespace HotelSystemIndustry.Infrastructure
                 .HasOne(ei => ei.EventHall)
                 .WithMany(eh => eh.Equipment)
                 .HasForeignKey(ei => ei.EventHallId);
+            modelBuilder.Entity<EventHall>()
+                .HasOne(eh => eh.Hotel)
+                .WithMany()
+                .HasForeignKey(eh => eh.HotelId);
             modelBuilder.Entity<EventReservation>()
                 .HasOne(er => er.EventType)
                 .WithMany()
@@ -180,6 +184,22 @@ namespace HotelSystemIndustry.Infrastructure
                 .WithMany()
                 .HasForeignKey(sii => sii.ItemId)
                 .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Storage>()
+                .HasOne(s => s.Hotel)
+                .WithMany()
+                .HasForeignKey(s => s.HotelId);
+            modelBuilder.Entity<Order>()
+                .HasOne(o => o.Hotel)
+                .WithMany()
+                .HasForeignKey(o => o.HotelId);
+            modelBuilder.Entity<ShopMagazine>()
+                .HasOne(m => m.Hotel)
+                .WithMany()
+                .HasForeignKey(m => m.HotelId);
+            modelBuilder.Entity<ShopPoint>()
+                .HasOne(p => p.Hotel)
+                .WithMany()
+                .HasForeignKey(p => p.HotelId);
 
 
             modelBuilder.Entity<EventReservation>()

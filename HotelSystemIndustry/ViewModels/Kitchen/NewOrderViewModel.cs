@@ -14,6 +14,9 @@ namespace HotelSystemIndustry.ViewModels.Kitchen
         [Required]
         public Guid Type { get; set; }
 
+        [Required]
+        public Guid HotelId { get; set; }
+
         [Required, MaxLength(100, ErrorMessage = "The delivery destination description is too long!")]
         public string Destination { get; set; } = string.Empty;
 

@@ -50,6 +50,11 @@ namespace HotelSystemIndustry.Models.Kitchen
         public virtual OrderType? Type { get; set; }
 
 
+        [Required]
+        public Guid HotelId { get; set; }
+
+        public Hotel? Hotel { get; set; }
+
 
         [Required, MaxLength(100, ErrorMessage = "Opis miejsca docelowego dostawy jest zbyt długi")]
         public required string DeliveryDestination { get; set; }
