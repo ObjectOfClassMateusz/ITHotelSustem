@@ -26,13 +26,21 @@
             @Html.DisplayNameFor(model => model.StartTime)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.StartTime)
+            @{ DateTime startTime = Model.StartTime.ToLocalTime(); }
+            @Html.DisplayFor(model => startTime)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.EndTime)
+            @{ DateTime endTime = Model.StartTime.ToLocalTime(); }
+            @Html.DisplayNameFor(model => endTime)
         </dt>
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.EndTime)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Name)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.NumRequiredStaff)
@@ -45,6 +53,12 @@
         </dt>
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.NumGuests)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.AgreementDocumentPath)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.AgreementDocumentPath)
         </dd>
     </dl>
 </div>

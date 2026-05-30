@@ -19,6 +19,9 @@
                 @Html.DisplayNameFor(model => model.NumMaxGuests)
             </th>
             <th>
+                @Html.DisplayNameFor(model => model.Hotel)
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.ReservationPrice)
             </th>
             <th></th>
@@ -32,6 +35,9 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.NumMaxGuests)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Hotel!.Name)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.ReservationPrice)

@@ -29,6 +29,21 @@
 </div>
 
 
+<hr />
+
+
+<form id="hotelchangeform" class="form-group row my-4 justify-content-center">
+
+    <div class="col-md-1">
+        <label class="control-label fs-6" for="hotelid">Hotel:</label>
+    </div>
+    <div class="col-md-4">
+        <select asp-items="ViewBag.HotelChangePartialHotelList" name="hotelid" id="hotelid" class="form-control"></select>
+    </div>
+
+</form>
+
+
 <h2>Management</h2>
 
 <hr />
@@ -51,4 +66,31 @@
         <a asp-controller="Purchase" asp-action="Index">Purchases</a>
     </li>
 </ul>
+
+
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#hotelid").change(function (e){
+                e.preventDefault();
+                let data = new FormData();
+                data.append("hotelid", $("#hotelid").val());
+                $.ajax({
+                    url: '/HotelChange/ChangeHotel',
+                    type: "POST",
+                    processData: false,
+                    data: data,
+                    dataType: 'json',
+                    contentType: false,
+                    success: function (response) {
+                        console.log('Changed hotel');
+                    },
+                    error: function (er) { console.log(er); }
+                });
+
+                return false;
+            });
+        });
+    </script>
+}
 

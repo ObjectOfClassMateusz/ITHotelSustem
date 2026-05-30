@@ -17,6 +17,8 @@
 <form class="row" method="post" asp-action="ChooseOrderProducts">
     @Html.AntiForgeryToken()
     <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+
+    @Html.HiddenFor(m => m.HotelId)
     
     <div class="form-group row my-2">
         <div class="col-md-4">

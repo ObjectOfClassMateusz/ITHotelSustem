@@ -34,6 +34,11 @@
                 <span asp-validation-for="EndTime" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <label asp-for="NumRequiredStaff" class="control-label"></label>
                 <input asp-for="NumRequiredStaff" class="form-control" />
                 <span asp-validation-for="NumRequiredStaff" class="text-danger"></span>
@@ -43,6 +48,7 @@
                 <input asp-for="NumGuests" class="form-control" />
                 <span asp-validation-for="NumGuests" class="text-danger"></span>
             </div>
+            @Html.HiddenFor(m => m.AgreementDocumentPath)
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>

@@ -23,7 +23,8 @@ namespace HotelSystemIndustry.Controllers.Events
         // GET: EventHall
         public async Task<IActionResult> Index()
         {
-            return View(await _context.EventHalls.ToListAsync());
+            var hotelDbContext = _context.EventHalls.Include(e => e.Hotel);
+            return View(await hotelDbContext.ToListAsync());
         }
 
         // GET: EventHall/Details/5
@@ -35,6 +36,7 @@ namespace HotelSystemIndustry.Controllers.Events
             }
 
             var eventHall = await _context.EventHalls
+                .Include(e => e.Hotel)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (eventHall == null)
             {
@@ -48,6 +50,7 @@ namespace HotelSystemIndustry.Controllers.Events
         [Authorize(Roles = "Admin,HotelEmployee")]
         public IActionResult Create()
         {
+            ViewData["HotelId"] = new SelectList(_context.Hotels, "Id", "Name");
             return View();
         }
 
@@ -57,7 +60,7 @@ namespace HotelSystemIndustry.Controllers.Events
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin,HotelEmployee")]
-        public async Task<IActionResult> Create([Bind("Id,Name,NumMaxGuests,ReservationPrice")] EventHall eventHall)
+        public async Task<IActionResult> Create([Bind("Id,Name,NumMaxGuests,HotelId,ReservationPrice")] EventHall eventHall)
         {
             if (ModelState.IsValid)
             {
@@ -66,6 +69,7 @@ namespace HotelSystemIndustry.Controllers.Events
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["HotelId"] = new SelectList(_context.Hotels, "Id", "Name", eventHall.HotelId);
             return View(eventHall);
         }
 
@@ -83,6 +87,7 @@ namespace HotelSystemIndustry.Controllers.Events
             {
                 return NotFound();
             }
+            ViewData["HotelId"] = new SelectList(_context.Hotels, "Id", "Name", eventHall.HotelId);
             return View(eventHall);
         }
 
@@ -92,7 +97,7 @@ namespace HotelSystemIndustry.Controllers.Events
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin,HotelEmployee")]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Id,Name,NumMaxGuests,ReservationPrice")] EventHall eventHall)
+        public async Task<IActionResult> Edit(Guid id, [Bind("Id,Name,NumMaxGuests,HotelId,ReservationPrice")] EventHall eventHall)
         {
             if (id != eventHall.Id)
             {
@@ -119,6 +124,7 @@ namespace HotelSystemIndustry.Controllers.Events
                 }
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["HotelId"] = new SelectList(_context.Hotels, "Id", "Name", eventHall.HotelId);
             return View(eventHall);
         }
 
@@ -132,6 +138,7 @@ namespace HotelSystemIndustry.Controllers.Events
             }
 
             var eventHall = await _context.EventHalls
+                .Include(e => e.Hotel)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (eventHall == null)
             {

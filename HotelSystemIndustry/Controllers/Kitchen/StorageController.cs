@@ -24,7 +24,8 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         // GET: Storage
         public async Task<IActionResult> Index()
         {
-            return View(await _context.KitchenStorages.ToListAsync());
+            var hotelDbContext = _context.KitchenStorages.Include(s => s.Hotel);
+            return View(await hotelDbContext.ToListAsync());
         }
 
         // GET: Storage/Details/5
@@ -36,6 +37,7 @@ namespace HotelSystemIndustry.Controllers.Kitchen
             }
 
             var storage = await _context.KitchenStorages
+                .Include(s => s.Hotel)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (storage == null)
             {
@@ -48,6 +50,7 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         // GET: Storage/Create
         public IActionResult Create()
         {
+            ViewData["HotelId"] = new SelectList(_context.Hotels, "Id", "Name");
             return View();
         }
 
@@ -56,7 +59,7 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Location")] Storage storage)
+        public async Task<IActionResult> Create([Bind("Id,Name,Location,HotelId")] Storage storage)
         {
             if (ModelState.IsValid)
             {
@@ -65,6 +68,7 @@ namespace HotelSystemIndustry.Controllers.Kitchen
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["HotelId"] = new SelectList(_context.Hotels, "Id", "Name", storage.HotelId);
             return View(storage);
         }
 
@@ -81,6 +85,7 @@ namespace HotelSystemIndustry.Controllers.Kitchen
             {
                 return NotFound();
             }
+            ViewData["HotelId"] = new SelectList(_context.Hotels, "Id", "Name", storage.HotelId);
             return View(storage);
         }
 
@@ -89,7 +94,7 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Id,Name,Location")] Storage storage)
+        public async Task<IActionResult> Edit(Guid id, [Bind("Id,Name,Location,HotelId")] Storage storage)
         {
             if (id != storage.Id)
             {
@@ -116,6 +121,7 @@ namespace HotelSystemIndustry.Controllers.Kitchen
                 }
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["HotelId"] = new SelectList(_context.Hotels, "Id", "Name", storage.HotelId);
             return View(storage);
         }
 
@@ -128,6 +134,7 @@ namespace HotelSystemIndustry.Controllers.Kitchen
             }
 
             var storage = await _context.KitchenStorages
+                .Include(s => s.Hotel)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (storage == null)
             {

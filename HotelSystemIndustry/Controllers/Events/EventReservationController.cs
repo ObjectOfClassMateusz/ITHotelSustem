@@ -59,15 +59,10 @@ namespace HotelSystemIndustry.Controllers.Events
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,StatusId,EventTypeId,StartTime,EndTime,NumRequiredStaff,NumGuests")] EventReservation eventReservation)
+        public async Task<IActionResult> Create([Bind("Id,StatusId,EventTypeId,StartTime,EndTime,Name,NumRequiredStaff,NumGuests,AgreementDocumentPath")] EventReservation eventReservation)
         {
-            if (ModelState.IsValid &&
-                eventReservation.EventTypeId != Guid.Empty &&
-                eventReservation.StatusId != Guid.Empty)
+            if (ModelState.IsValid)
             {
-                eventReservation.EventType = _context.EventTypes.Where(et => et.Id == eventReservation.EventTypeId).Single();
-                eventReservation.Status = _context.EventReservationStatuses.Where(s => s.Id == eventReservation.StatusId).Single();
-
                 eventReservation.StartTime = eventReservation.StartTime.ToUniversalTime();
                 eventReservation.EndTime = eventReservation.EndTime.ToUniversalTime();
 
@@ -104,7 +99,7 @@ namespace HotelSystemIndustry.Controllers.Events
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Id,StatusId,EventTypeId,StartTime,EndTime,NumRequiredStaff,NumGuests")] EventReservation eventReservation)
+        public async Task<IActionResult> Edit(Guid id, [Bind("Id,StatusId,EventTypeId,StartTime,EndTime,Name,NumRequiredStaff,NumGuests,AgreementDocumentPath")] EventReservation eventReservation)
         {
             if (id != eventReservation.Id)
             {
@@ -113,9 +108,6 @@ namespace HotelSystemIndustry.Controllers.Events
 
             if (ModelState.IsValid)
             {
-                eventReservation.EventType = _context.EventTypes.Where(et => et.Id == eventReservation.EventTypeId).Single();
-                eventReservation.Status = _context.EventReservationStatuses.Where(s => s.Id == eventReservation.StatusId).Single();
-
                 eventReservation.StartTime = eventReservation.StartTime.ToUniversalTime();
                 eventReservation.EndTime = eventReservation.EndTime.ToUniversalTime();
 
