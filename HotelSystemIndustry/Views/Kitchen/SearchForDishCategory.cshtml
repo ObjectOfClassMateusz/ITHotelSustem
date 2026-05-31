@@ -1,0 +1,44 @@
+@using HotelSystemIndustry.Models.Kitchen
+@using HotelSystemIndustry.Services
+
+@model IList<ExternalMealCategory>
+
+@{
+    ViewData["Title"] = "Special dish inspirations";
+    ViewBag.LowerNavPartial = "_KitchenNavPartial";
+}
+
+
+<h1 class="fs-2">Special dish inspirations</h1>
+<h2 class="fs-1">Search for dish by category</h2>
+<hr />
+
+
+<div class="container my-4">
+    @foreach (var category in Model) {
+        <div class="container my-4">
+            <h3 class="my-4">@category.StrCategory</h3>
+
+            <div class="row">
+                <div class="col-4 mx-auto">
+                    <img class="mx-auto d-block img-fluid" src="@category.StrCategoryThumb" />
+                </div>
+            </div>
+
+            <div class="my-4">
+                @category.StrCategoryDescription
+            </div>
+
+            <div class="my-4">
+                <a class="btn btn-primary" asp-action="SpecialDishesOfCategory" asp-route-category="@category.StrCategory">Show</a>
+            </div>
+
+            <hr />
+        </div>
+    }
+</div>
+
+<div class="my-4">
+    <a asp-action="SpecialDishInspiration" asp-controller="Kitchen" class="btn btn-primary">Back</a>
+</div>
+
