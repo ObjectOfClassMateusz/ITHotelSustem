@@ -1,0 +1,69 @@
+﻿@model IEnumerable<HotelSystemIndustry.Models.Recreation.RecreationFacility>
+
+@{
+    ViewData["Title"] = "Oferta Rekreacyjna";
+    ViewBag.LowerNavPartial = "_RecreationNavPartial";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Recreations Avaiable</h2>
+        
+        @if (User.IsInRole("Admin") || User.IsInRole("RecreationEmployee"))
+        {
+            <a asp-action="CreateFacility" class="btn btn-primary">+ Add new object</a>
+        }
+    </div>
+
+    <table class="table table-hover shadow-sm bg-white rounded">
+        <thead class="thead-light">
+            <tr>
+                <th>@Html.DisplayNameFor(model => model.Name)</th>
+                <th>@Html.DisplayNameFor(model => model.Description)</th>
+                <th>@Html.DisplayNameFor(model => model.MaxCapacity)</th>
+                <th>@Html.DisplayNameFor(model => model.PricePerHour)</th>
+                
+                @if (User.IsInRole("Admin") || User.IsInRole("RecreationEmployee"))
+                {
+                    <th class="text-center">Reservation and Management actions</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td class="align-middle font-weight-bold">
+                        @Html.DisplayFor(modelItem => item.Name)
+                    </td>
+                    <td class="align-middle">
+                        @Html.DisplayFor(modelItem => item.Description)
+                    </td>
+                    <td class="align-middle">
+                        @Html.DisplayFor(modelItem => item.MaxCapacity)
+                    </td>
+                    <td class="align-middle">
+                        @Html.DisplayFor(modelItem => item.PricePerHour)
+                    </td>
+                    
+                    @if (User.IsInRole("Admin") || User.IsInRole("RecreationEmployee"))
+                    {
+                        <td class="align-middle text-center">
+                            <a asp-action="Book" asp-route-facilityId="@item.Id" class="btn btn-sm btn-success">
+                                Book
+                            </a>
+                            <form asp-controller="Recreation" asp-action="DeleteFacility" asp-route-id="@item.Id" method="post" style="display:inline;">
+                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Czy na pewno chcesz usunąć tę placówkę?');">
+                                    Usuń
+                                </button>
+                            </form>
+                            <a asp-action="BookingList" asp-route-facilityId="@item.Id" class="btn btn-sm btn-info text-white ml-2">
+                                View Bookings
+                            </a>
+                        </td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

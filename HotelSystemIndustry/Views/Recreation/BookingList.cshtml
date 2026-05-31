@@ -1,0 +1,55 @@
+﻿@model IEnumerable<HotelSystemIndustry.Models.Recreation.RecreationBooking>
+
+@{
+    ViewData["Title"] = "Facility Bookings";
+    ViewBag.LowerNavPartial = "_RecreationNavPartial";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2> Active Bookings for: <span class="text-primary">@ViewBag.FacilityName</span></h2>
+        <a asp-action="FacilityList" class="btn btn-outline-secondary">Back to Facilities</a>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info shadow-sm">
+            No active bookings found for this facility.
+        </div>
+    }
+    else
+    {
+        <table class="table table-hover shadow-sm bg-white rounded">
+            <thead class="thead-light">
+                <tr>
+                    <th>Guest Name</th>
+                    <th>Start Time</th>
+                    <th>End Time</th>
+                    <th class="text-center">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td class="align-middle font-weight-bold">
+                            @item.Guest.FirstName @item.Guest.LastName
+                        </td>
+                        <td class="align-middle">
+                            @item.StartTime.ToString("dd.MM.yyyy HH:mm")
+                        </td>
+                        <td class="align-middle">
+                            @item.EndTime.ToString("dd.MM.yyyy HH:mm")
+                        </td>
+                        <td class="align-middle text-center">
+                            <form asp-action="CancelBooking" asp-route-id="@item.Id" method="post">
+                                <input type="hidden" name="facilityId" value="@ViewBag.FacilityId" />
+                                <button type="submit" class="btn btn-sm btn-danger">Cancel Booking</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
