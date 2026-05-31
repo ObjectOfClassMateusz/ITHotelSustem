@@ -1,5 +1,6 @@
 using HotelSystemIndustry.Infrastructure;
 using HotelSystemIndustry.Models.Kitchen;
+using HotelSystemIndustry.Services;
 using HotelSystemIndustry.ViewModels.Kitchen;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,10 +14,12 @@ namespace HotelSystemIndustry.Controllers.Kitchen
     public class KitchenController : Controller
     {
         private HotelDbContext _context;
+        private IExternalRecipeService _recipeService;
         
-        public KitchenController(HotelDbContext context)
+        public KitchenController(HotelDbContext context, IExternalRecipeService recipeService)
         {
             _context = context;
+            _recipeService = recipeService;
         }
 
         [HttpGet]
@@ -411,6 +414,100 @@ namespace HotelSystemIndustry.Controllers.Kitchen
                 return BadRequest("CookWithRecipeTakeArticle: there's no recipe with given ID!");
             
             return View("CookWithRecipe", recipe);
+        }
+
+
+        [HttpGet]
+        [Authorize(Roles="KitchenEmployee")]
+        public async Task<IActionResult> SpecialDishInspiration()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        [Authorize(Roles="KitchenEmployee")]
+        public async Task<IActionResult> SearchForDishCategory()
+        {
+            var categories = await _recipeService.GetCategories();
+
+            return View(categories);
+        }
+
+
+        [HttpGet]
+        [Authorize(Roles="KitchenEmployee")]
+        public async Task<IActionResult> SearchForDishArea()
+        {
+            var areas = await _recipeService.GetAreas();
+
+            return View(areas);
+        }
+
+
+        [HttpGet]
+        [Authorize(Roles="KitchenEmployee")]
+        public async Task<IActionResult> SearchForDishByName()
+        {
+            var meals = new List<ExternalMeal>();
+
+            ViewBag.PrevSearch = "";
+            return View(meals);
+        }
+
+
+        [HttpGet]
+        [Authorize(Roles="KitchenEmployee")]
+        public async Task<IActionResult> RandomSpecialDish()
+        {
+            var meal = await _recipeService.GetRandomMeal();
+            if (meal == null)
+                return BadRequest("Could not retrieve a random meal!");
+
+            return View("DisplaySpecialDish", meal);
+        }
+
+
+        [HttpGet]
+        [Authorize(Roles="KitchenEmployee")]
+        public async Task<IActionResult> SpecialDishesOfCategory(string category)
+        {
+            var dishes = await _recipeService.GetMealsOfCategory(category);
+
+            return View("FilterSpecialDishes", dishes);
+        }
+
+
+        [HttpGet]
+        [Authorize(Roles="KitchenEmployee")]
+        public async Task<IActionResult> SpecialDishesOfArea(string area)
+        {
+            var dishes = await _recipeService.GetMealsFromArea(area);
+
+            return View("FilterSpecialDishes", dishes);
+        }
+
+
+        [HttpPost]
+        [Authorize(Roles="KitchenEmployee")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SearchForDish(string name)
+        {
+            var meals = await _recipeService.SearchMealsByName(name);
+
+            ViewBag.PrevSearch = name;
+            return View("SearchForDishByName", meals);
+        }
+
+        
+        [HttpGet]
+        [Authorize(Roles="KitchenEmployee")]
+        public async Task<IActionResult> DisplaySpecialDish(string id)
+        {
+            var meal = await _recipeService.GetMealDetails(id);
+            if (meal == null)
+                return BadRequest("Invalid meal ID!");
+
+            return View(meal);
         }
 
 
