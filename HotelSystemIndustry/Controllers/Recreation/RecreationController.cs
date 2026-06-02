@@ -49,11 +49,21 @@ namespace HotelSystemIndustry.Controllers.Recreation
             if (facility == null) return NotFound();
 
             // do testów -> dodanie gościa
-            //if (!await _context.Guests.AnyAsync())
-            //{
-            //    _context.Guests.Add(new Guest { Id = Guid.NewGuid(), FirstName = "Jan", LastName = "Kowalski" });
-            //    await _context.SaveChangesAsync();
-            //}
+            if (!await _context.Guests.AnyAsync())
+            {
+                var hotel = await _context.Hotels.FirstOrDefaultAsync();
+                if (hotel != null)
+                {
+                    _context.Guests.Add(new Guest
+                    {
+                        Id = Guid.NewGuid(),
+                        FirstName = "Jan",
+                        LastName = "Kowalski",
+                        HotelId = hotel.Id
+                    });
+                    await _context.SaveChangesAsync();
+                }
+            }
 
             ViewBag.FacilityName = facility.Name;
             ViewBag.FacilityId = facility.Id;
@@ -82,17 +92,17 @@ namespace HotelSystemIndustry.Controllers.Recreation
             ModelState.Remove("Facility");
             ModelState.Remove("Guest");
 
-            booking.StartTime = DateTime.SpecifyKind(booking.StartTime, DateTimeKind.Utc);
-            booking.EndTime = DateTime.SpecifyKind(booking.EndTime, DateTimeKind.Utc);
+            booking.StartTime = DateTime.SpecifyKind(booking.StartTime, DateTimeKind.Local).ToUniversalTime();
+            booking.EndTime = DateTime.SpecifyKind(booking.EndTime, DateTimeKind.Local).ToUniversalTime();
 
             if (booking.StartTime < DateTime.UtcNow)
             {
-                ModelState.AddModelError("StartTime","Nie można dokonać rezerwacji w przeszłości.");
+                ModelState.AddModelError("StartTime", "Nie można dokonać rezerwacji w przeszłości.");
             }
 
             if (booking.EndTime <= booking.StartTime)
             {
-                ModelState.AddModelError("EndTime","Czas zakończenia musi być późniejszy niż czas rozpoczęcia.");
+                ModelState.AddModelError("EndTime", "Czas zakończenia musi być późniejszy niż czas rozpoczęcia.");
             }
 
             var facility = await _context.RecreationFacilities.FindAsync(booking.FacilityId);
@@ -179,10 +189,18 @@ namespace HotelSystemIndustry.Controllers.Recreation
         [HttpGet]
         public async Task<IActionResult> BookingList(Guid facilityId)
         {
+            var completedBookings = await _context.RecreationBookings.Where(b => b.FacilityId == facilityId &&
+                       b.Status == BookingStatus.SCHEDULED &&
+                       b.EndTime <= DateTime.UtcNow).ToListAsync();
+
+            if (completedBookings.Any())
+            {
+                completedBookings.ForEach(b => b.Status = BookingStatus.COMPLETED);
+                await _context.SaveChangesAsync();
+            }
+
             var facility = await _context.RecreationFacilities
                 .AsNoTracking()
-                .Include(f => f.Bookings)
-                .ThenInclude(b => b.Guest)
                 .FirstOrDefaultAsync(f => f.Id == facilityId);
 
             if (facility == null) return NotFound();
@@ -190,10 +208,14 @@ namespace HotelSystemIndustry.Controllers.Recreation
             ViewBag.FacilityName = facility.Name;
             ViewBag.FacilityId = facility.Id;
 
-            var activeBookings = facility.Bookings
-                .Where(b => b.Status == BookingStatus.SCHEDULED)
+            var activeBookings = await _context.RecreationBookings
+                .AsNoTracking()
+                .Include(b => b.Guest)
+                .Where(b => b.FacilityId == facilityId &&
+                            b.Status == BookingStatus.SCHEDULED &&
+                            b.EndTime > DateTime.UtcNow)
                 .OrderBy(b => b.StartTime)
-                .ToList();
+                .ToListAsync();
 
             return View(activeBookings);
         }

@@ -5,36 +5,35 @@
     ViewBag.LowerNavPartial = "_RecreationNavPartial";
 }
 
-<h1>CreateFacility</h1>
+<h1>Stwórz Nowy Obiekt Rekreacyjny</h1>
 
-<h4>RecreationFacility</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="CreateFacility">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
+                <label class="control-label">Nazwa</label>
                 <input asp-for="Name" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
+                <label class="control-label">Opis</label>
                 <input asp-for="Description" class="form-control" />
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="MaxCapacity" class="control-label"></label>
+                <label class="control-label">Maksymalna pojemność</label>
                 <input asp-for="MaxCapacity" class="form-control" />
                 <span asp-validation-for="MaxCapacity" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="PricePerHour" class="control-label"></label>
+                <label class="control-label">Cena za godzinę</label>
                 <input asp-for="PricePerHour" class="form-control" />
                 <span asp-validation-for="PricePerHour" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="submit" value="Utwórz" class="btn btn-primary" />
             </div>
         </form>
     </div>

@@ -7,14 +7,14 @@
 
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2> Active Bookings for: <span class="text-primary">@ViewBag.FacilityName</span></h2>
-        <a asp-action="FacilityList" class="btn btn-outline-secondary">Back to Facilities</a>
+        <h2> Aktywne Rezerwacje dla: <span class="text-primary">@ViewBag.FacilityName</span></h2>
+        <a asp-action="FacilityList" class="btn btn-outline-secondary">Wróć do obiektów</a>
     </div>
 
     @if (!Model.Any())
     {
         <div class="alert alert-info shadow-sm">
-            No active bookings found for this facility.
+            Nie zostały znalezione żadne rezerwacje do tego obiektu.
         </div>
     }
     else
@@ -22,10 +22,10 @@
         <table class="table table-hover shadow-sm bg-white rounded">
             <thead class="thead-light">
                 <tr>
-                    <th>Guest Name</th>
-                    <th>Start Time</th>
-                    <th>End Time</th>
-                    <th class="text-center">Action</th>
+                    <th>Imię Gościa</th>
+                    <th>Czas Startowy</th>
+                    <th>Czas Końcowy</th>
+                    <th class="text-center">Akcja</th>
                 </tr>
             </thead>
             <tbody>
@@ -36,15 +36,15 @@
                             @item.Guest.FirstName @item.Guest.LastName
                         </td>
                         <td class="align-middle">
-                            @item.StartTime.ToString("dd.MM.yyyy HH:mm")
+                            @item.StartTime.ToLocalTime().ToString("dd.MM.yyyy HH:mm")
                         </td>
                         <td class="align-middle">
-                            @item.EndTime.ToString("dd.MM.yyyy HH:mm")
+                            @item.EndTime.ToLocalTime().ToString("dd.MM.yyyy HH:mm")
                         </td>
                         <td class="align-middle text-center">
                             <form asp-action="CancelBooking" asp-route-id="@item.Id" method="post">
                                 <input type="hidden" name="facilityId" value="@ViewBag.FacilityId" />
-                                <button type="submit" class="btn btn-sm btn-danger">Cancel Booking</button>
+                                <button type="submit" class="btn btn-sm btn-danger">Anuluj rezerwacje</button>
                             </form>
                         </td>
                     </tr>

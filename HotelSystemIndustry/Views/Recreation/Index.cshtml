@@ -1,10 +1,10 @@
 @{
-    ViewData["Title"] = "Recreation Panel";
+    ViewData["Title"] = "Panel Rekreacji";
     ViewBag.LowerNavPartial = "_RecreationNavPartial";
 }
 
 <div class="container mt-4">
-    <h1 class="text-center">Recreation Center</h1>
+    <h1 class="text-center">Centrum Rekreacji</h1>
     <hr />
 
     <div class="row justify-content-center mt-5">
@@ -12,9 +12,9 @@
         <div class="col-md-4 text-center my-2">
             <div class="card shadow-sm">
                 <div class="card-body py-5">
-                    <h4>Recreation Offer</h4>
-                    <p class="text-muted">Browse available options and book your date.</p>
-                    <a asp-action="FacilityList" class="btn btn-primary w-100">Look up Facilities</a>
+                    <h4>Oferta Rekreacji</h4>
+                    <p class="text-muted">Przeglądaj rekreacje i zarezerwuj odpowiednią date.</p>
+                    <a asp-action="FacilityList" class="btn btn-primary w-100">Sprawdź listę obiektów</a>
                 </div>
             </div>
         </div>
@@ -24,9 +24,9 @@
             <div class="col-md-4 text-center my-2">
                 <div class="card shadow-sm bg-light">
                     <div class="card-body py-5">
-                        <h4>Managing the facilities</h4>
-                        <p class="text-muted">Add a facility - new recreation</p>
-                        <a asp-action="CreateFacility" class="btn btn-warning w-100">Add</a>
+                        <h4>Zarządzaj Obiektami</h4>
+                        <p class="text-muted">Dodaj nowy obiekt - nowa rekreacja</p>
+                        <a asp-action="CreateFacility" class="btn btn-warning w-100">Panel Dodawania obiektów</a>
                     </div>
                 </div>
             </div>
