@@ -40,7 +40,7 @@ public class DataSeeder
         await AddRoleAsync(roleManager, "Admin");
         await AddRoleAsync(roleManager, "HotelEmployee");
         await AddRoleAsync(roleManager, "KitchenEmployee");
-        await AddRoleAsync(roleManager, "MaintainanceEmployee");
+        await AddRoleAsync(roleManager, "MaintenanceEmployee");
         await AddRoleAsync(roleManager, "HousekeepingEmployee");
         await AddRoleAsync(roleManager, "TradingEmployee");
         await AddRoleAsync(roleManager, "RecreationEmployee");
@@ -48,7 +48,7 @@ public class DataSeeder
         await AddUserAsync(userManager, "admin@admin.com", "Właściciel Hotelu", "admin123$N", "Admin");
         await AddUserAsync(userManager, "hotellady@hotel.com", "Anna Machelska", "admin123$N", "HotelEmployee");
         await AddUserAsync(userManager, "kitchenlady@kitchen.com", "Anna Niedzielska", "admin123$N", "KitchenEmployee");
-        await AddUserAsync(userManager, "maintainanceguy@maintainance.com", "Marek Niedzielski", "admin123$N", "MaintainanceEmployee");
+        await AddUserAsync(userManager, "maintenanceguy@maintenance.com", "Marek Niedzielski", "admin123$N", "MaintenanceEmployee");
         await AddUserAsync(userManager, "housekeepinglady@housekeeping.com", "Zofia Kowalska", "admin123$N", "HousekeepingEmployee");
         await AddUserAsync(userManager, "tradingperson@trading.com", "Orestes Niedzielski", "admin123$N", "TradingEmployee");
         await AddUserAsync(userManager, "recreationguy@recreation.com", "Sławomir Niedzielski", "admin123$N", "RecreationEmployee");
@@ -58,7 +58,7 @@ public class DataSeeder
         if (malwiech != null)
         {
             await userManager.AddToRoleAsync(malwiech, "KitchenEmployee");
-            await userManager.AddToRoleAsync(malwiech, "MaintainanceEmployee");
+            await userManager.AddToRoleAsync(malwiech, "MaintenanceEmployee");
             await userManager.AddToRoleAsync(malwiech, "TradingEmployee");
             await userManager.AddToRoleAsync(malwiech, "RecreationEmployee");
         }

@@ -10,7 +10,7 @@ using System.Text.RegularExpressions;
 
 namespace HotelSystemIndustry.Controllers
 {
-    //[Authorize(Roles="KitchenEmployee,MaintainanceEmployee,Admin")]
+    //[Authorize(Roles="KitchenEmployee,MaintenanceEmployee,Admin")]
     public class HotelsController : Controller
     {
         private readonly HotelDbContext _context;

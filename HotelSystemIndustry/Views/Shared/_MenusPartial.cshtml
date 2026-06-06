@@ -28,9 +28,9 @@
                 <a id="kitchen-button" class="nav-link text-dark" asp-controller="Kitchen" asp-action="Index">Kitchen</a>
             </li>
         }
-        @if (User.IsInRole("MaintainanceEmployee")) {
+        @if (User.IsInRole("MaintenanceEmployee")) {
             <li class="nav-item">
-                <a id="maintainance-button" class="nav-link text-dark" asp-controller="Maintainance" asp-action="Index">Maintainance</a>
+                <a id="maintenance-button" class="nav-link text-dark" asp-controller="Maintenance" asp-action="Index">Maintenance</a>
             </li>
         }
         @if (User.IsInRole("HousekeepingEmployee"))
