@@ -41,6 +41,7 @@ public class DataSeeder
         await AddRoleAsync(roleManager, "HotelEmployee");
         await AddRoleAsync(roleManager, "KitchenEmployee");
         await AddRoleAsync(roleManager, "MaintainanceEmployee");
+        await AddRoleAsync(roleManager, "HousekeepingEmployee");
         await AddRoleAsync(roleManager, "TradingEmployee");
         await AddRoleAsync(roleManager, "RecreationEmployee");
 
@@ -48,6 +49,7 @@ public class DataSeeder
         await AddUserAsync(userManager, "hotellady@hotel.com", "Anna Machelska", "admin123$N", "HotelEmployee");
         await AddUserAsync(userManager, "kitchenlady@kitchen.com", "Anna Niedzielska", "admin123$N", "KitchenEmployee");
         await AddUserAsync(userManager, "maintainanceguy@maintainance.com", "Marek Niedzielski", "admin123$N", "MaintainanceEmployee");
+        await AddUserAsync(userManager, "housekeepinglady@housekeeping.com", "Zofia Kowalska", "admin123$N", "HousekeepingEmployee");
         await AddUserAsync(userManager, "tradingperson@trading.com", "Orestes Niedzielski", "admin123$N", "TradingEmployee");
         await AddUserAsync(userManager, "recreationguy@recreation.com", "Sławomir Niedzielski", "admin123$N", "RecreationEmployee");
 

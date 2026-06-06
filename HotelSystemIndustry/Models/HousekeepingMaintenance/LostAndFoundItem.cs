@@ -22,6 +22,6 @@ namespace HotelSystemIndustry.Models.HousekeepingMaintenance
 
         public Guid RoomId { get; set; }
         public required Room Room { get; set; }
-        public required EmployeeProfile FoundByEmployee { get; set; }
+        public required string FoundByEmployeeName { get; set; }
     }
 }

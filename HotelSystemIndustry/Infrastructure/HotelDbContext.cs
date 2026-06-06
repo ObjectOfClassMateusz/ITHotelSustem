@@ -310,6 +310,11 @@ namespace HotelSystemIndustry.Infrastructure
                 .HasOne(m => m.Room)
                 .WithMany(r => r.MaintenanceRequests)
                 .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<LostAndFoundItem>()
+                .HasOne(l => l.Room)
+                .WithMany(r => r.FoundItems)
+                .HasForeignKey(l => l.RoomId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Purchase>()
                 .HasOne(p => p.ShopPoint)

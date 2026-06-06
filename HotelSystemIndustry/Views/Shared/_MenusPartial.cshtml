@@ -33,6 +33,12 @@
                 <a id="maintainance-button" class="nav-link text-dark" asp-controller="Maintainance" asp-action="Index">Maintainance</a>
             </li>
         }
+        @if (User.IsInRole("HousekeepingEmployee"))
+        {
+            <li class="nav-item">
+                <a id="housekeeping-button" class="nav-link text-dark" asp-controller="Housekeeping" asp-action="Index">Housekeeping</a>
+            </li>
+        }
         @if (User.IsInRole("TradingEmployee")) {
             <li class="nav-item">
                 <a id="trading-button" class="nav-link text-dark" asp-controller="Trading" asp-action="Index">Trading</a>
