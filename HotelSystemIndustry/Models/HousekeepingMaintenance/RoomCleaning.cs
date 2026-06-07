@@ -25,5 +25,6 @@ namespace HotelSystemIndustry.Models.HousekeepingMaintenance
         public required Room Room { get; set; }
         public string? AssignedEmployeeName { get; set; }
         public string? AssignedEmployeeEmail { get; set; }
+        public ICollection<SupplyUsage>? SupplyUsages { get; set; }
     }
 }

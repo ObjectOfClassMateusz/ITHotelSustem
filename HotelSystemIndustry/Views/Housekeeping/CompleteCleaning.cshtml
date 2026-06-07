@@ -1,36 +1,40 @@
 ﻿@model HotelSystemIndustry.Models.HousekeepingMaintenance.RoomCleaning
+@using HotelSystemIndustry.Models.HousekeepingMaintenance
 
 @{
     ViewData["Title"] = "Zakończ Sprzątanie";
     ViewBag.LowerNavPartial = "_HousekeepingNavPartial";
+    var supplies = ViewBag.Supplies as List<HousekeepingSupply>;
 }
 
-<div class="container mt-4">
-    <div class="card shadow-sm col-md-6 mx-auto">
-        <div class="card-body p-4">
-            <h4 class="mb-3">Zakończ sprzątanie — Pokój @Model.Room.RoomNumber</h4>
-            <hr />
+<h4>Zakończ sprzątanie — Pokój @Model.Room.RoomNumber</h4>
+<hr />
 
-            <form asp-action="CompleteCleaning" method="post">
-                <input type="hidden" name="cleaningId" value="@Model.Id" />
+<form asp-action="CompleteCleaning" method="post">
+    <input type="hidden" name="cleaningId" value="@Model.Id" />
 
-                <div class="form-group mb-3">
-                    <label class="control-label font-weight-bold">Użyty środek</label>
-                    <select name="supplyId" class="form-control" asp-items="ViewBag.SuppliesSelectList">
-                        <option value="">-- Wybierz środek --</option>
-                    </select>
-                </div>
+    <table class="table mt-3">
+        <tr>
+            <th>Środek</th>
+            <th>Dostępna ilość</th>
+            <th>Użyta ilość</th>
+        </tr>
+        
+        @foreach (var s in supplies!)
+        {
+            <tr>
+                <td>@s.Name</td>
+                <td>@s.QuantityInStock @s.Unit</td>
+                <td>
+                    <input type="hidden" name="supplyIds" value="@s.Id" />
+                    <input type="number" name="amounts" class="form-control form-control-sm" step="0.01" min="0" max="@s.QuantityInStock" value="0" />
+                </td>
+            </tr>
+        }
+    </table>
 
-                <div class="form-group mb-4">
-                    <label class="control-label font-weight-bold">Ilość użyta</label>
-                    <input type="number" name="amountUsed" class="form-control" step="0.01" min="0.01" value="1" />
-                </div>
-
-                <div class="d-flex justify-content-between">
-                    <a asp-action="MyCleanings" class="btn btn-outline-secondary">Powrót</a>
-                    <button type="submit" class="btn btn-success">Zakończ i zapisz</button>
-                </div>
-            </form>
-        </div>
+    <div class="mt-4">
+        <a asp-action="MyCleanings" class="btn btn-outline-secondary">Powrót</a>
+        <button type="submit" class="btn btn-success">Zakończ i zapisz</button>
     </div>
-</div>
+</form>

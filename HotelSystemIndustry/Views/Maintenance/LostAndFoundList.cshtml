@@ -1,0 +1,54 @@
+﻿@model IEnumerable<HotelSystemIndustry.Models.HousekeepingMaintenance.LostAndFoundItem>
+@{
+    ViewData["Title"] = "Znalezione przedmioty";
+    ViewBag.LowerNavPartial = "_MaintenanceNavPartial";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-3">Znalezione Przedmioty</h2>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">Brak znalezionych przedmiotów.</div>
+    }
+    else
+    {
+        <table class="table table-hover bg-white shadow-sm">
+            <thead class="thead-light">
+                <tr>
+                    <th>Nazwa</th>
+                    <th>Opis</th>
+                    <th>Pokój</th>
+                    <th>Znalazł</th>
+                    <th>Data</th>
+                    <th>Status</th>
+                    <th class="text-center">Akcja</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.Name</td>
+                        <td>@item.Description</td>
+                        <td>Pokój @item.Room.RoomNumber</td>
+                        <td>@item.FoundByEmployeeName</td>
+                        <td>@item.FoundDate.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</td>
+                        <td>@item.Status</td>
+                        <td class="text-center">
+                            <form asp-action="UpdateLostItemStatus" method="post" style="display:inline">
+                                <input type="hidden" name="id" value="@item.Id" />
+                                <select name="status" class="form-control form-control-sm d-inline w-auto">
+                                    <option value="0">W przechowalni</option>
+                                    <option value="1">Zwrócono gościowi</option>
+                                    <option value="2">Wyrzucono</option>
+                                </select>
+                                <button type="submit" class="btn btn-sm btn-warning">Zmień</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>

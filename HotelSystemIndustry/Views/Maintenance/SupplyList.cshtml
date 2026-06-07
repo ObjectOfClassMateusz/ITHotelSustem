@@ -1,0 +1,47 @@
+﻿@model IEnumerable<HotelSystemIndustry.Models.HousekeepingMaintenance.HousekeepingSupply>
+@{
+    ViewData["Title"] = "Magazyn";
+    ViewBag.LowerNavPartial = "_MaintenanceNavPartial";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Magazyn Środków</h2>
+        <a asp-action="CreateSupply" class="btn btn-primary">+ Dodaj środek</a>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">Brak środków w magazynie.</div>
+    }
+    else
+    {
+        <table class="table table-hover bg-white shadow-sm">
+            <thead class="thead-light">
+                <tr>
+                    <th>Nazwa</th>
+                    <th>Kategoria</th>
+                    <th>Stan</th>
+                    <th>Minimum</th>
+                    <th>Jednostka</th>
+                    <th class="text-center">Akcja</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var s in Model)
+                {
+                    <tr class="@(s.QuantityInStock < s.MinimumRequiredQuantity ? "table-danger" : "")">
+                        <td>@s.Name</td>
+                        <td>@s.Category</td>
+                        <td>@s.QuantityInStock</td>
+                        <td>@s.MinimumRequiredQuantity</td>
+                        <td>@s.Unit</td>
+                        <td class="text-center">
+                            <a asp-action="EditSupply" asp-route-id="@s.Id" class="btn btn-sm btn-warning">Edytuj</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>

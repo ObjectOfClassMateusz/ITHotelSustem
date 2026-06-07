@@ -1,0 +1,34 @@
+﻿@model IEnumerable<HotelSystemIndustry.Models.HousekeepingMaintenance.EmployeeShift>
+@{
+    ViewData["Title"] = "Moje Zmiany";
+    ViewBag.LowerNavPartial = "_HousekeepingNavPartial";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-3">Moje Nadchodzące Zmiany</h2>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">Brak zaplanowanych zmian.</div>
+    }
+    else
+    {
+        <table class="table table-hover bg-white shadow-sm">
+            <thead class="thead-light">
+                <tr>
+                    <th>Początek</th>
+                    <th>Koniec</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var s in Model)
+                {
+                    <tr>
+                        <td>@s.StartTime.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</td>
+                        <td>@s.EndTime.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>

@@ -86,37 +86,40 @@ namespace HotelSystemIndustry.Controllers.Housekeeping
                 .Where(s => s.QuantityInStock > 0)
                 .ToListAsync();
 
-            ViewBag.SuppliesSelectList = new SelectList(supplies, "Id", "Name");
-
+            ViewBag.Supplies = supplies;
             return View(cleaning);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CompleteCleaning(Guid cleaningId, Guid supplyId, decimal amountUsed)
+        public async Task<IActionResult> CompleteCleaning(Guid cleaningId, List<Guid> supplyIds, List<decimal> amounts)
         {
             var cleaning = await _context.RoomCleanings
                 .Include(rc => rc.Room)
                 .FirstOrDefaultAsync(rc => rc.Id == cleaningId);
 
-            var supply = await _context.HousekeepingSupplies.FindAsync(supplyId);
+            if (cleaning == null) return NotFound();
 
-            if (cleaning == null || supply == null) return NotFound();
-
-            var usage = new SupplyUsage
+            for (int i = 0; i < supplyIds.Count; i++)
             {
-                Id = Guid.NewGuid(),
-                RoomCleaning = cleaning,
-                Supply = supply,
-                AmountUsed = amountUsed
-            };
+                if (amounts[i] <= 0) continue;
 
-            supply.QuantityInStock -= amountUsed;
+                var supply = await _context.HousekeepingSupplies.FindAsync(supplyIds[i]);
+                if (supply == null) continue;
+
+                _context.SupplyUsages.Add(new SupplyUsage
+                {
+                    Id = Guid.NewGuid(),
+                    RoomCleaning = cleaning,
+                    Supply = supply,
+                    AmountUsed = amounts[i]
+                });
+
+                supply.QuantityInStock -= amounts[i];
+            }
+
             cleaning.Status = CleaningStatus.COMPLETED;
-
-            _context.SupplyUsages.Add(usage);
             await _context.SaveChangesAsync();
-
             return RedirectToAction(nameof(MyCleanings));
         }
 
@@ -185,6 +188,19 @@ namespace HotelSystemIndustry.Controllers.Housekeeping
             await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
+        }
+        [HttpGet]
+        public async Task<IActionResult> MyShifts()
+        {
+            var user = await GetCurrentUser();
+
+            var shifts = await _context.EmployeeShifts
+                .Where(s => s.EmployeeEmail == user!.Email &&
+                            s.EndTime > DateTime.UtcNow)
+                .OrderBy(s => s.StartTime)
+                .ToListAsync();
+
+            return View(shifts);
         }
     }
 }

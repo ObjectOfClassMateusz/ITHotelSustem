@@ -1,0 +1,41 @@
+﻿@model HotelSystemIndustry.Models.HousekeepingMaintenance.HousekeepingSupply
+@{
+    ViewData["Title"] = "Edytuj Środek";
+    ViewBag.LowerNavPartial = "_MaintenanceNavPartial";
+}
+
+<div class="container mt-4">
+    <div class="card shadow-sm col-md-6 mx-auto">
+        <div class="card-body p-4">
+            <h4 class="mb-3">Edytuj środek</h4>
+            <hr />
+            <form asp-action="EditSupply" method="post">
+                <input type="hidden" asp-for="Id" />
+                <div class="form-group mb-3">
+                    <label class="control-label font-weight-bold">Nazwa</label>
+                    <input asp-for="Name" class="form-control" />
+                </div>
+                <div class="form-group mb-3">
+                    <label class="control-label font-weight-bold">Kategoria</label>
+                    <select asp-for="Category" class="form-control" asp-items="Html.GetEnumSelectList<HotelSystemIndustry.Models.HousekeepingMaintenance.SupplyCategory>()"></select>
+                </div>
+                <div class="form-group mb-3">
+                    <label class="control-label font-weight-bold">Jednostka</label>
+                    <select asp-for="Unit" class="form-control" asp-items="Html.GetEnumSelectList<HotelSystemIndustry.Models.HousekeepingMaintenance.SupplyUnit>()"></select>
+                </div>
+                <div class="form-group mb-3">
+                    <label class="control-label font-weight-bold">Stan magazynowy</label>
+                    <input asp-for="QuantityInStock" class="form-control" type="number" step="0.01" />
+                </div>
+                <div class="form-group mb-4">
+                    <label class="control-label font-weight-bold">Minimum wymagane</label>
+                    <input asp-for="MinimumRequiredQuantity" class="form-control" type="number" step="0.01" />
+                </div>
+                <div class="d-flex justify-content-between">
+                    <a asp-action="SupplyList" class="btn btn-outline-secondary">Powrót</a>
+                    <button type="submit" class="btn btn-warning">Zapisz zmiany</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

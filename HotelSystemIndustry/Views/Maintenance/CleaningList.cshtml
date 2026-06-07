@@ -1,0 +1,47 @@
+﻿@model IEnumerable<HotelSystemIndustry.Models.HousekeepingMaintenance.RoomCleaning>
+@{
+    ViewData["Title"] = "Sprzątania";
+    ViewBag.LowerNavPartial = "_MaintenanceNavPartial";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Lista Sprzątań</h2>
+        <a asp-action="ScheduleCleaning" class="btn btn-primary">+ Zaplanuj sprzątanie</a>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">Brak zaplanowanych sprzątań.</div>
+    }
+    else
+    {
+        <table class="table table-hover bg-white shadow-sm">
+            <thead class="thead-light">
+                <tr>
+                    <th>Pokój</th>
+                    <th>Pracownik</th>
+                    <th>Data</th>
+                    <th>Status</th>
+                    <th class="text-center">Akcja</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var c in Model)
+                {
+                    <tr>
+                        <td>Pokój @c.Room.RoomNumber</td>
+                        <td>@c.AssignedEmployeeName</td>
+                        <td>@c.ScheduledDate.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</td>
+                        <td>@c.Status</td>
+                        <td class="text-center">
+                            <form asp-action="DeleteCleaning" asp-route-id="@c.Id" method="post" style="display:inline">
+                                <button type="submit" class="btn btn-sm btn-danger">Usuń</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
