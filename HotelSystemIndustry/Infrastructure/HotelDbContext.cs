@@ -329,6 +329,20 @@ namespace HotelSystemIndustry.Infrastructure
                 .WithMany(r => r.FoundItems)
                 .HasForeignKey(l => l.RoomId)
                 .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<EmployeeShift>()
+                .HasOne(s => s.Hotel)
+                .WithMany()
+                .HasForeignKey(s => s.HotelId);
+
+            modelBuilder.Entity<HousekeepingSupply>()
+                .HasOne(s => s.Hotel)
+                .WithMany()
+                .HasForeignKey(s => s.HotelId);
+
+            modelBuilder.Entity<RecreationFacility>()
+                .HasOne(f => f.Hotel)
+                .WithMany()
+                .HasForeignKey(f => f.HotelId);
 
             modelBuilder.Entity<Purchase>()
                 .HasOne(p => p.ShopPoint)

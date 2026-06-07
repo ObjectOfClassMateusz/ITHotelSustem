@@ -1,8 +1,9 @@
+using HotelSystemIndustry.Models;
 using HotelSystemIndustry.Models.Events;
 using HotelSystemIndustry.Models.Kitchen;
+using HotelSystemIndustry.Models.Recreation;
 using HotelSystemIndustry.Models.Trading;
 using Microsoft.AspNetCore.Identity;
-using HotelSystemIndustry.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace HotelSystemIndustry.Infrastructure;
@@ -26,6 +27,7 @@ public class DataSeeder
             await SeedEvents(context);
             await SeedKitchen(context);
             await SeedTrading(context);
+            await SeedHousekeepingAndRecreation(context);
 
             await context.SaveChangesAsync();
         }
@@ -1187,6 +1189,58 @@ public class DataSeeder
         if (context.Phones.Count() == 0)
         {
             context.Phones.Add(phone);
+            await context.SaveChangesAsync();
+        }
+    }
+    private static async Task SeedHousekeepingAndRecreation(HotelDbContext context)
+    {
+        var hotel = await context.Hotels.FirstOrDefaultAsync(h => h.Name == "Hotel Alfa Dominicana");
+        if (hotel == null)
+            hotel = await context.Hotels.FirstOrDefaultAsync();
+        if (hotel == null)
+            throw new Exception("Błąd przy seedowaniu: nie znaleziono żadnego hotelu!");
+
+        if (!await context.Guests.AnyAsync())
+        {
+            context.Guests.Add(new Guest
+            {
+                Id = Guid.NewGuid(),
+                FirstName = "Jan",
+                LastName = "Kowalski",
+                HotelId = hotel.Id
+            });
+            context.Guests.Add(new Guest
+            {
+                Id = Guid.NewGuid(),
+                FirstName = "Maria",
+                LastName = "Nowak",
+                HotelId = hotel.Id
+            });
+
+            await context.SaveChangesAsync();
+        }
+
+        if (!await context.RecreationFacilities.AnyAsync())
+        {
+            context.RecreationFacilities.Add(new RecreationFacility
+            {
+                Id = Guid.NewGuid(),
+                Name = "Swimming Pool",
+                Description = "Outdoor swimming pool",
+                MaxCapacity = 20,
+                PricePerHour = 15.00m,
+                HotelId = hotel.Id
+            });
+            context.RecreationFacilities.Add(new RecreationFacility
+            {
+                Id = Guid.NewGuid(),
+                Name = "Tennis Court",
+                Description = "Indoor tennis court",
+                MaxCapacity = 4,
+                PricePerHour = 30.00m,
+                HotelId = hotel.Id
+            });
+
             await context.SaveChangesAsync();
         }
     }

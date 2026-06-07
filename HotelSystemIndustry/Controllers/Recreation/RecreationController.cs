@@ -1,3 +1,4 @@
+using HotelSystemIndustry.Controllers;
 using HotelSystemIndustry.Infrastructure;
 using HotelSystemIndustry.Models;
 using HotelSystemIndustry.Models.Recreation;
@@ -18,10 +19,55 @@ namespace HotelSystemIndustry.Controllers.Recreation
             _context = context;
         }
 
+        private async Task<Guid> GetCurrentHotelId()
+        {
+            HotelChangeController hotelChangeController = new HotelChangeController(_context)
+            {
+                ControllerContext = this.ControllerContext
+            };
+            return await hotelChangeController.GetCurrentHotel();
+        }
+
         [HttpGet]
         public async Task<IActionResult> Index()
         {
+            Guid currentHotelId = await GetCurrentHotelId();
+            ViewBag.HotelChangePartialHotelList = new SelectList(_context.Hotels, "Id", "Name", currentHotelId);
             return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> FacilityList()
+        {
+            Guid currentHotelId = await GetCurrentHotelId();
+
+            var facilities = await _context.RecreationFacilities
+                .Where(f => f.HotelId == currentHotelId)
+                .AsNoTracking().ToListAsync();
+            return View(facilities);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> CreateFacility()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateFacility(RecreationFacility facility)
+        {
+            ModelState.Remove("Hotel");
+            if (ModelState.IsValid)
+            {
+                Guid currentHotelId = await GetCurrentHotelId();
+                facility.HotelId = currentHotelId;
+                _context.RecreationFacilities.Add(facility);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(FacilityList));
+            }
+
+            return View(facility);
         }
 
         [HttpGet]
@@ -48,30 +94,17 @@ namespace HotelSystemIndustry.Controllers.Recreation
             var facility = await _context.RecreationFacilities.FindAsync(facilityId);
             if (facility == null) return NotFound();
 
-            // do testów -> dodanie gościa
-            if (!await _context.Guests.AnyAsync())
-            {
-                var hotel = await _context.Hotels.FirstOrDefaultAsync();
-                if (hotel != null)
-                {
-                    _context.Guests.Add(new Guest
-                    {
-                        Id = Guid.NewGuid(),
-                        FirstName = "Jan",
-                        LastName = "Kowalski",
-                        HotelId = hotel.Id
-                    });
-                    await _context.SaveChangesAsync();
-                }
-            }
+            Guid currentHotelId = await GetCurrentHotelId();
+
+            var guestsList = await _context.Guests
+                .AsNoTracking()
+                .Where(g => g.HotelId == currentHotelId)
+                .Select(g => new { Id = g.Id, FullName = g.FirstName + " " + g.LastName })
+                .ToListAsync();
 
             ViewBag.FacilityName = facility.Name;
             ViewBag.FacilityId = facility.Id;
-            var guestsList = await _context.Guests.AsNoTracking().Select(g => new {
-                                                                 Id = g.Id,
-                                                                 FullName = g.FirstName + " " + g.LastName}).ToListAsync();
-
-            ViewBag.GuestsSelectList = new SelectList(guestsList,"Id","FullName");
+            ViewBag.GuestsSelectList = new SelectList(guestsList, "Id", "FullName");
 
             var bookingModel = new RecreationBooking
             {
@@ -96,21 +129,16 @@ namespace HotelSystemIndustry.Controllers.Recreation
             booking.EndTime = DateTime.SpecifyKind(booking.EndTime, DateTimeKind.Local).ToUniversalTime();
 
             if (booking.StartTime < DateTime.UtcNow)
-            {
                 ModelState.AddModelError("StartTime", "Nie można dokonać rezerwacji w przeszłości.");
-            }
 
             if (booking.EndTime <= booking.StartTime)
-            {
                 ModelState.AddModelError("EndTime", "Czas zakończenia musi być późniejszy niż czas rozpoczęcia.");
-            }
 
             var facility = await _context.RecreationFacilities.FindAsync(booking.FacilityId);
             if (facility == null) return NotFound();
 
             if (ModelState.IsValid)
             {
-                //sprawdzamy maxcapacity w danym czasie, za każdą nakładającą sie rezerwacje zwiększamy zmienną
                 var overlappingBookingsCount = await _context.RecreationBookings
                     .Where(b => b.FacilityId == booking.FacilityId &&
                                 b.Status == BookingStatus.SCHEDULED &&
@@ -119,9 +147,7 @@ namespace HotelSystemIndustry.Controllers.Recreation
                     .CountAsync();
 
                 if (overlappingBookingsCount + 1 > facility.MaxCapacity)
-                {
-                    ModelState.AddModelError(string.Empty,"Brak miejsc w wybranym przedziale czasowym.");
-                }
+                    ModelState.AddModelError(string.Empty, "Brak miejsc w wybranym przedziale czasowym.");
             }
 
             if (ModelState.IsValid)
@@ -132,15 +158,17 @@ namespace HotelSystemIndustry.Controllers.Recreation
                 return RedirectToAction(nameof(FacilityList));
             }
 
-            ViewBag.FacilityName = facility.Name;
-            ViewBag.FacilityId = booking.FacilityId;
+            Guid currentHotelId = await GetCurrentHotelId();
 
             var guestsList = await _context.Guests
                 .AsNoTracking()
-                .Select(g => new {Id = g.Id, FullName = g.FirstName + " " + g.LastName})
+                .Where(g => g.HotelId == currentHotelId)
+                .Select(g => new { Id = g.Id, FullName = g.FirstName + " " + g.LastName })
                 .ToListAsync();
 
-            ViewBag.GuestsSelectList = new SelectList(guestsList,"Id","FullName", booking.GuestId);
+            ViewBag.FacilityName = facility.Name;
+            ViewBag.FacilityId = booking.FacilityId;
+            ViewBag.GuestsSelectList = new SelectList(guestsList, "Id", "FullName", booking.GuestId);
 
             return View(booking);
         }
@@ -150,48 +178,21 @@ namespace HotelSystemIndustry.Controllers.Recreation
         public async Task<IActionResult> CancelBooking(Guid id, Guid facilityId)
         {
             var booking = await _context.RecreationBookings.FindAsync(id);
-
             if (booking == null) return NotFound();
 
             booking.Status = BookingStatus.CANCELLED;
             await _context.SaveChangesAsync();
 
-            return RedirectToAction(nameof(BookingList), new {facilityId = facilityId});
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> FacilityList()
-        {
-            var facilities = await _context.RecreationFacilities.AsNoTracking().ToListAsync();
-            return View(facilities);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> CreateFacility()
-        {
-            return View();
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateFacility(RecreationFacility facility)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.RecreationFacilities.Add(facility);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(FacilityList));
-            }
-
-            return View(facility);
+            return RedirectToAction(nameof(BookingList), new { facilityId = facilityId });
         }
 
         [HttpGet]
         public async Task<IActionResult> BookingList(Guid facilityId)
         {
-            var completedBookings = await _context.RecreationBookings.Where(b => b.FacilityId == facilityId &&
-                       b.Status == BookingStatus.SCHEDULED &&
-                       b.EndTime <= DateTime.UtcNow).ToListAsync();
+            var completedBookings = await _context.RecreationBookings
+                .Where(b => b.FacilityId == facilityId &&
+                            b.Status == BookingStatus.SCHEDULED &&
+                            b.EndTime <= DateTime.UtcNow).ToListAsync();
 
             if (completedBookings.Any())
             {
@@ -228,15 +229,10 @@ namespace HotelSystemIndustry.Controllers.Recreation
                 .Include(f => f.Bookings)
                 .FirstOrDefaultAsync(f => f.Id == id);
 
-            if (facility == null)
-            {
-                return NotFound();
-            }
-            //usuwamy powiązane rezerwacje aby móc usunąć facility
+            if (facility == null) return NotFound();
+
             if (facility.Bookings != null && facility.Bookings.Any())
-            {
                 _context.RecreationBookings.RemoveRange(facility.Bookings);
-            }
 
             _context.RecreationFacilities.Remove(facility);
             await _context.SaveChangesAsync();

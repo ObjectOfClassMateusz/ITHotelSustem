@@ -13,5 +13,7 @@ namespace HotelSystemIndustry.Models.HousekeepingMaintenance
         public DateTime StartTime { get; set; }
         [DataType(DataType.DateTime)]
         public DateTime EndTime { get; set; }
+        public Guid HotelId { get; set; }
+        public Hotel Hotel { get; set; } = null!;
     }
 }

@@ -1,3 +1,4 @@
+using HotelSystemIndustry.Controllers;
 using HotelSystemIndustry.Infrastructure;
 using HotelSystemIndustry.Models;
 using HotelSystemIndustry.Models.HousekeepingMaintenance;
@@ -21,27 +22,44 @@ namespace HotelSystemIndustry.Controllers.Maintenance
             _userManager = userManager;
         }
 
+        private async Task<Guid> GetCurrentHotelId()
+        {
+            HotelChangeController hotelChangeController = new HotelChangeController(_context)
+            {
+                ControllerContext = this.ControllerContext
+            };
+            return await hotelChangeController.GetCurrentHotel();
+        }
+
         [HttpGet]
         public async Task<IActionResult> Index()
         {
+            Guid currentHotelId = await GetCurrentHotelId();
+
             var pendingRequests = await _context.MaintenanceRequests
                 .Include(mr => mr.Room)
-                .Where(mr => mr.Status == MaintenanceStatus.AWAITING_DECISION)
+                .Where(mr => mr.Room.HotelId == currentHotelId &&
+                             mr.Status == MaintenanceStatus.AWAITING_DECISION)
                 .OrderByDescending(mr => mr.Priority).Take(5).ToListAsync();
 
             var lowSupplies = await _context.HousekeepingSupplies
-                .Where(s => s.QuantityInStock < s.MinimumRequiredQuantity).ToListAsync();
+                .Where(s => s.HotelId == currentHotelId &&
+                            s.QuantityInStock < s.MinimumRequiredQuantity).ToListAsync();
 
             ViewBag.PendingRequests = pendingRequests;
             ViewBag.LowSupplies = lowSupplies;
+            ViewBag.HotelChangePartialHotelList = new SelectList(_context.Hotels, "Id", "Name", currentHotelId);
             return View();
         }
 
         [HttpGet]
         public async Task<IActionResult> CleaningList()
         {
+            Guid currentHotelId = await GetCurrentHotelId();
+
             var cleanings = await _context.RoomCleanings
                 .Include(rc => rc.Room)
+                .Where(rc => rc.Room.HotelId == currentHotelId)
                 .OrderByDescending(rc => rc.ScheduledDate).ToListAsync();
             return View(cleanings);
         }
@@ -49,9 +67,14 @@ namespace HotelSystemIndustry.Controllers.Maintenance
         [HttpGet]
         public async Task<IActionResult> ScheduleCleaning()
         {
-            var rooms = await _context.Rooms.AsNoTracking().ToListAsync();
+            Guid currentHotelId = await GetCurrentHotelId();
+
+            var rooms = await _context.Rooms
+                .Where(r => r.HotelId == currentHotelId)
+                .AsNoTracking().ToListAsync();
+
             var activeShifts = await _context.EmployeeShifts
-                .Where(s => s.EndTime > DateTime.UtcNow)
+                .Where(s => s.HotelId == currentHotelId && s.EndTime > DateTime.UtcNow)
                 .OrderBy(s => s.StartTime)
                 .ToListAsync();
 
@@ -69,6 +92,8 @@ namespace HotelSystemIndustry.Controllers.Maintenance
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ScheduleCleaning(Guid roomId, string employeeEmail, DateTime scheduledDate)
         {
+            Guid currentHotelId = await GetCurrentHotelId();
+
             var room = await _context.Rooms.FindAsync(roomId);
             if (room == null) return NotFound();
 
@@ -79,15 +104,18 @@ namespace HotelSystemIndustry.Controllers.Maintenance
 
             var hasShift = await _context.EmployeeShifts
                 .AnyAsync(s => s.EmployeeEmail == employeeEmail &&
+                               s.HotelId == currentHotelId &&
                                s.StartTime <= scheduledUtc &&
                                s.EndTime >= scheduledUtc);
 
             if (!hasShift)
             {
                 ModelState.AddModelError("", "Pracownik nie ma zmiany w tym czasie.");
-                var rooms = await _context.Rooms.AsNoTracking().ToListAsync();
+                var rooms = await _context.Rooms
+                    .Where(r => r.HotelId == currentHotelId)
+                    .AsNoTracking().ToListAsync();
                 var activeShifts = await _context.EmployeeShifts
-                    .Where(s => s.EndTime > DateTime.UtcNow)
+                    .Where(s => s.HotelId == currentHotelId && s.EndTime > DateTime.UtcNow)
                     .ToListAsync();
                 ViewBag.RoomsSelectList = new SelectList(rooms, "Id", "RoomNumber");
                 ViewBag.ShiftsSelectList = new SelectList(
@@ -134,12 +162,19 @@ namespace HotelSystemIndustry.Controllers.Maintenance
         [HttpGet]
         public async Task<IActionResult> MaintenanceList(string? status)
         {
-            var requests = await _context.MaintenanceRequests.Include(mr => mr.Room)
-                .OrderByDescending(mr => mr.Priority).ThenBy(mr => mr.ReportedDate)
-                .ToListAsync();
+            Guid currentHotelId = await GetCurrentHotelId();
 
+            var query = _context.MaintenanceRequests
+                .Include(mr => mr.Room)
+                .Where(mr => mr.Room.HotelId == currentHotelId)
+                .OrderByDescending(mr => mr.Priority)
+                .ThenBy(mr => mr.ReportedDate);
+
+            List<MaintenanceRequest> requests;
             if (!string.IsNullOrEmpty(status) && Enum.TryParse<MaintenanceStatus>(status, out var parsedStatus))
-                requests = requests.Where(mr => mr.Status == parsedStatus).ToList();
+                requests = await query.Where(mr => mr.Status == parsedStatus).ToListAsync();
+            else
+                requests = await query.ToListAsync();
 
             ViewBag.CurrentStatus = status;
             return View(requests);
@@ -172,7 +207,10 @@ namespace HotelSystemIndustry.Controllers.Maintenance
         [HttpGet]
         public async Task<IActionResult> SupplyList()
         {
+            Guid currentHotelId = await GetCurrentHotelId();
+
             var supplies = await _context.HousekeepingSupplies
+                .Where(s => s.HotelId == currentHotelId)
                 .AsNoTracking().OrderBy(s => s.Name).ToListAsync();
             return View(supplies);
         }
@@ -187,9 +225,12 @@ namespace HotelSystemIndustry.Controllers.Maintenance
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateSupply(HousekeepingSupply supply)
         {
+            ModelState.Remove("Hotel");
             if (!ModelState.IsValid) return View(supply);
 
+            Guid currentHotelId = await GetCurrentHotelId();
             supply.Id = Guid.NewGuid();
+            supply.HotelId = currentHotelId;
             _context.HousekeepingSupplies.Add(supply);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(SupplyList));
@@ -217,8 +258,11 @@ namespace HotelSystemIndustry.Controllers.Maintenance
         [HttpGet]
         public async Task<IActionResult> LostAndFoundList()
         {
+            Guid currentHotelId = await GetCurrentHotelId();
+
             var items = await _context.LostAndFoundItems
                 .Include(i => i.Room)
+                .Where(i => i.Room.HotelId == currentHotelId)
                 .OrderByDescending(i => i.FoundDate).ToListAsync();
             return View(items);
         }
@@ -238,7 +282,10 @@ namespace HotelSystemIndustry.Controllers.Maintenance
         [HttpGet]
         public async Task<IActionResult> ShiftList()
         {
+            Guid currentHotelId = await GetCurrentHotelId();
+
             var shifts = await _context.EmployeeShifts
+                .Where(s => s.HotelId == currentHotelId)
                 .AsNoTracking().OrderByDescending(s => s.StartTime).ToListAsync();
             return View(shifts);
         }
@@ -264,13 +311,17 @@ namespace HotelSystemIndustry.Controllers.Maintenance
                 return View();
             }
 
+            Guid currentHotelId = await GetCurrentHotelId();
+
             var user = await _userManager.FindByEmailAsync(employeeEmail);
             if (user == null) return NotFound();
+
             var shift = new EmployeeShift
             {
                 Id = Guid.NewGuid(),
                 EmployeeEmail = employeeEmail,
                 EmployeeName = user.FullName,
+                HotelId = currentHotelId,
                 StartTime = DateTime.SpecifyKind(startTime, DateTimeKind.Local).ToUniversalTime(),
                 EndTime = DateTime.SpecifyKind(endTime, DateTimeKind.Local).ToUniversalTime()
             };
