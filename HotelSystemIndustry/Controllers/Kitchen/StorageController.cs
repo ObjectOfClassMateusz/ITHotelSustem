@@ -24,7 +24,11 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         // GET: Storage
         public async Task<IActionResult> Index()
         {
-            var hotelDbContext = _context.KitchenStorages.Include(s => s.Hotel);
+            Guid hotelId = await GetCurrentHotelId();
+
+            var hotelDbContext = _context.KitchenStorages
+                .Where(s => s.HotelId == hotelId)
+                .Include(s => s.Hotel);
             return View(await hotelDbContext.ToListAsync());
         }
 
@@ -162,6 +166,16 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         private bool StorageExists(Guid id)
         {
             return _context.KitchenStorages.Any(e => e.Id == id);
+        }
+
+
+        private async Task<Guid> GetCurrentHotelId()
+        {
+            HotelChangeController hotelChangeController = new HotelChangeController(_context)
+            {
+                ControllerContext = this.ControllerContext
+            };
+            return await hotelChangeController.GetCurrentHotel();
         }
     }
 }

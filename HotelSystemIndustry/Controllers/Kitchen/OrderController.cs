@@ -24,7 +24,12 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         // GET: Order
         public async Task<IActionResult> Index()
         {
-            var hotelDbContext = _context.KitchenOrders.Include(o => o.Hotel).Include(o => o.Type);
+            Guid hotelId = await GetCurrentHotelId();
+
+            var hotelDbContext = _context.KitchenOrders
+                .Where(o => o.HotelId == hotelId)
+                .Include(o => o.Hotel)
+                .Include(o => o.Type);
             return View(await hotelDbContext.ToListAsync());
         }
 
@@ -180,6 +185,16 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         private bool OrderExists(Guid id)
         {
             return _context.KitchenOrders.Any(e => e.Id == id);
+        }
+
+
+        private async Task<Guid> GetCurrentHotelId()
+        {
+            HotelChangeController hotelChangeController = new HotelChangeController(_context)
+            {
+                ControllerContext = this.ControllerContext
+            };
+            return await hotelChangeController.GetCurrentHotel();
         }
     }
 }

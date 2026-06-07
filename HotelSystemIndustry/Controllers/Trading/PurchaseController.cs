@@ -24,7 +24,11 @@ namespace HotelSystemIndustry.Controllers.Trading
         // GET: Purchase
         public async Task<IActionResult> Index()
         {
-            var hotelDbContext = _context.Purchases.Include(p => p.ShopPoint);
+            var hotelId = await GetCurrentHotelId();
+
+            var hotelDbContext = _context.Purchases
+                .Include(p => p.ShopPoint)
+                .Where(p => p.ShopPoint!.HotelId == hotelId);
             return View(await hotelDbContext.ToListAsync());
         }
 
@@ -182,6 +186,16 @@ namespace HotelSystemIndustry.Controllers.Trading
         private bool PurchaseExists(Guid id)
         {
             return _context.Purchases.Any(e => e.Id == id);
+        }
+
+
+        private async Task<Guid> GetCurrentHotelId()
+        {
+            HotelChangeController hotelChangeController = new HotelChangeController(_context)
+            {
+                ControllerContext = this.ControllerContext
+            };
+            return await hotelChangeController.GetCurrentHotel();
         }
     }
 }
