@@ -20,7 +20,6 @@ namespace HotelSystemIndustry.Infrastructure
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             base.OnConfiguring(optionsBuilder);
-            Console.WriteLine(_configuration.GetConnectionString("HotelConnection"));
             optionsBuilder.UseNpgsql(_configuration.GetConnectionString("HotelConnection"));
 
             //Add-Migration InitialCreate

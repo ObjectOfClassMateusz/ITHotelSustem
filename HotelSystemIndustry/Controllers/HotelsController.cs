@@ -4,7 +4,9 @@ using HotelSystemIndustry.Models;
 using Humanizer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Text.RegularExpressions;
 
@@ -56,24 +58,28 @@ namespace HotelSystemIndustry.Controllers
         [Authorize(Roles = "HotelEmployee")]
         public async Task<IActionResult> Calendar(Guid? id, int? day, int? month, int? year)
         {
-            if (id == null) return NotFound();
+            if (id == null) 
+                return NotFound();
 
             var today = DateTime.Today;
             int y = year ?? today.Year;
             int m = month ?? today.Month;
             int d = day ?? today.Day;
 
-            // Zabezpieczenie przed nieprawidłowymi wartościami
-            if (m < 1 || m > 12) m = today.Month;
-            if (y < 2000 || y > 2100) y = today.Year;
+            //Valid date input
+            if (m < 1 || m > 12) 
+                m = today.Month;
+            if (y < 2000 || y > 2100) 
+                y = today.Year;
 
             var hotel = await _context.Hotels
                 .Include(h => h.Rooms)
                 .FirstOrDefaultAsync(h => h.Id == id);
 
-            if (hotel == null) return NotFound();
+            if (hotel == null) 
+                return NotFound();
 
-            // Zakres kalendarza: 30 dni od wybranej daty
+            //Calendar range: 30 days from the selected date
             var startDate = new DateTime(y, m, d);
             var endDate = startDate.AddDays(30);
 
@@ -166,14 +172,19 @@ namespace HotelSystemIndustry.Controllers
             var hotel = await _context.Hotels
                 .Include(h => h.Address)
                 .Include(h => h.PhoneNumbers)
+                .Include(h => h.Rooms)
                 .FirstOrDefaultAsync(h => h.Id == id);
-            if (hotel == null) return NotFound();
+            if (hotel == null)
+            {
+                return NotFound();
+            }
             return View(hotel);
         }
 
         // POST: Hotels/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(Guid id, Hotel model,List<Phone> PhoneNumbers)
         {
             
@@ -231,6 +242,7 @@ namespace HotelSystemIndustry.Controllers
         // POST: Hotels/Delete/
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
             var hotel = await _context.Hotels.FindAsync(id)
@@ -254,6 +266,7 @@ namespace HotelSystemIndustry.Controllers
 
         // GET: Hotels/AddRoom/id
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddRoom(Guid? id)
         {
             if (id == null) 
@@ -272,6 +285,7 @@ namespace HotelSystemIndustry.Controllers
         // POST: Hotels/AddRoom
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddRoom(AddRoomDTO dto)
         {
             if (!ModelState.IsValid) 
@@ -312,5 +326,281 @@ namespace HotelSystemIndustry.Controllers
 
         private bool HotelExists(Guid id) 
             =>_context.Hotels.Any(e => e.Id == id);
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteRoom(Guid roomId, Guid hotelId)
+        {
+            var room = await _context.Rooms.FindAsync(roomId);
+            if (room != null)
+            {
+                _context.Rooms.Remove(room);
+                await _context.SaveChangesAsync();
+            }
+            return RedirectToAction(nameof(Edit), new { id = hotelId });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> EditRoom(Guid roomId, Guid hotelId)
+        {
+            var room = await _context.Rooms.FindAsync(roomId);
+            if (room == null) 
+                return NotFound();
+
+            var hotel = await _context.Hotels.FindAsync(hotelId);
+            if (hotel == null) 
+                return NotFound();
+
+            var dto = new EditRoomDTO
+            {
+                RoomId = room.Id,
+                HotelId = hotelId,
+                HotelName = hotel.Name,
+                RoomNumber = room.RoomNumber,
+                Floor = room.Floor,
+                Capacity = room.Capacity,
+                BasePricePerNight = room.BasePricePerNight,
+                Renovation = room.Renovation,
+                RoomType = room.RoomType
+            };
+            return View(dto);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditRoom(EditRoomDTO dto)
+        {
+            if (!ModelState.IsValid) return View(dto);
+
+            var room = await _context.Rooms.FindAsync(dto.RoomId);
+            if (room == null) return NotFound();
+
+            // Sprawdź duplikat numeru (pomijając siebie)
+            bool duplicate = await _context.Rooms.AnyAsync(r =>
+                r.HotelId == dto.HotelId &&
+                r.RoomNumber == dto.RoomNumber &&
+                r.Id != dto.RoomId);
+
+            if (duplicate)
+            {
+                ModelState.AddModelError(nameof(dto.RoomNumber),
+                    $"Pokój nr {dto.RoomNumber} już istnieje w tym hotelu.");
+                return View(dto);
+            }
+
+            room.RoomNumber = dto.RoomNumber;
+            room.Floor = dto.Floor;
+            room.Capacity = dto.Capacity;
+            room.BasePricePerNight = dto.BasePricePerNight;
+            room.Renovation = dto.Renovation;
+            room.RoomType = dto.RoomType;
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Edit), new { id = dto.HotelId });
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "HotelEmployee")]
+        public async Task<IActionResult> CreateReservation(Guid hotelId)
+        {
+            var hotel = await _context.Hotels
+                .Include(h => h.Rooms)
+                //.Include(h => h.Guests)  // jeśli masz nawigację
+                .FirstOrDefaultAsync(h => h.Id == hotelId);
+
+            if (hotel == null) return NotFound();
+
+            var guests = await _context.Guests
+                .Where(g => g.HotelId == hotelId)
+                .OrderBy(g => g.LastName)
+                .ToListAsync();
+
+            var dto = new CreateReservationDTO
+            {
+                HotelId = hotelId,
+                HotelName = hotel.Name,
+                AvailableRooms = hotel.Rooms
+                    .Where(r => !r.Renovation)
+                    .OrderBy(r => r.RoomNumber)
+                    .Select(r => new SelectListItem(
+                        $"#{r.RoomNumber} — {r.RoomType} — {r.BasePricePerNight:C}/noc",
+                        r.Id.ToString()))
+                    .ToList(),
+                AvailableGuests = guests
+                    .Select(g => new SelectListItem(
+                        $"{g.FirstName} {g.LastName} ({g.Email})",
+                        g.Id.ToString()))
+                    .ToList(),
+                PaymentMethods = Enum.GetValues<PaymentMethod>()
+                    .Select(p => new SelectListItem(p.ToString(), ((int)p).ToString()))
+                    .ToList()
+            };
+
+            return View(dto);
+        }
+
+        // POST: Hotels/CreateReservation
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "HotelEmployee")]
+        public async Task<IActionResult> CreateReservation(CreateReservationDTO dto)
+        {
+            if (dto.CheckOutDate <= dto.CheckInDate)
+                ModelState.AddModelError(nameof(dto.CheckOutDate),
+                    "Data wymeldowania musi być późniejsza niż zameldowania.");
+
+            if (!dto.SelectedGuestIds.Any())
+                ModelState.AddModelError(nameof(dto.SelectedGuestIds),
+                    "Wybierz co najmniej jednego gościa.");
+
+            if (!ModelState.IsValid)
+            {
+                // Przeładuj listy
+                await ReloadReservationDTO(dto);
+                return View(dto);
+            }
+
+            var room = await _context.Rooms.FindAsync(dto.RoomId);
+            if (room == null) return NotFound();
+
+            var guests = await _context.Guests
+                .Where(g => dto.SelectedGuestIds.Contains(g.Id))
+                .ToListAsync();
+
+            var nights = (dto.CheckOutDate - dto.CheckInDate).Days;
+
+            var payment = new Payment
+            {
+                Id = Guid.NewGuid(),
+                Method = dto.PaymentMethod,
+                Amount = room.BasePricePerNight * nights,
+                PaymentDate =  DateTime.Now.ToUniversalTime()
+            };
+
+            var reservation = new Reservation
+            {
+                Id = Guid.NewGuid(),
+                CheckInDate = dto.CheckInDate.ToUniversalTime(),
+                CheckOutDate = dto.CheckOutDate.ToUniversalTime(),
+                Status = dto.Status,
+                NumberOfOvernightStays = nights,
+                NIP = dto.NIP,
+                SpecialWishes = dto.SpecialWishes,
+                RoomId = dto.RoomId,
+                Payment = payment,
+                Guests = guests
+            };
+
+            await _context.Reservations.AddAsync(reservation);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Calendar),
+                new
+                {
+                    id = dto.HotelId,
+                    day = dto.CheckInDate.Day,
+                    month = dto.CheckInDate.Month,
+                    year = dto.CheckInDate.Year
+                });
+        }
+
+        // GET: Hotels/CreateInvoice?hotelId=...
+        [HttpGet]
+        [Authorize(Roles = "HotelEmployee")]
+        public async Task<IActionResult> CreateInvoice(Guid hotelId)
+        {
+            var hotel = await _context.Hotels.FindAsync(hotelId);
+            if (hotel == null) return NotFound();
+
+            var reservations = await _context.Reservations
+                .Include(r => r.Room)
+                .Include(r => r.Guests)
+                .Where(r => r.Room.HotelId == hotelId && r.Invoice == null)
+                .OrderByDescending(r => r.CheckInDate)
+                .ToListAsync();
+
+            var lastNum = await _context.Invoices.CountAsync() + 1;
+
+            var dto = new CreateInvoiceDTO
+            {
+                HotelId = hotelId,
+                HotelName = hotel.Name,
+                InvoiceNumber = $"FV/{DateTime.Today.Year}/{lastNum:D4}",
+                IssueDate = DateTime.Today,
+                AvailableReservations = reservations.Select(r => new SelectListItem(
+                    $"#{r.Id.ToString()[..8]} | " +
+                    $"{r.CheckInDate:dd.MM.yy}–{r.CheckOutDate:dd.MM.yy} | " +
+                    $"Pokój {r.Room?.RoomNumber} | " +
+                    $"{string.Join(", ", r.Guests.Select(g => g.LastName))}",
+                    r.Id.ToString())).ToList()
+            };
+
+            return View(dto);
+        }
+
+        // POST: Hotels/CreateInvoice
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "HotelEmployee")]
+        public async Task<IActionResult> CreateInvoice(CreateInvoiceDTO dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                await ReloadInvoiceDTO(dto);
+                return View(dto);
+            }
+
+            bool duplicate = await _context.Invoices
+                .AnyAsync(i => i.InvoiceNumber == dto.InvoiceNumber);
+            if (duplicate)
+            {
+                ModelState.AddModelError(nameof(dto.InvoiceNumber),
+                    "Faktura o tym numerze już istnieje.");
+                await ReloadInvoiceDTO(dto);
+                return View(dto);
+            }
+
+            var invoice = new Invoice
+            {
+                Id = Guid.NewGuid(),
+                InvoiceNumber = dto.InvoiceNumber,
+                IssueDate = dto.IssueDate.ToUniversalTime(),
+                ReservationId = dto.ReservationId,
+                TotalAmount = dto.TotalAmount
+            };
+
+            await _context.Invoices.AddAsync(invoice);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Calendar), new { id = dto.HotelId });
+        }
+
+        // Helpers
+        private async Task ReloadReservationDTO(CreateReservationDTO dto)
+        {
+            var rooms = await _context.Rooms
+                .Where(r => r.HotelId == dto.HotelId && !r.Renovation).ToListAsync();
+            var guests = await _context.Guests
+                .Where(g => g.HotelId == dto.HotelId).ToListAsync();
+
+            dto.AvailableRooms = rooms.Select(r => new SelectListItem(
+                $"#{r.RoomNumber} — {r.RoomType} — {r.BasePricePerNight:C}/noc",
+                r.Id.ToString())).ToList();
+            dto.AvailableGuests = guests.Select(g => new SelectListItem(
+                $"{g.FirstName} {g.LastName}", g.Id.ToString())).ToList();
+            dto.PaymentMethods = Enum.GetValues<PaymentMethod>()
+                .Select(p => new SelectListItem(p.ToString(), ((int)p).ToString())).ToList();
+        }
+
+        private async Task ReloadInvoiceDTO(CreateInvoiceDTO dto)
+        {
+            var reservations = await _context.Reservations
+                .Include(r => r.Room).Include(r => r.Guests)
+                .Where(r => r.Room.HotelId == dto.HotelId && r.Invoice == null)
+                .ToListAsync();
+            dto.AvailableReservations = reservations.Select(r => new SelectListItem(
+                $"#{r.Id.ToString()[..8]} | {r.CheckInDate:dd.MM.yy}–{r.CheckOutDate:dd.MM.yy}",
+                r.Id.ToString())).ToList();
+        }
     }
 }

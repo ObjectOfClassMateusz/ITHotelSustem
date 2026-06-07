@@ -1,7 +1,6 @@
 ﻿@using HotelSystemIndustry.Models
 @{
     ViewData["Title"] = "Kalendarz — " + ((Hotel)ViewBag.Hotel).Name;
-
     Hotel hotel = (Hotel)ViewBag.Hotel;
     DateTime startDate = (DateTime)ViewBag.StartDate;
     DateTime endDate = (DateTime)ViewBag.EndDate;
@@ -9,7 +8,6 @@
    // var reservations = (List<Reservation>)ViewBag.Reservations;
     int totalDays = (int)(endDate - startDate).TotalDays;
 
-    // Grupy tygodniowe do nagłówka
     var weeks = new List<(DateTime WeekStart, int Span)>();
     DateTime cur = startDate;
     while (cur < endDate)
@@ -23,8 +21,6 @@
 
     DateTime prevDate = startDate.AddDays(-30);
     DateTime nextDate = startDate.AddDays(30);
-
-    // Helpers
     string RouteDate(DateTime dt) =>
         $"?id={hotel.Id}&day={dt.Day}&month={dt.Month}&year={dt.Year}";
 
@@ -559,7 +555,7 @@
     }
 </style>
 
-<a asp-action="Details" asp-route-id="@hotel.Id" class=" asp-link">
+<a asp-action="Index" class=" asp-link">
     Wróć
 </a>
 
@@ -582,9 +578,6 @@
             <a href="#" class="tb-btn">
                 <span class="tb-icon">📕</span>Czarna Lista
             </a>
-            <!--<a asp-action="AddRoom" asp-route-id="hotel.Id" class="tb-btn">
-                <span class="tb-icon">🏨</span>Dodaj pokój
-            </a>-->
         </div>
     </div>
 
@@ -593,10 +586,16 @@
     <div style="display:flex;flex-direction:column;">
         <span class="tb-label-group">Widok</span>
         <div class="tb-group">
-            <a href="#" class="tb-btn">
+            <a asp-action="CreateReservation"
+               asp-controller="Hotels"
+               asp-route-hotelId="@hotel.Id"
+               class="tb-btn">
                 <span class="tb-icon">📤</span>Rezerwacje
             </a>
-            <a href="#" class="tb-btn">
+            <a asp-action="CreateInvoice"
+               asp-controller="Hotels"
+               asp-route-hotelId="@hotel.Id"
+               class="tb-btn">
                 <span class="tb-icon">📜</span>Faktury
             </a>
             <a href="#" class="tb-btn">
@@ -666,8 +665,6 @@
             <div class="cal-empty">
                 <span style="font-size:2rem;">🏨</span>
                 <span>Brak pokoi w tym hotelu</span>
-                <a asp-action="AddRoom" asp-route-id="@hotel.Id"
-                   style="color:var(--gold);font-size:0.8rem;text-decoration:none;">+ Dodaj pierwszy pokój</a>
             </div>
         }
         else

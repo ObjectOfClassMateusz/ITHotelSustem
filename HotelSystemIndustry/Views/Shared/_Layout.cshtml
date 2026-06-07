@@ -20,11 +20,6 @@
                 <a class="navbar-brand asp-link" asp-area="" asp-controller="Hotels" asp-action="Index">
                     Hotel System Industry
                 </a>
-
-                <!--<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>-->
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <partial name="_MenusPartial"/>
                     <partial name="_LoginPartial"/>
@@ -36,9 +31,7 @@
                     @await Html.PartialAsync((string)ViewBag.LowerNavPartial)
                 </div>
             }
-        </nav>
-    
-    
+        </nav>   
     </header>
     <div class="container">
         <main role="main" class="pb-3">
@@ -47,9 +40,9 @@
     </div>
 
     <footer class="navbar navbar-toggleable-sm border-top footer text-muted bg-goldyellow">
-        <div class="container">
-            &copy; 2026 - Hotel System Industry - 
-            <a class="navbar-brand asp-link" asp-area="" asp-controller="Hotels" asp-action="Privacy">
+        <div class="footer-cont">
+            <div>&copy; 2026 - Hotel System Industry - </div>
+            <a class="navbar-brand asp-link" asp-area="" asp-controller="Hotels" asp-action="Privacy" style="max-height: 30px; padding: 8px;">
                 Polityka Prywatności
             </a>
         </div>

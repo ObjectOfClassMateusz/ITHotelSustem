@@ -1,0 +1,767 @@
+﻿@model HotelSystemIndustry.Infrastructure.DTO.CreateReservationDTO
+@using HotelSystemIndustry.Models
+@{
+    ViewData["Title"] = "Nowa rezerwacja — " + Model.HotelName;
+    var statuses = Enum.GetValues(typeof(ReservationStatus)).Cast<ReservationStatus>();
+}
+
+<style>
+    import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap');
+
+    :root {
+        --bg: #0f0f12;
+        --surface: #17171d;
+        --surface2: #1e1e27;
+        --border: #2a2a38;
+        --border2: #353548;
+        --gold: #d4a843;
+        --gold-dim: #8a6c28;
+        --gold-pale: rgba(212,168,67,0.08);
+        --text: #e8e6f0;
+        --muted: #6b6880;
+        --danger: #c15a4a;
+        --success: #4ac18e;
+    }
+
+    *, *::before, *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: 'Syne', sans-serif;
+        min-height: 100vh;
+    }
+
+    /* ── TOPBAR ───────────────────────────── */
+    .topbar {
+        height: 56px;
+        background: var(--surface);
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        padding: 0 1.5rem;
+        gap: 1rem;
+        position: sticky;
+        top: 0;
+        z-index: 50;
+    }
+
+    .topbar-brand {
+        font-size: 0.7rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--gold);
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+        .topbar-brand::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: var(--gold);
+            transform: rotate(45deg);
+        }
+
+    .topbar-sep {
+        width: 1px;
+        height: 28px;
+        background: var(--border);
+    }
+
+    .topbar-crumb {
+        font-family: 'DM Mono', monospace;
+        font-size: 0.7rem;
+        color: var(--muted);
+    }
+
+        .topbar-crumb em {
+            color: var(--text);
+            font-style: normal;
+            font-weight: 600;
+        }
+
+    .topbar-back {
+        margin-left: auto;
+        font-family: 'DM Mono', monospace;
+        font-size: 0.68rem;
+        color: var(--muted);
+        text-decoration: none;
+        padding: 0.38rem 0.85rem;
+        border: 1px solid var(--border);
+        border-radius: 3px;
+        background: var(--surface2);
+        transition: color 0.15s, border-color 0.15s;
+    }
+
+        .topbar-back:hover {
+            color: var(--gold);
+            border-color: var(--gold-dim);
+            text-decoration: none;
+        }
+
+    /* ── LAYOUT ───────────────────────────── */
+    .shell {
+        max-width: 820px;
+        margin: 2.5rem auto;
+        padding: 0 1.5rem 5rem;
+    }
+
+    .page-header {
+        margin-bottom: 2rem;
+        animation: fadeDown 0.4s ease both;
+    }
+
+    .page-kicker {
+        font-family: 'DM Mono', monospace;
+        font-size: 0.6rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--gold-dim);
+        margin-bottom: 0.3rem;
+    }
+
+    .page-h1 {
+        font-size: clamp(1.8rem, 4.5vw, 2.6rem);
+        font-weight: 800;
+        line-height: 1.1;
+    }
+
+        .page-h1 em {
+            font-style: italic;
+            color: var(--gold);
+            font-weight: 400;
+        }
+
+    /* ── GRID ─────────────────────────────── */
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.25rem;
+    }
+
+        .form-grid .span-2 {
+            grid-column: span 2;
+        }
+
+    /* ── CARD ─────────────────────────────── */
+    .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        padding: 1.75rem;
+        animation: fadeUp 0.4s ease both;
+    }
+
+        .card:nth-child(1) {
+            animation-delay: 0.04s;
+        }
+
+        .card:nth-child(2) {
+            animation-delay: 0.08s;
+        }
+
+        .card:nth-child(3) {
+            animation-delay: 0.12s;
+        }
+
+        .card:nth-child(4) {
+            animation-delay: 0.16s;
+        }
+
+        .card:nth-child(5) {
+            animation-delay: 0.20s;
+        }
+
+    .card-label {
+        font-size: 0.57rem;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--gold);
+        font-weight: 700;
+        padding-bottom: 0.65rem;
+        margin-bottom: 1.25rem;
+        border-bottom: 1px solid var(--border);
+    }
+
+    /* ── FIELDS ───────────────────────────── */
+    .field {
+        margin-bottom: 1.15rem;
+    }
+
+        .field:last-child {
+            margin-bottom: 0;
+        }
+
+        .field label {
+            display: block;
+            font-family: 'DM Mono', monospace;
+            font-size: 0.62rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 0.4rem;
+        }
+
+        .field input,
+        .field select,
+        .field textarea {
+            width: 100%;
+            padding: 0.65rem 0.9rem;
+            background: var(--surface2);
+            border: 1px solid var(--border2);
+            border-radius: 3px;
+            color: var(--text);
+            font-family: 'DM Mono', monospace;
+            font-size: 0.88rem;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            appearance: none;
+        }
+
+            .field input:focus,
+            .field select:focus,
+            .field textarea:focus {
+                border-color: var(--gold);
+                box-shadow: 0 0 0 3px rgba(212,168,67,0.12);
+            }
+
+            .field input::placeholder,
+            .field textarea::placeholder {
+                color: #3a3848;
+            }
+
+            .field input.input-validation-error,
+            .field select.input-validation-error {
+                border-color: var(--danger);
+            }
+
+        .field textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+    .field-validation-error {
+        display: block;
+        font-size: 0.7rem;
+        color: var(--danger);
+        margin-top: 0.3rem;
+        font-family: 'DM Mono', monospace;
+    }
+
+    .field-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    /* Select wrapper */
+    .select-wrap {
+        position: relative;
+    }
+
+        .select-wrap::after {
+            content: '▾';
+            position: absolute;
+            right: 0.85rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gold);
+            pointer-events: none;
+            font-size: 0.8rem;
+        }
+
+        .select-wrap select {
+            padding-right: 2rem;
+        }
+
+    /* ── NIGHT COUNTER ────────────────────── */
+    .night-counter {
+        background: var(--surface2);
+        border: 1px solid var(--border2);
+        border-radius: 3px;
+        padding: 0.75rem 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 0.75rem;
+    }
+
+    .night-counter-label {
+        font-family: 'DM Mono', monospace;
+        font-size: 0.65rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--muted);
+    }
+
+    .night-counter-val {
+        font-size: 1.15rem;
+        font-weight: 800;
+        color: var(--gold);
+        font-family: 'DM Mono', monospace;
+    }
+
+    .price-estimate {
+        font-family: 'DM Mono', monospace;
+        font-size: 0.72rem;
+        color: var(--success);
+        text-align: right;
+        margin-top: 0.4rem;
+    }
+
+    /* ── STATUS CHIPS ─────────────────────── */
+    .status-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.5rem;
+    }
+
+    .status-card input[type="radio"] {
+        position: absolute;
+        opacity: 0;
+        width: 0;
+    }
+
+    .status-card label {
+        display: flex;
+        align-items: center;
+        gap: 0.55rem;
+        padding: 0.65rem 0.85rem;
+        border: 1px solid var(--border2);
+        border-radius: 3px;
+        background: var(--surface2);
+        cursor: pointer;
+        font-size: 0.8rem;
+        color: var(--text);
+        transition: border-color 0.2s, background 0.2s;
+        margin: 0;
+    }
+
+    .status-card input:checked + label {
+        border-color: var(--gold);
+        background: var(--gold-pale);
+    }
+
+    .status-card label:hover {
+        border-color: var(--gold-dim);
+    }
+
+    .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+
+    .dot-pending {
+        background: #f0a830;
+    }
+
+    .dot-confirmed {
+        background: var(--success);
+    }
+
+    .dot-cancelled {
+        background: var(--danger);
+    }
+
+    .dot-completed {
+        background: var(--muted);
+    }
+
+    /* ── GUEST CHECKBOXES ─────────────────── */
+    .guest-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.45rem;
+        max-height: 220px;
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: var(--border2) transparent;
+    }
+
+    .guest-check {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        padding: 0.55rem 0.75rem;
+        border: 1px solid var(--border2);
+        border-radius: 3px;
+        background: var(--surface2);
+        cursor: pointer;
+        transition: border-color 0.15s, background 0.15s;
+        user-select: none;
+    }
+
+        .guest-check:has(input:checked) {
+            border-color: var(--gold);
+            background: var(--gold-pale);
+        }
+
+        .guest-check:hover {
+            border-color: var(--gold-dim);
+        }
+
+        .guest-check input {
+            accent-color: var(--gold);
+            width: 15px;
+            height: 15px;
+            flex-shrink: 0;
+        }
+
+    .guest-check-name {
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .guest-check-email {
+        font-family: 'DM Mono', monospace;
+        font-size: 0.65rem;
+        color: var(--muted);
+        margin-left: auto;
+    }
+
+    .guests-empty {
+        font-family: 'DM Mono', monospace;
+        font-size: 0.75rem;
+        color: var(--muted);
+        text-align: center;
+        padding: 1rem 0;
+        font-style: italic;
+    }
+
+    /* ── ACTIONS ──────────────────────────── */
+    .form-actions {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border);
+        flex-wrap: wrap;
+        animation: fadeUp 0.4s 0.24s ease both;
+    }
+
+    .btn-submit {
+        background: var(--gold);
+        color: #0f0f12;
+        border: none;
+        padding: 0.82rem 2.5rem;
+        font-family: 'Syne', sans-serif;
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        border-radius: 3px;
+        cursor: pointer;
+        transition: background 0.2s, transform 0.15s;
+    }
+
+        .btn-submit:hover {
+            background: #e6ba55;
+            transform: translateY(-1px);
+        }
+
+    .btn-cancel-link {
+        font-family: 'DM Mono', monospace;
+        font-size: 0.72rem;
+        color: var(--muted);
+        text-decoration: none;
+        transition: color 0.2s;
+        letter-spacing: 0.05em;
+    }
+
+        .btn-cancel-link:hover {
+            color: var(--text);
+            text-decoration: none;
+        }
+
+    /* ── ANIMATIONS ───────────────────────── */
+    @@keyframes fadeDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@keyframes fadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(12px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@media (max-width: 640px) {
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+
+            .form-grid .span-2 {
+                grid-column: span 1;
+            }
+
+        .status-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .field-row {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+{{-- TOPBAR --}}
+<div class="topbar">
+    <div class="topbar-brand">Hotel System Industry</div>
+    <div class="topbar-sep"></div>
+    <div class="topbar-crumb">
+        Nowa rezerwacja &rsaquo; <em>@Model.HotelName</em>
+    </div>
+    <a asp-action="Calendar" asp-route-id="@Model.HotelId" class="topbar-back">
+        &#8592; Kalendarz
+    </a>
+</div>
+
+<div class="shell">
+    <div class="page-header">
+        <p class="page-kicker">&#9670; Nowa rezerwacja</p>
+        <h1 class="page-h1">Utwórz <em>rezerwację</em></h1>
+    </div>
+
+    @using (Html.BeginForm("CreateReservation", "Hotels", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.HotelId)
+        @Html.HiddenFor(m => m.HotelName)
+
+        <div class="form-grid">
+
+            {{-- ── Pokój ── --}}
+            <div class="card">
+                <div class="card-label">🛏 Pokój</div>
+
+                <div class="field">
+                    <label>Wybierz pokój</label>
+                    <div class="select-wrap">
+                        @Html.DropDownListFor(m => m.RoomId,
+                        Model.AvailableRooms,
+                                        "— wybierz pokój —",
+                                        new { id = "roomSelect" })
+                </div>
+                @Html.ValidationMessageFor(m => m.RoomId)
+            </div>
+
+            <div class="field">
+                <label>Daty pobytu</label>
+                <div class="field-row">
+                    <div>
+                        <label style="font-size:0.55rem;color:var(--muted);margin-bottom:0.3rem;">Check-in</label>
+                        @Html.TextBoxFor(m => m.CheckInDate,
+                                                "{0:yyyy-MM-dd}",
+                                                new { type = "date", id = "checkIn" })
+                        @Html.ValidationMessageFor(m => m.CheckInDate)
+                    </div>
+                    <div>
+                        <label style="font-size:0.55rem;color:var(--muted);margin-bottom:0.3rem;">Check-out</label>
+                        @Html.TextBoxFor(m => m.CheckOutDate,
+                                                "{0:yyyy-MM-dd}",
+                                                new { type = "date", id = "checkOut" })
+                        @Html.ValidationMessageFor(m => m.CheckOutDate)
+                    </div>
+                </div>
+            </div>
+
+            <div class="night-counter">
+                <span class="night-counter-label">Liczba nocy</span>
+                <span class="night-counter-val" id="nightCount">—</span>
+            </div>
+            <div class="price-estimate" id="priceEstimate"></div>
+        </div>
+
+        {{-- ── Dane ── --}}
+        <div class="card">
+            <div class="card-label">📋 Dane rezerwacji</div>
+
+            <div class="field">
+                @Html.LabelFor(m => m.NIP, "NIP (max 10 znaków)")
+                @Html.TextBoxFor(m => m.NIP, new { placeholder = "0000000000", maxlength = "10" })
+                @Html.ValidationMessageFor(m => m.NIP)
+            </div>
+
+            <div class="field">
+                @Html.LabelFor(m => m.SpecialWishes, "Specjalne życzenia (opcjonalne)")
+                @Html.TextAreaFor(m => m.SpecialWishes,
+                                new { placeholder = "np. łóżeczko dla dziecka, widok na morze..." })
+            </div>
+        </div>
+
+        {{-- ── Status ── --}}
+        <div class="card">
+            <div class="card-label">📌 Status rezerwacji</div>
+
+            <div class="status-grid">
+                @{
+                        var statusDots = new Dictionary<ReservationStatus, string> {
+                                { ReservationStatus.Pending,   "dot-pending" },
+                                { ReservationStatus.Confirmed, "dot-confirmed" },
+                                { ReservationStatus.Cancelled, "dot-cancelled" },
+                                { ReservationStatus.Completed, "dot-completed" }
+                                };
+                        var statusLabels = new Dictionary<ReservationStatus, string> {
+                                { ReservationStatus.Pending,   "Oczekująca" },
+                                { ReservationStatus.Confirmed, "Potwierdzona" },
+                                { ReservationStatus.Cancelled, "Anulowana" },
+                                { ReservationStatus.Completed, "Zakończona" }
+                                };
+                    }
+                    @foreach (var s in statuses)
+                    {
+                        <div class="status-card">
+                            <input type="radio" name="Status"
+                                   id="status-@s"
+                                   value="@((int)s)"
+                                   @(Model.Status == s ? "checked" : "") />
+                            <label for="status-@s">
+                                <span class="status-dot @statusDots[s]"></span>
+                                @statusLabels[s]
+                            </label>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            {{-- ── Płatność ── --}}
+            <div class="card">
+                <div class="card-label">💳 Płatność</div>
+
+                <div class="field">
+                    <label>Metoda płatności</label>
+                    <div class="select-wrap">
+                        @Html.DropDownListFor(m => m.PaymentMethod,
+                        Model.PaymentMethods,
+                                        "— wybierz metodę —")
+                </div>
+                @Html.ValidationMessageFor(m => m.PaymentMethod)
+            </div>
+        </div>
+
+        {{-- ── Goście ── --}}
+        <div class="card span-2">
+            <div class="card-label">
+                👤 Goście rezerwacji
+                <span style="margin-left:auto;font-size:0.62rem;color:var(--muted);font-weight:400;letter-spacing:0;">
+                    Wybrano: <span id="guestSelectedCount">0</span>
+                </span>
+            </div>
+
+            @Html.ValidationMessageFor(m => m.SelectedGuestIds)
+
+            @if (Model.AvailableGuests.Any())
+                {
+                    <div class="guest-list" id="guestList">
+                        @foreach (var g in Model.AvailableGuests)
+                        {
+                            var parts = g.Text.Split('(');
+                            var name = parts[0].Trim();
+                            var email = parts.Length > 1 ? parts[1].TrimEnd(')') : "";
+                            <label class="guest-check">
+                                <input type="checkbox"
+                                       name="SelectedGuestIds"
+                                       value="@g.Value"
+                                       onchange="updateGuestCount()" />
+                                <span class="guest-check-name">@name</span>
+                                <span class="guest-check-email">@email</span>
+                            </label>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="guests-empty">
+                        Brak gości w tym hotelu.
+                        <a asp-controller="Guests" asp-action="Create"
+                           asp-route-hotelId="@Model.HotelId"
+                           style="color:var(--gold);text-decoration:none;">
+                            Dodaj gościa
+                        </a>
+                    </div>
+                }
+            </div>
+
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn-submit">&#43; Utwórz rezerwację</button>
+            <a asp-action="Calendar" asp-route-id="@Model.HotelId"
+               class="btn-cancel-link">&#8592; Anuluj</a>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        // Room prices (passed from server via data attributes for JS calculation)
+        // We recalculate nights and estimate on date change
+
+        const checkIn  = document.getElementById('checkIn');
+        const checkOut = document.getElementById('checkOut');
+        const nightEl  = document.getElementById('nightCount');
+        const priceEl  = document.getElementById('priceEstimate');
+
+        function calcNights() {
+            const a = new Date(checkIn.value);
+            const b = new Date(checkOut.value);
+            if (!checkIn.value || !checkOut.value || b <= a) {
+                nightEl.textContent = '—';
+                priceEl.textContent = '';
+                return;
+            }
+            const n = Math.round((b - a) / 86400000);
+            nightEl.textContent = n + (n === 1 ? ' noc' : n < 5 ? ' noce' : ' nocy');
+        }
+
+        checkIn.addEventListener('change', calcNights);
+        checkOut.addEventListener('change', calcNights);
+
+        // Enforce check-out > check-in
+        checkIn.addEventListener('change', () => {
+            if (checkOut.value && checkOut.value <= checkIn.value) {
+                const d = new Date(checkIn.value);
+                d.setDate(d.getDate() + 1);
+                checkOut.value = d.toISOString().split('T')[0];
+            }
+            calcNights();
+        });
+
+        // Guest counter
+        function updateGuestCount() {
+            const n = document.querySelectorAll('#guestList input:checked').length;
+            document.getElementById('guestSelectedCount').textContent = n;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            calcNights();
+            updateGuestCount();
+        });
+    </script>
+}

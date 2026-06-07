@@ -11,7 +11,7 @@ namespace HotelSystemIndustry.Controllers.Events
     
     public class EventManagementController : Controller
     {
-        
+        // customer / hotwl employe
         private HotelDbContext _context;
 
         private IWebHostEnvironment _appEnvironment;
