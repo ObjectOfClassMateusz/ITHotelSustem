@@ -27,6 +27,9 @@ namespace HotelSystemIndustry.Controllers.Trading
         [HttpGet]
         public async Task<IActionResult> Index()
         {
+            Guid currentHotel = await GetCurrentHotelId();
+
+            ViewBag.HotelChangePartialHotelList = new SelectList(_context.Hotels, "Id", "Name", currentHotel);
             return View();
         }
 
@@ -35,14 +38,43 @@ namespace HotelSystemIndustry.Controllers.Trading
         {
             SellOrRentItemsViewModel model = new();
 
+            Guid currentHotel = await GetCurrentHotelId();
+
+            var magazine = await _context.ShopMagazines
+                .AsNoTracking()
+                .FirstOrDefaultAsync(m => m.HotelId == currentHotel);
+            var magazineId = magazine != null ? magazine.Id : Guid.Empty;
+            model.Items.MagazineId = magazineId;
+
             var items = await GetSaleItemInstances();
 
             ViewBag.SaleItemInstances = items;
 
-            ViewBag.ShopPointList = GetShopPointsSelectList();
+            ViewBag.ShopPointList = GetShopPointsSelectList(currentHotel);
+            ViewBag.MagazineList = GetMagazineSelectList(currentHotel, magazineId);
 
             return View(model);
         }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RefreshSaleOrRentItemsView(SellOrRentItemsViewModel model)
+        {
+            Guid currentHotel = await GetCurrentHotelId();
+
+            var items = await GetSaleItemInstances();
+
+            ViewBag.SaleItemInstances = items;
+
+            ViewBag.ShopPointList = GetShopPointsSelectList(currentHotel, model.Items.ShopPointId);
+            ViewBag.MagazineList = GetMagazineSelectList(currentHotel, model.Items.MagazineId);
+
+            ModelState.Clear();
+
+            return View("SellOrRentItemsView", model);
+        }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -75,11 +107,14 @@ namespace HotelSystemIndustry.Controllers.Trading
                 model.NewItemId = Guid.Empty;
             }
 
+            Guid currentHotel = await GetCurrentHotelId();
+
             var items = await GetSaleItemInstances();
 
             ViewBag.SaleItemInstances = items;
 
-            ViewBag.ShopPointList = GetShopPointsSelectList(model.Items.ShopPointId);
+            ViewBag.ShopPointList = GetShopPointsSelectList(currentHotel, model.Items.ShopPointId);
+            ViewBag.MagazineList = GetMagazineSelectList(currentHotel, model.Items.MagazineId);
 
             ModelState.Clear();
 
@@ -95,11 +130,14 @@ namespace HotelSystemIndustry.Controllers.Trading
                 model.Items.Items.RemoveAt(index);
             }
 
+            Guid currentHotel = await GetCurrentHotelId();
+
             var items = await GetSaleItemInstances();
 
             ViewBag.SaleItemInstances = items;
 
-            ViewBag.ShopPointList = GetShopPointsSelectList(model.Items.ShopPointId);
+            ViewBag.ShopPointList = GetShopPointsSelectList(currentHotel, model.Items.ShopPointId);
+            ViewBag.MagazineList = GetMagazineSelectList(currentHotel, model.Items.MagazineId);
 
             ModelState.Clear();
 
@@ -113,7 +151,7 @@ namespace HotelSystemIndustry.Controllers.Trading
             var items = await GetSaleItemInstances();
             ViewBag.SaleItemInstances = items;
 
-            if (model.Items.ShopPointId != null && model.Items.ShopPointId != Guid.Empty)
+            if (model.Items.ShopPointId != Guid.Empty)
             {
                 var shopPoint = await _context.ShopPoints.FirstOrDefaultAsync(sp => sp.Id == model.Items.ShopPointId);
                 if (shopPoint == null)
@@ -133,11 +171,14 @@ namespace HotelSystemIndustry.Controllers.Trading
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ReturnToSellOrRentItemsView(SellOrRentItems model)
         {
+            Guid currentHotel = await GetCurrentHotelId();
+
             var items = await GetSaleItemInstances();
 
             ViewBag.SaleItemInstances = items;
 
-            ViewBag.ShopPointList = GetShopPointsSelectList(model.ShopPointId);
+            ViewBag.ShopPointList = GetShopPointsSelectList(currentHotel, model.ShopPointId);
+            ViewBag.MagazineList = GetMagazineSelectList(currentHotel, model.MagazineId);
 
             return View("SellOrRentItemsView", new SellOrRentItemsViewModel{Items = model});
         }
@@ -168,11 +209,15 @@ namespace HotelSystemIndustry.Controllers.Trading
         [HttpGet]
         public async Task<IActionResult> AcceptReturnView()
         {
+            Guid currentHotel = await GetCurrentHotelId();
+
             var unreturnedRentItems = await _context.PurchaseItems
                 .AsNoTracking()
                 .Include(p => p.SaleItem)
                     .ThenInclude(si => si!.Type)
-                .Where(p => p.SaleItem!.Type!.IsForRent && !p.HasBeenReturned)
+                .Include(p => p.Purchase)
+                    .ThenInclude(p => p!.ShopPoint)
+                .Where(p => p.Purchase!.ShopPoint!.HotelId == currentHotel && p.SaleItem!.Type!.IsForRent && !p.HasBeenReturned)
                 .ToListAsync();
 
             ViewBag.Items = unreturnedRentItems;
@@ -181,9 +226,12 @@ namespace HotelSystemIndustry.Controllers.Trading
         }
 
 
-        [HttpGet("[action]/{purchaseItemId}")]
+        [HttpGet("[controller]/[action]/{purchaseItemId}")]
+        [ApiExplorerSettings(IgnoreApi = true)]
         public async Task<IActionResult> ReturnItemMenu(Guid purchaseItemId)
         {
+            Guid currentHotel = await GetCurrentHotelId();
+
             var purchaseItem = await _context.PurchaseItems
                 .AsNoTracking()
                 .Where(p => p.Id == purchaseItemId)
@@ -196,13 +244,14 @@ namespace HotelSystemIndustry.Controllers.Trading
             // Find instances of the same item of the same variant
             var instances = await _context.SaleItemInstances
                 .AsNoTracking()
-                .Where(s => s.ItemId == purchaseItem.SaleItemId && s.Variant == purchaseItem.Variant)
                 .Include(s => s.Magazine)
+                .Where(s => s.Magazine!.HotelId == currentHotel && s.ItemId == purchaseItem.SaleItemId && s.Variant == purchaseItem.Variant)
                 .ToListAsync();
 
             // Find magazines that are not on the list above
             var magazines = await _context.ShopMagazines
                 .AsNoTracking()
+                .Where(m => m.HotelId == currentHotel)
                 .ToListAsync();
 
             for (var i = 0; i < magazines.Count;)
@@ -240,15 +289,22 @@ namespace HotelSystemIndustry.Controllers.Trading
         [HttpGet]
         public async Task<IActionResult> AcceptDeliveryView()
         {
+            Guid currentHotel = await GetCurrentHotelId();
+
             var items = await _context.SaleItems.AsNoTracking().ToListAsync();
-            var magazines = await _context.ShopMagazines.AsNoTracking().ToListAsync();
+            var magazines = await _context.ShopMagazines
+                .AsNoTracking()
+                .Where(m => m.HotelId == currentHotel)
+                .ToListAsync();
 
             var itemInstances = await _context.SaleItemInstances
                 .AsNoTracking()
+                .Include(s => s.Magazine)
+                .Where(s => s.Magazine!.HotelId == currentHotel)
                 .ToListAsync();
 
             var itemSelectList = new SelectList(_context.SaleItems, "Id", "Name");
-            var magazineSelectList = new SelectList(_context.ShopMagazines, "Id", "Location");
+            var magazineSelectList = new SelectList(magazines, "Id", "Location");
 
             ViewBag.Items = items;
             ViewBag.ItemInstances = itemInstances;
@@ -273,15 +329,22 @@ namespace HotelSystemIndustry.Controllers.Trading
             ModelState.Clear();
 
 
+            Guid currentHotel = await GetCurrentHotelId();
+
             var items = await _context.SaleItems.AsNoTracking().ToListAsync();
-            var magazines = await _context.ShopMagazines.AsNoTracking().ToListAsync();
+            var magazines = await _context.ShopMagazines
+                .AsNoTracking()
+                .Where(m => m.HotelId == currentHotel)
+                .ToListAsync();
 
             var itemInstances = await _context.SaleItemInstances
                 .AsNoTracking()
+                .Include(s => s.Magazine)
+                .Where(s => s.Magazine!.HotelId == currentHotel)
                 .ToListAsync();
 
             var itemSelectList = new SelectList(_context.SaleItems, "Id", "Name");
-            var magazineSelectList = new SelectList(_context.ShopMagazines, "Id", "Location");
+            var magazineSelectList = new SelectList(magazines, "Id", "Location");
 
             ViewBag.Items = items;
             ViewBag.ItemInstances = itemInstances;
@@ -314,13 +377,14 @@ namespace HotelSystemIndustry.Controllers.Trading
         [HttpGet]
         public async Task<IActionResult> PruneExpiredItems()
         {
+            Guid currentHotel = await GetCurrentHotelId();
             DateTime today = DateTime.UtcNow.Date;
 
             var expiredItems = await _context.SaleItemInstances
                 .AsNoTracking()
-                .Where(s => s.ExpireDate != null && s.ExpireDate <= today)
                 .Include(s => s.Item)
                 .Include(s => s.Magazine)
+                .Where(s => s.Magazine!.HotelId == currentHotel && s.ExpireDate != null && s.ExpireDate <= today)
                 .ToListAsync();
 
             ViewBag.ExpiredItems = expiredItems;
@@ -332,12 +396,14 @@ namespace HotelSystemIndustry.Controllers.Trading
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ConfirmExpiredItemsPrunning()
         {
+            Guid currentHotel = await GetCurrentHotelId();
             DateTime today = DateTime.UtcNow.Date;
 
             var expiredItems = await _context.SaleItemInstances
-                .Where(s => s.ExpireDate != null && s.ExpireDate <= today)
+                .AsNoTracking()
                 .Include(s => s.Item)
                 .Include(s => s.Magazine)
+                .Where(s => s.Magazine!.HotelId == currentHotel && s.ExpireDate != null && s.ExpireDate <= today)
                 .ToListAsync();
 
             TradingApiController apiController = new TradingApiController(_context)
@@ -345,24 +411,36 @@ namespace HotelSystemIndustry.Controllers.Trading
                 ControllerContext = this.ControllerContext
             };
 
-            await apiController.PruneExpiredItems();
+            await apiController.PruneExpiredItems(currentHotel);
 
             return RedirectToAction("PruneExpiredItems");
         }
 
 
-        private SelectList GetShopPointsSelectList(Guid? shopPointId = null)
+        private SelectList GetShopPointsSelectList(Guid hotelId, Guid? shopPointId = null)
         {
             List<SelectListItem> items = _context.ShopPoints
+                .Where(sp => sp.HotelId == hotelId)
                 .Select(sp => new SelectListItem(sp.Location, sp.Id.ToString()))
                 .ToList();
-
-            items.Add(new SelectListItem("-- None --", Guid.Empty.ToString()));
             
             if (shopPointId != null && shopPointId != Guid.Empty)
                 return new SelectList(items, "Value", "Text", shopPointId.Value.ToString());
             else
-                return new SelectList(items, "Value", "Text", Guid.Empty.ToString());
+                return new SelectList(items, "Value", "Text");
+        }
+
+        private SelectList GetMagazineSelectList(Guid hotelId, Guid? magazineId = null)
+        {
+            List<SelectListItem> items = _context.ShopMagazines
+                .Where(sm => sm.HotelId == hotelId)
+                .Select(sp => new SelectListItem(sp.Location, sp.Id.ToString()))
+                .ToList();
+            
+            if (magazineId != null && magazineId != Guid.Empty)
+                return new SelectList(items, "Value", "Text", magazineId.Value.ToString());
+            else
+                return new SelectList(items, "Value", "Text");
         }
 
         private async Task<List<SaleItemInstance>> GetSaleItemInstances()
@@ -376,6 +454,16 @@ namespace HotelSystemIndustry.Controllers.Trading
                 .ToListAsync();
 
             return items;
+        }
+
+
+        private async Task<Guid> GetCurrentHotelId()
+        {
+            HotelChangeController hotelChangeController = new HotelChangeController(_context)
+            {
+                ControllerContext = this.ControllerContext
+            };
+            return await hotelChangeController.GetCurrentHotel();
         }
     }
 

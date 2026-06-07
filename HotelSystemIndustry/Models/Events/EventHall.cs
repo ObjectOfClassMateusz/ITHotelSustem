@@ -13,6 +13,11 @@ namespace HotelSystemIndustry.Models.Events
         [Range(typeof(uint), "0", "500")]
         public uint NumMaxGuests { get; set; }
 
+        [Required]
+        public Guid HotelId { get; set; }
+
+        public virtual Hotel? Hotel { get; set; }
+
         [DataType(DataType.Currency)]
         [DisplayFormat(DataFormatString="{0:C2}")]
         [Range(typeof(decimal), "0", "79228162514264337593543950335")]

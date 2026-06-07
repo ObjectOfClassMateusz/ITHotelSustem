@@ -1,0 +1,39 @@
+@using HotelSystemIndustry.Models.Kitchen
+@using HotelSystemIndustry.Services
+
+@model IList<ExternalMealArea>
+
+@{
+    ViewData["Title"] = "Special dish inspirations";
+    ViewBag.LowerNavPartial = "_KitchenNavPartial";
+}
+
+
+<h1 class="fs-2">Special dish inspirations</h1>
+<h2 class="fs-1">Search for dish by area</h2>
+<hr />
+
+
+<div class="container my-4">
+    @foreach (var area in Model) {
+        <div class="container my-4">
+            <h3 class="my-4">@area.StrArea</h3>
+
+            <div class="my-4">
+                <span class="fw-bold">Country:</span> @area.StrCountry
+            </div>
+
+            <div class="my-4">
+                <a class="btn btn-primary" asp-action="SpecialDishesOfArea" asp-route-area="@area.StrArea">Show</a>
+            </div>
+
+            <hr />
+        </div>
+    }
+</div>
+
+
+<div class="my-4">
+    <a asp-action="SpecialDishInspiration" asp-controller="Kitchen" class="btn btn-primary">Back</a>
+</div>
+

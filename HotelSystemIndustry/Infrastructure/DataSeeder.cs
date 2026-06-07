@@ -3,6 +3,7 @@ using HotelSystemIndustry.Models.Kitchen;
 using HotelSystemIndustry.Models.Trading;
 using Microsoft.AspNetCore.Identity;
 using HotelSystemIndustry.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace HotelSystemIndustry.Infrastructure;
 
@@ -21,10 +22,10 @@ public class DataSeeder
             logger.LogInformation("Upewnianie się, że baza danych jest stworzona");
             await context.Database.EnsureCreatedAsync();
             await SeedRolesAndUsers(roleManager, userManager);
+            await SeedHotel(context);
             await SeedEvents(context);
             await SeedKitchen(context);
             await SeedTrading(context);
-            await SeedHotel(context);
 
             await context.SaveChangesAsync();
         }
@@ -105,6 +106,13 @@ public class DataSeeder
 
     private static async Task SeedEvents(HotelDbContext context)
     {
+        var hotel = await context.Hotels.FirstOrDefaultAsync(h => h.Name == "Hotel Alfa Dominicana");
+        if (hotel == null)
+            hotel = await context.Hotels.FirstOrDefaultAsync();
+        if (hotel == null)
+            throw new Exception($"Błąd przy seedowaniu wydarzeń: nie znaleziono żadnego hotelu!");
+        
+
         if (context.EquipmentTypes.Count() == 0)
         {
             context.EquipmentTypes.Add(new EquipmentType
@@ -170,15 +178,15 @@ public class DataSeeder
         {
             context.EventHalls.Add(new EventHall
             {
-                Id = Guid.NewGuid(), Name = "Conference Hall", NumMaxGuests = 300, ReservationPrice = 200.0m
+                Id = Guid.NewGuid(), Name = "Conference Hall", NumMaxGuests = 300, ReservationPrice = 200.0m, HotelId = hotel.Id, Hotel = hotel
             });
             context.EventHalls.Add(new EventHall
             {
-                Id = Guid.NewGuid(), Name = "Banquette Hall", NumMaxGuests = 150, ReservationPrice = 150.0m
+                Id = Guid.NewGuid(), Name = "Banquette Hall", NumMaxGuests = 150, ReservationPrice = 150.0m, HotelId = hotel.Id, Hotel = hotel
             });
             context.EventHalls.Add(new EventHall
             {
-                Id = Guid.NewGuid(), Name = "Main Assembly Hall", NumMaxGuests = 500, ReservationPrice = 300.0m
+                Id = Guid.NewGuid(), Name = "Main Assembly Hall", NumMaxGuests = 500, ReservationPrice = 300.0m, HotelId = hotel.Id, Hotel = hotel
             });
 
             await context.SaveChangesAsync();
@@ -365,6 +373,13 @@ public class DataSeeder
 
     private static async Task SeedKitchen(HotelDbContext context)
     {
+        var hotel = await context.Hotels.FirstOrDefaultAsync(h => h.Name == "Hotel Alfa Dominicana");
+        if (hotel == null)
+            hotel = await context.Hotels.FirstOrDefaultAsync();
+        if (hotel == null)
+            throw new Exception($"Błąd przy seedowaniu kuchni: nie znaleziono żadnego hotelu!");
+
+
         if (context.KitchenArticleTypes.Count() == 0)
         {
             context.KitchenArticleTypes.Add(new KitchenArticleType
@@ -481,11 +496,11 @@ public class DataSeeder
         {
             context.KitchenStorages.Add(new Storage
             {
-                Id = Guid.NewGuid(), Name = "Fridge", Location = "Kitchen"
+                Id = Guid.NewGuid(), Name = "Fridge", Location = "Kitchen", HotelId = hotel.Id, Hotel = hotel
             });
             context.KitchenStorages.Add(new Storage
             {
-                Id = Guid.NewGuid(), Name = "Basement Storage", Location = "Hotel basement"
+                Id = Guid.NewGuid(), Name = "Basement Storage", Location = "Hotel basement", HotelId = hotel.Id, Hotel = hotel
             });
 
             await context.SaveChangesAsync();
@@ -862,6 +877,13 @@ public class DataSeeder
 
     private static async Task SeedTrading(HotelDbContext context)
     {
+        var hotel = await context.Hotels.FirstOrDefaultAsync(h => h.Name == "Hotel Alfa Dominicana");
+        if (hotel == null)
+            hotel = await context.Hotels.FirstOrDefaultAsync();
+        if (hotel == null)
+            throw new Exception($"Błąd przy seedowaniu modułu handlu: nie znaleziono żadnego hotelu!");
+
+
         if (context.SaleItemTypes.Count() == 0)
         {
             context.SaleItemTypes.Add(new SaleItemType
@@ -884,19 +906,19 @@ public class DataSeeder
         {
             context.ShopMagazines.Add(new ShopMagazine
             {
-                Id = Guid.NewGuid(), Location = "Souvenir shop facilities"
+                Id = Guid.NewGuid(), Location = "Souvenir shop facilities", HotelId = hotel.Id, Hotel = hotel
             });
             context.ShopMagazines.Add(new ShopMagazine
             {
-                Id = Guid.NewGuid(), Location = "Supermarket facilities"
+                Id = Guid.NewGuid(), Location = "Supermarket facilities", HotelId = hotel.Id, Hotel = hotel
             });
             context.ShopMagazines.Add(new ShopMagazine
             {
-                Id = Guid.NewGuid(), Location = "Hotel basement"
+                Id = Guid.NewGuid(), Location = "Hotel basement", HotelId = hotel.Id, Hotel = hotel
             });
             context.ShopMagazines.Add(new ShopMagazine
             {
-                Id = Guid.NewGuid(), Location = "Garage"
+                Id = Guid.NewGuid(), Location = "Garage", HotelId = hotel.Id, Hotel = hotel
             });
 
             await context.SaveChangesAsync();
@@ -906,15 +928,15 @@ public class DataSeeder
         {
             context.ShopPoints.Add(new ShopPoint
             {
-                Id = Guid.NewGuid(), Location = "Souvenir shop in hotel lobby"
+                Id = Guid.NewGuid(), Location = "Souvenir shop in hotel lobby", HotelId = hotel.Id, Hotel = hotel
             });
             context.ShopPoints.Add(new ShopPoint
             {
-                Id = Guid.NewGuid(), Location = "Supermarket after the hall"
+                Id = Guid.NewGuid(), Location = "Supermarket after the hall", HotelId = hotel.Id, Hotel = hotel
             });
             context.ShopPoints.Add(new ShopPoint
             {
-                Id = Guid.NewGuid(), Location = "Kiosk near guest rooms"
+                Id = Guid.NewGuid(), Location = "Kiosk near guest rooms", HotelId = hotel.Id, Hotel = hotel
             });
 
             await context.SaveChangesAsync();
@@ -933,6 +955,14 @@ public class DataSeeder
             context.SaleItems.Add(new SaleItem
             {
                 Id = Guid.NewGuid(), Name = "Greek wine", ContainsAlcohol = true, TypeId = toBuyType.Id, Type = toBuyType
+            });
+            context.SaleItems.Add(new SaleItem
+            {
+                Id = Guid.NewGuid(), Name = "White wine", ContainsAlcohol = true, TypeId = toBuyType.Id, Type = toBuyType
+            });
+            context.SaleItems.Add(new SaleItem
+            {
+                Id = Guid.NewGuid(), Name = "Plums in chocolate", ContainsAlcohol = false, TypeId = toBuyType.Id, Type = toBuyType
             });
             context.SaleItems.Add(new SaleItem
             {
@@ -982,6 +1012,18 @@ public class DataSeeder
             {
                 Id = Guid.NewGuid(), Variant = "Portobello", Count = 5, ExpireDate = DateTime.UtcNow.AddYears(10).Date, Price = 89.95m,
                 ItemId = context.SaleItems.FirstOrDefault(si => si.Name == "Greek wine")!.Id,
+                MagazineId = context.ShopMagazines.FirstOrDefault(m => m.Location == "Supermarket facilities")!.Id,
+            });
+            context.SaleItemInstances.Add(new SaleItemInstance
+            {
+                Id = Guid.NewGuid(), Variant = "Portobello", Count = 10, ExpireDate = DateTime.UtcNow.AddYears(10).Date, Price = 59.95m,
+                ItemId = context.SaleItems.FirstOrDefault(si => si.Name == "White wine")!.Id,
+                MagazineId = context.ShopMagazines.FirstOrDefault(m => m.Location == "Supermarket facilities")!.Id,
+            });
+            context.SaleItemInstances.Add(new SaleItemInstance
+            {
+                Id = Guid.NewGuid(), Variant = "", Count = 36, ExpireDate = DateTime.UtcNow.AddMonths(5).Date, Price = 10.95m,
+                ItemId = context.SaleItems.FirstOrDefault(si => si.Name == "Plums in chocolate")!.Id,
                 MagazineId = context.ShopMagazines.FirstOrDefault(m => m.Location == "Supermarket facilities")!.Id,
             });
             context.SaleItemInstances.Add(new SaleItemInstance
@@ -1133,14 +1175,17 @@ public class DataSeeder
         if (context.Hotels.Count() == 0)
         {
             context.Hotels.Add(hotel);
+            await context.SaveChangesAsync();
         }
         if (context.Addresses.Count() == 0) 
         {
             context.Addresses.Add(address);
+            await context.SaveChangesAsync();
         }
         if (context.Phones.Count() == 0)
         {
             context.Phones.Add(phone);
+            await context.SaveChangesAsync();
         }
     }
 }

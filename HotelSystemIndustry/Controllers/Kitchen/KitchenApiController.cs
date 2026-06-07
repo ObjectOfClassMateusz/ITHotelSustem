@@ -31,25 +31,26 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         }
 
 
-        [HttpGet("[action]/{articleId}")]
+        [HttpGet("[action]/{hotelId}/{articleId}")]
         [Authorize(Roles="KitchenEmployee")]
-        public async Task<List<ArticleInstance>> GetArticleInstanceList(Guid articleId)
+        public async Task<List<ArticleInstance>> GetArticleInstanceList(Guid hotelId, Guid articleId)
         {
             var articleInstances = await _context.KitchenArticleInstances
                 .AsNoTracking()
-                .Where(ai => ai.ArticleId == articleId)
                 .Include(ai => ai.Storage)
+                .Where(ai => ai.ArticleId == articleId && ai.Storage!.HotelId == hotelId)
                 .ToListAsync();
             return articleInstances;
         }
 
 
-        [HttpGet("[action]")]
+        [HttpGet("[action]/{hotelId}")]
         [Authorize(Roles="KitchenEmployee")]
-        public async Task<List<Storage>> GetStorageList()
+        public async Task<List<Storage>> GetStorageList(Guid hotelId)
         {
             var storages = await _context.KitchenStorages
                 .AsNoTracking()
+                .Where(s => s.HotelId == hotelId)
                 .ToListAsync();
             return storages;
         }

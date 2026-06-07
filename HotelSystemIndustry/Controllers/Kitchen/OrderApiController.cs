@@ -51,6 +51,7 @@ namespace HotelSystemIndustry.Controllers.Kitchen
                 SubmissionTime = DateTime.Now.ToUniversalTime(),
                 RealisedTime = null,
                 TypeId = model.Type,
+                HotelId = model.HotelId,
                 DeliveryDestination = model.Destination,
                 Products = new List<OrderProduct>()
             };
@@ -91,16 +92,16 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         }
 
 
-        [HttpGet("[action]")]
+        [HttpGet("[action]/{hotelId}")]
         [Authorize(Roles="KitchenEmployee")]
-        public async Task<List<Order>> GetOrdersToRealise()
+        public async Task<List<Order>> GetOrdersToRealise(Guid hotelId)
         {
             var unrealisedOrders = await _context.KitchenOrders
                 .AsNoTracking()
-                .Where(p => p.RealisedTime == null)
                 .Include(p => p.Type)
                 .Include(p => p.Products)
                     !.ThenInclude(op => op.Product)
+                .Where(p => p.RealisedTime == null && p.HotelId == hotelId)
                 .ToListAsync();
 
             return unrealisedOrders;

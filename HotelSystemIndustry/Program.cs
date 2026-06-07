@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using System.Text.Json.Serialization;
 using HotelSystemIndustry.Infrastructure;
+using HotelSystemIndustry.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -23,7 +24,6 @@ builder.Services.AddAntiforgery();
 
 builder.Services.AddIdentity<User, IdentityRole>(options =>
     {
-        options.SignIn.RequireConfirmedAccount = true;
         options.Password.RequireDigit = true;
         options.Password.RequiredLength = 8;
         options.Password.RequireNonAlphanumeric = false;
@@ -42,11 +42,24 @@ builder.Services.ConfigureApplicationCookie(options =>
 });
 
 
-builder.Services.AddMemoryCache();
-builder.Services.AddSession();
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(60);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 
 
 builder.Services.AddRazorPages();
+
+
+builder.Services.AddHttpClient("themealdb", client =>
+{
+    client.BaseAddress = new Uri("https://www.themealdb.com/api/json/v1/");
+    client.DefaultRequestHeaders.Add("Accept", "application/json");
+});
+builder.Services.AddScoped<IExternalRecipeService, ExternalRecipeService>();
 
 
 builder.Services.AddEndpointsApiExplorer();

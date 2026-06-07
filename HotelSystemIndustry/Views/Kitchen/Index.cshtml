@@ -30,7 +30,27 @@
         <a asp-action="ChooseProductCookingHelp" class="page-link text-dark">Cooking Help</a>
     </div>
 
+    <div class="col-md-4 text-center my-2">
+        <a asp-action="SpecialDishInspiration" class="page-link text-dark">Looking for an inspiration?</a>
+    </div>
+
 </div>
+
+
+<hr />
+
+
+<form id="hotelchangeform" class="form-group row my-4 justify-content-center">
+
+    <div class="col-md-1">
+        <label class="control-label fs-6" for="hotelid">Hotel:</label>
+    </div>
+    <div class="col-md-4">
+        <select asp-items="ViewBag.HotelChangePartialHotelList" name="hotelid" id="hotelid" class="form-control"></select>
+    </div>
+
+</form>
+
 
 
 <h2>
@@ -64,4 +84,32 @@
         <a asp-controller="Order" asp-action="Index">Orders</a>
     </li>
 </ul>
+
+
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#hotelid").change(function (e){
+                e.preventDefault();
+                let data = new FormData();
+                data.append("hotelid", $("#hotelid").val());
+                $.ajax({
+                    url: '/HotelChange/ChangeHotel',
+                    type: "POST",
+                    processData: false,
+                    data: data,
+                    dataType: 'json',
+                    contentType: false,
+                    success: function (response) {
+                        console.log('Changed hotel');
+                    },
+                    error: function (er) { console.log(er); }
+                });
+
+                return false;
+            });
+        });
+    </script>
+}
+
 

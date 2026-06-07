@@ -1,0 +1,108 @@
+@using HotelSystemIndustry.Models.Kitchen
+@using HotelSystemIndustry.Services
+
+@model ExternalMeal
+
+@{
+    ViewData["Title"] = "Special dish inspirations";
+    ViewBag.LowerNavPartial = "_KitchenNavPartial";
+}
+
+
+<h1 class="fs-2">Special dish inspirations</h1>
+<h2 class="fs-1">@Model.StrMeal</h2>
+<hr />
+
+
+<div class="container my-4 fs-5">
+    <div class="row">
+        <div class="col-3 mx-auto">
+            <img class="mx-auto d-block img-fluid" src="@Model.StrMealThumb" />
+        </div>
+    </div>
+
+    <dl>
+        <div class="row">
+            <dt class="col-md-1">
+                Category:
+            </dt>
+            <dd class="col-md-4">
+                @Model.StrCategory
+            </dd>
+        </div>
+        @if (!string.IsNullOrEmpty(Model.StrArea)) {
+            <div class="row">
+                <dt class="col-md-1">
+                    Area:
+                </dt>
+                <dd class="col-md-4">
+                    @Model.StrArea
+                </dd>
+            </div>
+        }
+        <div class="row">
+            <dt class="col-md-1">
+                Country:
+            </dt>
+            <dd class="col-md-4">
+                @Model.StrCountry
+            </dd>
+        </div>
+        @if (Model.StrTags != null) {
+            <div class="row">
+                <dt class="col-md-1">
+                    Tags:
+                </dt>
+                <dd class="col-md-4">
+                    @Model.StrTags.Replace(",", ", ")
+                </dd>
+            </div>
+        }
+    </dl>
+
+    <h3 class="my-4">Ingredients</h3>
+
+    
+    <ul>
+        @{
+            string?[] ings = {
+                Model.StrIngredient1, Model.StrIngredient2, Model.StrIngredient3, Model.StrIngredient4, Model.StrIngredient5,
+                Model.StrIngredient6, Model.StrIngredient7, Model.StrIngredient8, Model.StrIngredient9, Model.StrIngredient10,
+                Model.StrIngredient11, Model.StrIngredient12, Model.StrIngredient13, Model.StrIngredient14, Model.StrIngredient15,
+                Model.StrIngredient16, Model.StrIngredient17, Model.StrIngredient18, Model.StrIngredient19, Model.StrIngredient20
+            };
+            string?[] measures = {
+                Model.StrMeasure1, Model.StrMeasure2, Model.StrMeasure3, Model.StrMeasure4, Model.StrMeasure5,
+                Model.StrMeasure6, Model.StrMeasure7, Model.StrMeasure8, Model.StrMeasure9, Model.StrMeasure10,
+                Model.StrMeasure11, Model.StrMeasure12, Model.StrMeasure13, Model.StrMeasure14, Model.StrMeasure15,
+                Model.StrMeasure16, Model.StrMeasure17, Model.StrMeasure18, Model.StrMeasure19, Model.StrMeasure20
+            };
+
+            for (int i = 0; i < 20; i++) {
+
+                if (!string.IsNullOrEmpty(ings[i])) {
+                    <li>
+                        @ings[i]
+                        @if (!string.IsNullOrEmpty(measures[i])) {
+                            <span>–</span> @measures[i]
+                        }
+                    </li>
+                }
+            }
+        }
+    </ul>
+
+    <h3>Recipe</h3>
+    <div class="my-4">
+        @Model.StrInstructions
+    </div>
+
+    @if (!string.IsNullOrEmpty(Model.StrYoutube)) {
+        <a class="my-4" href="@Model.StrYoutube">See on Youtube</a>
+    }
+</div>
+
+<div class="my-4">
+    <a asp-action="SpecialDishInspiration" asp-controller="Kitchen" class="btn btn-primary">Back</a>
+</div>
+

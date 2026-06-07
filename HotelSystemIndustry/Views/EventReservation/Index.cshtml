@@ -25,10 +25,16 @@
                 @Html.DisplayNameFor(model => model.EndTime)
             </th>
             <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.NumRequiredStaff)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.NumGuests)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AgreementDocumentPath)
             </th>
             <th></th>
         </tr>
@@ -43,16 +49,24 @@
                 @Html.DisplayFor(modelItem => item.EventType.Name)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.StartTime)
+                @{ DateTime startTime = item.StartTime.ToLocalTime(); }
+                @Html.DisplayFor(modelItem => startTime)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.EndTime)
+                @{ DateTime endTime = item.StartTime.ToLocalTime(); }
+                @Html.DisplayFor(modelItem => endTime)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.NumRequiredStaff)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.NumGuests)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AgreementDocumentPath)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

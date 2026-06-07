@@ -53,6 +53,10 @@ namespace HotelSystemIndustry.Models.Events
 
         [DataType(DataType.DateTime)]
         public DateTime EndTime { get; set; }
+
+
+        [MaxLength(30)]
+        public string Name { get; set; } = string.Empty;
         
 
         [Range(typeof(uint), "0", "500")]
@@ -62,13 +66,12 @@ namespace HotelSystemIndustry.Models.Events
         public uint NumGuests { get; set; }
 
 
+        public string AgreementDocumentPath { get; set; } = string.Empty;
+
+
         public virtual ICollection<EventHall>? Halls { get; set; }
 
         public virtual ICollection<EquipmentInstance>? Equipment { get; set; }
-
-        public virtual ICollection<Room>? Rooms { get; set; }
-
-        public virtual ICollection<KitchenProduct>? Food { get; set; }
     }
 
 }

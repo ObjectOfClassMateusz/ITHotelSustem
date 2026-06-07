@@ -1,0 +1,74 @@
+@using HotelSystemIndustry.Models.Events
+@model EventReservation
+
+@{
+    ViewData["Title"] = "Cancel event";
+    ViewBag.LowerNavPartial = "_HotelManagementNavPartial";
+}
+
+
+<h1 class="my-4">Confirm event cancelation</h1>
+
+<hr />
+
+<div class="container">
+    <h2 class="my-4">Do you really want to cancel this event?</h2>
+
+    <form method="post" asp-action="ConfirmEventCancelation">
+        @Html.AntiForgeryToken()
+
+        <input type="hidden" name="id" value="@Model.Id" />
+
+        <div class="fw-bold fs-3 my-4">@Model.Name</div>
+
+        <dl class="fs-5">
+            <div class="row">
+                <dt class="col-md-4">
+                    Event type:
+                </dt>
+                <dd class="col-md-6">
+                    @Model.EventType?.Name
+                </dd>
+            </div>
+            <div class="row">
+                <dt class="col-md-4">
+                    Status:
+                </dt>
+                <dd class="col-md-4">
+                    @Model.Status?.Name
+                </dd>
+            </div>
+            <div class="row">
+                <dt class="col-md-4">
+                    Start time:
+                </dt>
+                <dd class="col-md-6">
+                    @Model.StartTime.ToLocalTime()
+                </dd>
+            </div>
+            <div class="row">
+                <dt class="col-md-4">
+                    End time:
+                </dt>
+                <dd class="col-md-6">
+                    @Model.EndTime.ToLocalTime()
+                </dd>
+            </div>
+        </dl>
+
+        <div class="my-5">
+            <input type="submit" value="Confirm" class="btn btn-danger" />
+        </div>
+    </form>
+</div>
+
+<div class="my-5">
+    <a class="btn btn-primary" asp-action="EventRealisation" asp-route-id="@Model.Id">Back</a>
+</div>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial.cshtml");
+    }
+}

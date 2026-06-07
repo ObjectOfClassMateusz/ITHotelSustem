@@ -25,6 +25,7 @@
     @Html.HiddenFor(m => m.EventTypeId)
     @Html.HiddenFor(m => m.StartTime)
     @Html.HiddenFor(m => m.EndTime)
+    @Html.HiddenFor(m => m.Name)
 
     @if (freeHalls.Count == 0) {
         <span>Sorry! There are no free event halls in the given time span.</span>
@@ -50,9 +51,11 @@
                         <h3 class="col-sm-4 text-start my-2">@hall!.Name</h3>
                         <span class="col-sm-4 text-center my-2">Max. @hall.NumMaxGuests guests</span>
                         <span class="col-sm-4 text-end my-2">Reservation price / day: @Html.DisplayFor(m => hall.ReservationPrice)</span>
-                    
+                        <span class="my-2"><span class="fw-bold">Hotel:</span> <span>@hall.Hotel!.Name</span></span>
+
+                        <hr />
+
                         @if (hall.Equipment!.Count() > 0) {
-                            <hr />
                             <span class="fw-bold">Available equipment:</span>
 
                             <ul>
@@ -66,7 +69,7 @@
             }
         </div>
 
-        <div class="mx-4">
+        <div class="mx-4 my-4">
             <input type="submit" class="btn btn-success" value="Next" />
         </div>
     }

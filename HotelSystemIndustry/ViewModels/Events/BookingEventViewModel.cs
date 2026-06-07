@@ -16,6 +16,10 @@ namespace HotelSystemIndustry.ViewModels.Events
         public DateTime EndTime { get; set; }
 
 
+        [MaxLength(50)]
+        public string Name { get; set; } = string.Empty;
+
+
         public uint NumGuests { get; set; } = 10;
 
         [Range(0, 20)]
