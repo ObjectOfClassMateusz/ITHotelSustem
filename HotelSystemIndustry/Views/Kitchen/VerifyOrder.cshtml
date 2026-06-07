@@ -24,8 +24,16 @@
 
     @Html.HiddenFor(m => m.Type)
     @Html.HiddenFor(m => m.Destination)
+    @Html.HiddenFor(m => m.HotelId)
 
     <dl class="row">
+        <dt class="col-sm-2">
+            @Html.LabelFor(m => m.HotelId, "Hotel: ")
+        </dt>
+        <dd class="col-sm-10">
+            @ViewBag.HotelName
+        </dd>
+
         <dt class="col-sm-2">
             @Html.LabelFor(m => m.Type, "Order type: ")
         </dt>

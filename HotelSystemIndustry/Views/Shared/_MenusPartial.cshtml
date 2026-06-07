@@ -22,6 +22,9 @@
             <li class="nav-item">
                 <a id="reception-button" class="nav-link text-dark" asp-controller="Reception" asp-action="Index">Reception</a>
             </li>
+            <li class="nav-item">
+                <a id="events-button" class="nav-link text-dark" asp-controller="EventManagement" asp-action="Index">Events</a>
+            </li>
         }
         @if (User.IsInRole("KitchenEmployee")) {
             <li class="nav-item">

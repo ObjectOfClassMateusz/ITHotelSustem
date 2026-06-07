@@ -23,6 +23,10 @@
                 <span asp-validation-for="NumMaxGuests" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="HotelId" class="control-label"></label>
+                <select asp-for="HotelId" class ="form-control" asp-items="ViewBag.HotelId"></select>
+            </div>
+            <div class="form-group">
                 <label asp-for="ReservationPrice" class="control-label"></label>
                 <input asp-for="ReservationPrice" class="form-control" />
                 <span asp-validation-for="ReservationPrice" class="text-danger"></span>

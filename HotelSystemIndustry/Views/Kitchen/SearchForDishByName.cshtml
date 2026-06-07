@@ -1,0 +1,67 @@
+@using HotelSystemIndustry.Models.Kitchen
+@using HotelSystemIndustry.Services
+
+@model IList<ExternalMeal>
+
+@{
+    ViewData["Title"] = "Special dish inspirations";
+    ViewBag.LowerNavPartial = "_KitchenNavPartial";
+}
+
+
+<h1 class="fs-2">Special dish inspirations</h1>
+<h2 class="fs-1">Search for dish by name</h2>
+<hr />
+
+
+<div class="container">
+    <form class="row mx-auto" method="post" asp-action="SearchForDish">
+        @Html.AntiForgeryToken()
+
+        <div class="col-md-10">
+            <input type="text" name="name" class="form-control" value="@ViewBag.PrevSearch" placeholder="Type here …" />
+        </div>
+        <div class="col-md-2">
+            <input type="submit" class="btn btn-success" value="Submit" />
+        </div>
+    </form>
+
+    <hr />
+
+
+    @if (Model.Count == 0 && !string.IsNullOrEmpty(ViewBag.PrevSearch)) {
+        <h2>There are no meals with the given name!</h2>
+    }
+
+    @foreach (var meal in Model) {
+        <h3 class="my-4">@meal.StrMeal</h3>
+
+            <div class="row">
+                <div class="col-3 mx-auto">
+                    <img class="mx-auto d-block img-fluid" src="@meal.StrMealThumb" />
+                </div>
+            </div>
+
+            @if (!string.IsNullOrEmpty(meal.StrArea)) {
+                <div>
+                    <span class="fw-bold">Area:</span> @meal.StrArea
+                </div>
+            }
+            <div>
+                <span class="fw-bold">Country:</span> @meal.StrCountry
+            </div>
+
+            <div class="my-4">
+                <a class="btn btn-primary" asp-action="DisplaySpecialDish" asp-route-id="@meal.IdMeal">Show</a>
+            </div>
+
+            <hr />
+    }
+
+</div>
+
+
+<div class="my-4">
+    <a asp-action="SpecialDishInspiration" asp-controller="Kitchen" class="btn btn-primary">Back</a>
+</div>
+

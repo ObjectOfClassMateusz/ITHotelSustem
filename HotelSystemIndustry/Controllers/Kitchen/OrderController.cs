@@ -24,7 +24,7 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         // GET: Order
         public async Task<IActionResult> Index()
         {
-            var hotelDbContext = _context.KitchenOrders.Include(o => o.Type);
+            var hotelDbContext = _context.KitchenOrders.Include(o => o.Hotel).Include(o => o.Type);
             return View(await hotelDbContext.ToListAsync());
         }
 
@@ -37,6 +37,7 @@ namespace HotelSystemIndustry.Controllers.Kitchen
             }
 
             var order = await _context.KitchenOrders
+                .Include(o => o.Hotel)
                 .Include(o => o.Type)
                 .Include(o => o.Products)
                     !.ThenInclude(p => p.Product)
@@ -52,6 +53,7 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         // GET: Order/Create
         public IActionResult Create()
         {
+            ViewData["HotelId"] = new SelectList(_context.Hotels, "Id", "Name");
             ViewData["TypeId"] = new SelectList(_context.KitchenOrderTypes, "Id", "Name");
             return View();
         }
@@ -61,7 +63,7 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,SubmissionTime,RealisedTime,TypeId,DeliveryDestination")] Order order)
+        public async Task<IActionResult> Create([Bind("Id,SubmissionTime,RealisedTime,TypeId,HotelId,DeliveryDestination")] Order order)
         {
             if (ModelState.IsValid && order.TypeId != Guid.Empty)
             {
@@ -75,6 +77,7 @@ namespace HotelSystemIndustry.Controllers.Kitchen
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["HotelId"] = new SelectList(_context.Hotels, "Id", "Name", order.HotelId);
             ViewData["TypeId"] = new SelectList(_context.KitchenOrderTypes, "Id", "Name", order.TypeId);
             return View(order);
         }
@@ -92,6 +95,7 @@ namespace HotelSystemIndustry.Controllers.Kitchen
             {
                 return NotFound();
             }
+            ViewData["HotelId"] = new SelectList(_context.Hotels, "Id", "Name", order.HotelId);
             ViewData["TypeId"] = new SelectList(_context.KitchenOrderTypes, "Id", "Name", order.TypeId);
             return View(order);
         }
@@ -101,7 +105,7 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Id,SubmissionTime,RealisedTime,TypeId,DeliveryDestination")] Order order)
+        public async Task<IActionResult> Edit(Guid id, [Bind("Id,SubmissionTime,RealisedTime,TypeId,HotelId,DeliveryDestination")] Order order)
         {
             if (id != order.Id)
             {
@@ -133,6 +137,7 @@ namespace HotelSystemIndustry.Controllers.Kitchen
                 }
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["HotelId"] = new SelectList(_context.Hotels, "Id", "Name", order.HotelId);
             ViewData["TypeId"] = new SelectList(_context.KitchenOrderTypes, "Id", "Name", order.TypeId);
             return View(order);
         }
@@ -146,6 +151,7 @@ namespace HotelSystemIndustry.Controllers.Kitchen
             }
 
             var order = await _context.KitchenOrders
+                .Include(o => o.Hotel)
                 .Include(o => o.Type)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (order == null)
