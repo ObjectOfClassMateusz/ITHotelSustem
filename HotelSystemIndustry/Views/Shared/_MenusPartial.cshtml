@@ -7,7 +7,7 @@
 <ul class="navbar-nav flex-grow-1">
 
     <li class="nav-item">
-        <a class="nav-link text-dark" asp-area="" asp-controller="Hotels" asp-action="Index">Hotels</a>
+        <a class="nav-link text-dark" asp-controller="Hotels" asp-action="Index">Hotels</a>
     </li>
     
 
@@ -16,9 +16,6 @@
 
 
         @if (User.IsInRole("HotelEmployee")) {
-            <li class="nav-item">
-                <a id="reception-button" class="nav-link text-dark" asp-controller="Reception" asp-action="Index">Reception</a>
-            </li>
             <li class="nav-item">
                 <a id="events-button" class="nav-link text-dark" asp-controller="EventManagement" asp-action="Index">Events</a>
             </li>

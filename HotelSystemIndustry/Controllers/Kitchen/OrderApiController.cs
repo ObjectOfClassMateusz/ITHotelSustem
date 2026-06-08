@@ -1,4 +1,5 @@
 using HotelSystemIndustry.Infrastructure;
+using HotelSystemIndustry.Models;
 using HotelSystemIndustry.Models.Kitchen;
 using HotelSystemIndustry.ViewModels.Kitchen;
 using Microsoft.AspNetCore.Authorization;
@@ -17,6 +18,13 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         public OrderApiController(HotelDbContext context)
         {
             _context = context;
+        }
+
+
+        [HttpGet("[action]")]
+        public async Task<IList<Hotel>> GetHotels()
+        {
+            return await _context.Hotels.ToListAsync();
         }
 
 

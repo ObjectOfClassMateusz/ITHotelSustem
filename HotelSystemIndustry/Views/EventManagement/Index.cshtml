@@ -5,12 +5,7 @@
 
 @{
     ViewData["Title"] = "Event Management";
-    @if (User.IsInRole("HotelEmployee"))
-    {
-        ViewBag.LowerNavPartial = "_HotelManagementNavPartial";
-    } else {
-        ViewBag.LowerNavPartial = "_CustomerNavPartial";
-    }
+    ViewBag.LowerNavPartial = "_EventsNavPartial";
 }
 
 

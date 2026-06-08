@@ -21,12 +21,14 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         }
 
         // GET: OrderType
+        [Authorize(Roles="KitchenEmployee,Admin")]
         public async Task<IActionResult> Index()
         {
             return View(await _context.KitchenOrderTypes.ToListAsync());
         }
 
         // GET: OrderType/Details/5
+        [Authorize(Roles="KitchenEmployee,Admin")]
         public async Task<IActionResult> Details(Guid? id)
         {
             if (id == null)
