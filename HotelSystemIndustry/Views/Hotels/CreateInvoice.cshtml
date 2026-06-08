@@ -347,7 +347,6 @@
         <h1 class="page-h1">Nowa <em>faktura</em></h1>
     </div>
 
-    {{-- Live invoice number preview --}}
     <div class="invoice-hero">
         <div class="invoice-num-display" id="invoiceNumDisplay">@Model.InvoiceNumber</div>
         <div class="invoice-meta">
@@ -400,28 +399,8 @@
                 Wybierz rezerwację aby zobaczyć szczegóły.
             </div>
         </div>
-
-        <div class="card">
-            <div class="card-label">💰 Kwota</div>
-
-            <div class="field">
-                @Html.LabelFor(m => m.TotalAmount, "Kwota całkowita (PLN)")
-                @Html.TextBoxFor(m => m.TotalAmount,
-                    new { type = "number", min = "0", step = "0.01",
-                          placeholder = "0.00", id = "totalAmount" })
-                @Html.ValidationMessageFor(m => m.TotalAmount)
-            </div>
-
-            <div class="amount-display">
-                <span class="amount-val" id="amountDisplay">0,00</span>
-                <span class="amount-currency">PLN</span>
-            </div>
-        </div>
-
         <div class="form-actions">
             <button type="submit" class="btn-submit">&#43; Wystaw fakturę</button>
-            <a asp-action="Calendar" asp-route-id="@Model.HotelId"
-               class="btn-cancel-link">&#8592; Anuluj</a>
         </div>
     }
 </div>

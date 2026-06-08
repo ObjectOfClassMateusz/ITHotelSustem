@@ -1,11 +1,14 @@
 ﻿using HotelSystemIndustry.Infrastructure;
 using HotelSystemIndustry.Infrastructure.DTO;
 using HotelSystemIndustry.Models;
+using HotelSystemIndustry.Models.ViewModels;
+using HotelSystemIndustry.Services;
 using Humanizer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text.RegularExpressions;
@@ -16,8 +19,10 @@ namespace HotelSystemIndustry.Controllers
     public class HotelsController : Controller
     {
         private readonly HotelDbContext _context;
-        public HotelsController(HotelDbContext context){
-            _context = context;
+        private readonly PdfService _pdfService;
+        public HotelsController(HotelDbContext context, PdfService pdfService)
+        {
+            _context = context; _pdfService = pdfService;
         }
 
         [HttpGet]
@@ -80,21 +85,21 @@ namespace HotelSystemIndustry.Controllers
                 return NotFound();
 
             //Calendar range: 30 days from the selected date
-            var startDate = new DateTime(y, m, d);
-            var endDate = startDate.AddDays(30);
+            var startDate = new DateTime(y, m, d).ToUniversalTime();
+            var endDate = startDate.AddDays(30).ToUniversalTime();
 
             // Rezerwacje w zakresie widoku
-            /*var reservations = await _context.Reservations
+            var reservations = await _context.Reservations
                 .Include(r => r.Room)
                 .Where(r => r.Room.HotelId == id
-                         && r.CheckOutDate > startDate
-                         && r.CheckInDate < endDate)
-                .ToListAsync();*/
+                         && r.CheckOutDate.ToUniversalTime() > startDate
+                         && r.CheckInDate.ToUniversalTime() < endDate)
+                .ToListAsync();
 
             ViewBag.Hotel = hotel;
-            ViewBag.StartDate = startDate;
-            ViewBag.EndDate = endDate;
-            //ViewBag.Reservations = reservations;
+            ViewBag.StartDate = startDate.ToUniversalTime();
+            ViewBag.EndDate = endDate.ToUniversalTime();
+            ViewBag.Reservations = reservations;
             ViewBag.Today = today;
 
             return View();
@@ -405,10 +410,10 @@ namespace HotelSystemIndustry.Controllers
         {
             var hotel = await _context.Hotels
                 .Include(h => h.Rooms)
-                //.Include(h => h.Guests)  // jeśli masz nawigację
                 .FirstOrDefaultAsync(h => h.Id == hotelId);
 
-            if (hotel == null) return NotFound();
+            if (hotel == null) 
+                return NotFound();
 
             var guests = await _context.Guests
                 .Where(g => g.HotelId == hotelId)
@@ -538,7 +543,35 @@ namespace HotelSystemIndustry.Controllers
             return View(dto);
         }
 
-        // POST: Hotels/CreateInvoice
+        // Helpers
+        private async Task ReloadReservationDTO(CreateReservationDTO dto)
+        {
+            var rooms = await _context.Rooms
+                .Where(r => r.HotelId == dto.HotelId && !r.Renovation).ToListAsync();
+            var guests = await _context.Guests
+                .Where(g => g.HotelId == dto.HotelId).ToListAsync();
+
+            dto.AvailableRooms = rooms.Select(r => new SelectListItem(
+                $"#{r.RoomNumber} — {r.RoomType} — {r.BasePricePerNight:C}/noc",
+                r.Id.ToString())).ToList();
+            dto.AvailableGuests = guests.Select(g => new SelectListItem(
+                $"{g.FirstName} {g.LastName}", g.Id.ToString())).ToList();
+            dto.PaymentMethods = Enum.GetValues<PaymentMethod>()
+                .Select(p => new SelectListItem(p.ToString(), ((int)p).ToString())).ToList();
+        }
+
+        private async Task ReloadInvoiceDTO(CreateInvoiceDTO dto)
+        {
+            var reservations = await _context.Reservations
+                .Include(r => r.Room).Include(r => r.Guests)
+                .Where(r => r.Room.HotelId == dto.HotelId && r.Invoice == null)
+                .ToListAsync();
+            dto.AvailableReservations = reservations.Select(r => new SelectListItem(
+                $"#{r.Id.ToString()[..8]} | {r.CheckInDate:dd.MM.yy}–{r.CheckOutDate:dd.MM.yy}",
+                r.Id.ToString())).ToList();
+        }
+
+        // POST: Hotels/CreateInvoice — generuje PDF i zapisuje
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "HotelEmployee")]
@@ -572,35 +605,126 @@ namespace HotelSystemIndustry.Controllers
             await _context.Invoices.AddAsync(invoice);
             await _context.SaveChangesAsync();
 
-            return RedirectToAction(nameof(Calendar), new { id = dto.HotelId });
+            // Załaduj dane potrzebne do PDF
+            var fullInvoice = await _context.Invoices
+                .Include(i => i.Reservation)
+                    .ThenInclude(r => r.Room)
+                .Include(i => i.Reservation)
+                    .ThenInclude(r => r.Guests)
+                .FirstAsync(i => i.Id == invoice.Id);
+
+            var pdfBytes = _pdfService.GenerateInvoicePdf(fullInvoice);
+
+            return File(pdfBytes,
+                        "application/pdf",
+                        $"Faktura_{invoice.InvoiceNumber.Replace("/", "-")}.pdf");
         }
 
-        // Helpers
-        private async Task ReloadReservationDTO(CreateReservationDTO dto)
+        // GET: Hotels/MonthlySummary?hotelId=...&month=5&year=2026
+        [HttpGet]
+        [Authorize(Roles = "HotelEmployee")]
+        public async Task<IActionResult> MonthlySummary(Guid hotelId, int? month, int? year)
         {
-            var rooms = await _context.Rooms
-                .Where(r => r.HotelId == dto.HotelId && !r.Renovation).ToListAsync();
-            var guests = await _context.Guests
-                .Where(g => g.HotelId == dto.HotelId).ToListAsync();
+            var hotel = await _context.Hotels.FindAsync(hotelId);
+            if (hotel == null) return NotFound();
 
-            dto.AvailableRooms = rooms.Select(r => new SelectListItem(
-                $"#{r.RoomNumber} — {r.RoomType} — {r.BasePricePerNight:C}/noc",
-                r.Id.ToString())).ToList();
-            dto.AvailableGuests = guests.Select(g => new SelectListItem(
-                $"{g.FirstName} {g.LastName}", g.Id.ToString())).ToList();
-            dto.PaymentMethods = Enum.GetValues<PaymentMethod>()
-                .Select(p => new SelectListItem(p.ToString(), ((int)p).ToString())).ToList();
+            int m = month ?? DateTime.Today.Month;
+            int y = year ?? DateTime.Today.Year;
+            if (m < 1 || m > 12) m = DateTime.Today.Month;
+
+            var start = new DateTime(y, m, 1).ToUniversalTime();
+            var end = start.AddMonths(1).ToUniversalTime();
+
+            var reservations = await _context.Reservations
+                .Include(r => r.Room)
+                .Include(r => r.Guests)
+                .Where(r => r.Room.HotelId == hotelId
+                         && r.CheckInDate.ToUniversalTime() < end
+                         && r.CheckOutDate.ToUniversalTime() > start)
+                .ToListAsync();
+
+            var rows = reservations.Select(r => new ReservationRowVM
+            {
+                RoomNumber = r.Room?.RoomNumber ?? "—",
+                CheckIn = r.CheckInDate.ToUniversalTime(),
+                CheckOut = r.CheckOutDate.ToUniversalTime(),
+                Nights = r.NumberOfOvernightStays,
+                Revenue = (r.Room?.BasePricePerNight ?? 0) * r.NumberOfOvernightStays,
+                GuestNames = string.Join(", ",
+                    r.Guests.Select(g => $"{g.FirstName} {g.LastName}"))
+            }).ToList();
+
+            var vm = new MonthlySummaryVM
+            {
+                HotelId = hotelId,
+                HotelName = hotel.Name,
+                Month = m,
+                Year = y,
+                MonthName = start.ToString("MMMM", new System.Globalization.CultureInfo("pl-PL")),
+                TotalReservations = rows.Count,
+                TotalGuests = reservations.SelectMany(r => r.Guests).Select(g => g.Id).Distinct().Count(),
+                TotalNights = rows.Sum(r => r.Nights),
+                TotalRevenue = rows.Sum(r => r.Revenue),
+                AvgRevenuePerNight = rows.Count > 0 ? rows.Average(r => r.Revenue / Math.Max(r.Nights, 1)) : 0,
+                AvgStayLength = rows.Count > 0 ? (decimal)rows.Average(r => r.Nights) : 0,
+                Reservations = rows
+            };
+
+            ViewBag.Month = m;
+            ViewBag.Year = y;
+            return View(vm);
         }
 
-        private async Task ReloadInvoiceDTO(CreateInvoiceDTO dto)
+        // POST: Hotels/MonthlySummary/Download — pobierz PDF
+        [HttpPost]
+        [Authorize(Roles = "HotelEmployee")]
+        public async Task<IActionResult> MonthlySummaryDownload(Guid hotelId, int month, int year)
         {
+            // Pobierz te same dane co GET
+            var hotel = await _context.Hotels.FindAsync(hotelId);
+            if (hotel == null) return NotFound();
+
+            var start = new DateTime(year, month, 1).ToUniversalTime();
+            var end = start.AddMonths(1).ToUniversalTime();
+
             var reservations = await _context.Reservations
                 .Include(r => r.Room).Include(r => r.Guests)
-                .Where(r => r.Room.HotelId == dto.HotelId && r.Invoice == null)
+                .Where(r => r.Room.HotelId == hotelId
+                         && r.CheckInDate.ToUniversalTime() < end
+                         && r.CheckOutDate.ToUniversalTime() > start)
                 .ToListAsync();
-            dto.AvailableReservations = reservations.Select(r => new SelectListItem(
-                $"#{r.Id.ToString()[..8]} | {r.CheckInDate:dd.MM.yy}–{r.CheckOutDate:dd.MM.yy}",
-                r.Id.ToString())).ToList();
+
+            var rows = reservations.Select(r => new ReservationRowVM
+            {
+                RoomNumber = r.Room?.RoomNumber ?? "—",
+                CheckIn = r.CheckInDate.ToUniversalTime(),
+                CheckOut = r.CheckOutDate.ToUniversalTime(),
+                Nights = r.NumberOfOvernightStays,
+                Revenue = (r.Room?.BasePricePerNight ?? 0) * r.NumberOfOvernightStays,
+                GuestNames = string.Join(", ", r.Guests.Select(g => $"{g.FirstName} {g.LastName}"))
+            }).ToList();
+
+            var vm = new MonthlySummaryVM
+            {
+                HotelId = hotelId,
+                HotelName = hotel.Name,
+                Month = month,
+                Year = year,
+                MonthName = start.ToString("MMMM", new System.Globalization.CultureInfo("pl-PL")),
+                TotalReservations = rows.Count,
+                TotalGuests = reservations.SelectMany(r => r.Guests).Select(g => g.Id).Distinct().Count(),
+                TotalNights = rows.Sum(r => r.Nights),
+                TotalRevenue = rows.Sum(r => r.Revenue),
+                AvgRevenuePerNight = rows.Count > 0 ? rows.Average(r => r.Revenue / Math.Max(r.Nights, 1)) : 0,
+                AvgStayLength = rows.Count > 0 ? (decimal)rows.Average(r => r.Nights) : 0,
+                Reservations = rows
+            };
+
+            var pdfBytes = _pdfService.GenerateMonthlySummaryPdf(vm);
+            string name = $"Sprawozdanie_{vm.HotelName}_{vm.MonthName}_{year}.pdf"
+                            .Replace(" ", "_");
+
+            return File(pdfBytes, "application/pdf", name);
         }
     }
 }

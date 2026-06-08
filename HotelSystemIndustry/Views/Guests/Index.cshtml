@@ -513,10 +513,6 @@
                asp-route-id="@hotel.Id" class="tb-link">
                 &#9670; Kalendarz
             </a>
-            <a asp-controller="Hotels" asp-action="Details"
-               asp-route-id="@hotel.Id" class="tb-link">
-                &#8592; Hotel
-            </a>
         }
     </div>
 </div>
@@ -566,7 +562,6 @@
                         <th>E-mail</th>
                         <th>Telefon</th>
                         <th class="hotel-col">Hotel</th>
-                        <th class="res-col">Rez.</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -575,7 +570,6 @@
                     {
                         string ini = (item.FirstName.Length > 0 ? item.FirstName[0].ToString() : "")
                         + (item.LastName.Length > 0 ? item.LastName[0].ToString() : "");
-                        int resCount = item.Reservations?.Count ?? 0;
 
                         <tr class="guest-row"
                             data-search="@(item.FirstName + " " + item.LastName + " " + item.Email)">
@@ -620,11 +614,6 @@
                                 <span class="hotel-tag">@(item.Hotel?.Name ?? "—")</span>
                             </td>
 
-                            <td class="res-col">
-                                <span class="res-badge @(resCount == 0 ? "zero" : "")">
-                                    @resCount
-                                </span>
-                            </td>
 
                             <td>
                                 <div class="action-cell">
@@ -632,14 +621,6 @@
                                        asp-action="Details"
                                        asp-route-id="@item.Id"
                                        class="act-btn">Profil</a>
-                                    <a asp-controller="Guests"
-                                       asp-action="Edit"
-                                       asp-route-id="@item.Id"
-                                       class="act-btn">Edytuj</a>
-                                    <a asp-controller="Guests"
-                                       asp-action="Delete"
-                                       asp-route-id="@item.Id"
-                                       class="act-btn danger">Usuń</a>
                                 </div>
                             </td>
                         </tr>

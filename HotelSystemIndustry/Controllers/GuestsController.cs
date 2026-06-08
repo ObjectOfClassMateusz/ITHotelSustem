@@ -9,8 +9,10 @@ using System;
 
 namespace HotelSystemIndustry.Controllers
 {
-    // Controllers/GuestsController.cs
-    [Authorize(Roles = "HotelEmployee")]
+    //[ApiController]
+    //[Route("api/[controller]")]
+
+    //swagger
     public class GuestsController : Controller
     {
         private readonly HotelDbContext _context;

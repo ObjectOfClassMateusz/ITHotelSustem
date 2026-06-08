@@ -5,7 +5,7 @@
     DateTime startDate = (DateTime)ViewBag.StartDate;
     DateTime endDate = (DateTime)ViewBag.EndDate;
     DateTime today = (DateTime)ViewBag.Today;
-   // var reservations = (List<Reservation>)ViewBag.Reservations;
+    var reservations = (List<Reservation>)ViewBag.Reservations;
     int totalDays = (int)(endDate - startDate).TotalDays;
 
     var weeks = new List<(DateTime WeekStart, int Span)>();
@@ -46,11 +46,11 @@
     };
     int colorIdx = 0;
     var resColors = new Dictionary<Guid, string>();
-   /* foreach (var r in reservations)
+    foreach (var r in reservations)
     {
         if (!resColors.ContainsKey(r.Id))
             resColors[r.Id] = palette[colorIdx++ % palette.Length];
-    }*/
+    }
 }
 
 <style>
@@ -431,17 +431,10 @@
         z-index: 1;
     }
 
-    .grid-row {
-        height: var(--row-h);
-        border-bottom: 1px solid var(--border);
-        position: relative;
-    }
 
-    /* Reservation blocks */
     .res-block {
         position: absolute;
-        top: 5px;
-        height: calc(var(--row-h) - 10px);
+        height: 28px; /* stała wysokość zamiast calc */
         border-radius: 3px;
         display: flex;
         align-items: center;
@@ -463,9 +456,28 @@
 
         .res-block:hover {
             filter: brightness(1.15);
-            transform: scaleY(1.06);
             z-index: 20;
         }
+
+    /* Zwiększ wysokość wiersza żeby pomieścić kilka pasów */
+    .grid-row {
+        height: var(--row-h);
+        border-bottom: 1px solid var(--border);
+        position: relative;
+        /* min-height pozwoli na dynamiczne rozszerzenie przez JS */
+    }
+
+    .room-label {
+        height: var(--row-h);
+        /* będzie aktualizowane przez JS */
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 0 0.85rem;
+        border-bottom: 1px solid var(--border);
+        transition: background 0.15s;
+        cursor: default;
+    }
 
     /* Empty state */
     .cal-empty {
@@ -575,9 +587,6 @@
             <a asp-controller="Guests" asp-action="Index" asp-route-hotelId="@hotel.Id" class="tb-btn">
                 <span class="tb-icon">🛠️</span>Zarządzaj
             </a>
-            <a href="#" class="tb-btn">
-                <span class="tb-icon">📕</span>Czarna Lista
-            </a>
         </div>
     </div>
 
@@ -598,7 +607,9 @@
                class="tb-btn">
                 <span class="tb-icon">📜</span>Faktury
             </a>
-            <a href="#" class="tb-btn">
+            <a asp-action="MonthlySummary"
+               asp-route-hotelId="@hotel.Id"
+               class="tb-btn">
                 <span class="tb-icon">📝</span>Raporty
             </a>
         </div>
@@ -701,9 +712,9 @@
                 <div class="grid-rows">
                     @foreach (var room in hotel.Rooms.OrderBy(r => r.Floor).ThenBy(r => r.RoomNumber))
                     {
-                        //var roomRes = reservations.Where(r => r.Room?.Id == room.Id).ToList();
+                        var roomRes = reservations.Where(r => r.Room?.Id == room.Id).ToList();
                         <div class="grid-row">
-                            @* @foreach (var res in roomRes)
+                            @foreach (var res in roomRes)
                             {
                                 string left = ColLeft(res.CheckInDate);
                                 string width = ColWidth(res.CheckInDate, res.CheckOutDate);
@@ -716,7 +727,7 @@
                                      data-tip="@tip">
                                     @nights
                                 </div>
-                            } *@
+                            }
                         </div>
                     }
                 </div>
@@ -727,7 +738,7 @@
 
     <div class="statusbar">
         <div class="status-item">Pokoje: <span>@hotel.Rooms.Count</span></div>
-        <div class="status-item">Rezerwacje w widoku: <span>@*reservations.Count*@</span></div>
+        <div class="status-item">Rezerwacje w widoku: <span>reservations.Count</span></div>
         <div class="status-item">Zakres: <span>@startDate.ToString("dd.MM.yyyy") — @endDate.AddDays(-1).ToString("dd.MM.yyyy")</span></div>
         <div class="status-item" style="margin-left:auto;">
             Zalogowany jako: <span>HotelEmployee</span>
@@ -737,20 +748,84 @@
 
 @section Scripts {
     <script>
-        // Highlight row on hover
-        document.querySelectorAll('.grid-row').forEach((row, i) => 
-        {
+        // ── Row highlight on hover ─────────────────────────────
+        document.querySelectorAll('.grid-row').forEach((row, i) => {
             const label = document.querySelectorAll('.room-label')[i];
-            row.addEventListener('mouseenter', () => 
-            {
+            row.addEventListener('mouseenter', () => {
                 row.style.background = 'rgba(212,168,67,0.04)';
                 if (label) label.style.background = 'rgba(212,168,67,0.08)';
             });
-            row.addEventListener('mouseleave', () => 
-            {
+            row.addEventListener('mouseleave', () => {
                 row.style.background = '';
                 if (label) label.style.background = '';
             });
+        });
+
+        // ── Lane layout algorithm ──────────────────────────────
+        // Każdy wiersz (.grid-row) może mieć kilka .res-block,
+        // które mogą się nakładać. Układamy je w "lanes" pionowo.
+
+        const LANE_H    = 30;   // px wysokość jednego pasa
+        const LANE_GAP  = 4;    // px przerwa między pasami
+        const LANE_TOP  = 4;    // px od góry wiersza do pierwszego pasa
+        const ROW_PAD_B = 6;    // px padding na dole wiersza
+
+        document.querySelectorAll('.grid-row').forEach((row, rowIdx) => {
+            const blocks = Array.from(row.querySelectorAll('.res-block'));
+            if (blocks.length === 0) return;
+
+            // Pobierz pozycję (left%) i szerokość(%) każdego bloku
+            const items = blocks.map(b => ({
+                el:    b,
+                left:  parseFloat(b.style.left),
+                width: parseFloat(b.style.width),
+                lane:  -1
+            }));
+
+            // Sortuj wg. left (wcześniejszy check-in pierwszy)
+            items.sort((a, b) => a.left - b.left);
+
+            // Zachłanny algorytm przydzielania pasów
+            // lanes[i] = koniec (right%) ostatniego bloku na pasie i
+            const lanes = [];
+
+            for (const item of items) {
+                const right = item.left + item.width;
+                let placed  = false;
+
+                for (let li = 0; li < lanes.length; li++) {
+                    // Zostaw 0.5% margines żeby sąsiadujące nie wyglądały na nakładające
+                    if (lanes[li] <= item.left + 0.3) {
+                        item.lane = li;
+                        lanes[li] = right;
+                        placed = true;
+                        break;
+                    }
+                }
+
+                if (!placed) {
+                    item.lane = lanes.length;
+                    lanes.push(right);
+                }
+            }
+
+            const numLanes  = lanes.length;
+            const rowHeight = LANE_TOP + numLanes * LANE_H
+                            + (numLanes - 1) * LANE_GAP
+                            + ROW_PAD_B;
+
+            // Ustaw wysokość wiersza i etykiety pokoju
+            row.style.height = rowHeight + 'px';
+
+            const label = document.querySelectorAll('.room-label')[rowIdx];
+            if (label) label.style.height = rowHeight + 'px';
+
+            // Ustaw pozycję każdego bloku
+            for (const item of items) {
+                const topPx = LANE_TOP + item.lane * (LANE_H + LANE_GAP);
+                item.el.style.top    = topPx + 'px';
+                item.el.style.height = LANE_H + 'px';
+            }
         });
     </script>
 }

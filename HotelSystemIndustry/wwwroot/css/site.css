@@ -37,13 +37,12 @@ body {
   display: none;
 }
 
-/*---------------------------Validacje----------------------------------*/
 .nonvalid-field
 {
     padding:1px;
     color: red;
 }
-/*-------------------Przycisk dodaj hotel--------------------------------*/
+
 .add-hotel-btn {
     width: 3rem;
     height: 3rem;

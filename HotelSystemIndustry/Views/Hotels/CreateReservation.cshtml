@@ -526,7 +526,6 @@
     }
 </style>
 
-{{-- TOPBAR --}}
 <div class="topbar">
     <div class="topbar-brand">Hotel System Industry</div>
     <div class="topbar-sep"></div>
@@ -549,13 +548,9 @@
         @Html.AntiForgeryToken()
         @Html.HiddenFor(m => m.HotelId)
         @Html.HiddenFor(m => m.HotelName)
-
         <div class="form-grid">
-
-            {{-- ── Pokój ── --}}
             <div class="card">
                 <div class="card-label">🛏 Pokój</div>
-
                 <div class="field">
                     <label>Wybierz pokój</label>
                     <div class="select-wrap">
@@ -594,7 +589,6 @@
             <div class="price-estimate" id="priceEstimate"></div>
         </div>
 
-        {{-- ── Dane ── --}}
         <div class="card">
             <div class="card-label">📋 Dane rezerwacji</div>
 
@@ -611,7 +605,6 @@
             </div>
         </div>
 
-        {{-- ── Status ── --}}
         <div class="card">
             <div class="card-label">📌 Status rezerwacji</div>
 
@@ -646,7 +639,6 @@
                 </div>
             </div>
 
-            {{-- ── Płatność ── --}}
             <div class="card">
                 <div class="card-label">💳 Płatność</div>
 
@@ -661,7 +653,6 @@
             </div>
         </div>
 
-        {{-- ── Goście ── --}}
         <div class="card span-2">
             <div class="card-label">
                 👤 Goście rezerwacji
