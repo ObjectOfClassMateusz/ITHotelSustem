@@ -21,6 +21,7 @@ namespace HotelSystemIndustry.Controllers.Events
         }
 
         // GET: Equipment
+        [Authorize(Roles = "Admin,HotelEmployee")]
         public async Task<IActionResult> Index()
         {
             var hotelDbContext = _context.Equipment.Include(e => e.Type);
@@ -28,6 +29,7 @@ namespace HotelSystemIndustry.Controllers.Events
         }
 
         // GET: Equipment/Details/5
+        [Authorize(Roles = "Admin,HotelEmployee")]
         public async Task<IActionResult> Details(Guid? id)
         {
             if (id == null)

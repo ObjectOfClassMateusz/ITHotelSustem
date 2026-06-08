@@ -1,7 +1,7 @@
 @using HotelSystemIndustry.Models.Trading
 
 @{
-    ViewData["Title"] = "Return Item";
+    ViewData["Title"] = "Zwróć przedmiot";
     ViewBag.LowerNavPartial = "_TradingNavPartial";
 
     var purchaseItem = (PurchaseItem)ViewBag.PurchaseItem;
@@ -9,7 +9,7 @@
     var magazineSelectList = (IEnumerable<SelectListItem>)ViewBag.MagazineSelectList;
 }
 
-<h1>Return Item</h1>
+<h1>Zwróć wypożyczony przedmiot</h1>
 <hr />
 
 
@@ -17,27 +17,27 @@
     <h3>@purchaseItem.SaleItem!.Name</h3>
     <dl>
         <div class="row">
-            <dt class="col-sm-2">Variant</dt>
+            <dt class="col-sm-2">Wariant</dt>
             <dd class="col-sm-6">@purchaseItem.Variant</dd>
         </div>
         <div class="row">
-            <dt class="col-sm-2">Count</dt>
+            <dt class="col-sm-2">Ilość</dt>
             <dd class="col-sm-6">@purchaseItem.Count</dd>
         </div>
         <div class="row">
-            <dt class="col-sm-2">Unit price</dt>
+            <dt class="col-sm-2">Cena jednostkowa</dt>
             <dd class="col-sm-6">@Html.DisplayFor(m => purchaseItem.UnitPrice)</dd>
         </div>
     </dl>
 
     @if (saleItemInstances.Count > 0) {
-        <h2>Magazines where the item is stored</h2>
+        <h2>Magazyny, w których ten sam przedmiot jest przechowywany</h2>
 
         <table class="table">
             <thead>
                 <tr>
-                    <th>Magazine</th>
-                    <th>Count</th>
+                    <th>Magazyn</th>
+                    <th>Ilość</th>
                     <th></th>
                 </tr>
             </thead>
@@ -51,7 +51,7 @@
                                 @Html.AntiForgeryToken()
                                 <input type="hidden" name="PurchaseItemId" value="@purchaseItem.Id" />
                                 <input type="hidden" name="MagazineId" value="@instance.MagazineId" />
-                                <input type="submit" class="btn btn-success" value="Return here" />
+                                <input type="submit" class="btn btn-success" value="Zwróć tutaj" />
                             </form>
                         </td>
                     </tr>
@@ -60,12 +60,12 @@
         </table>
 
         if (magazineSelectList.Count() > 0) {
-            <h3>…or store in another place</h3>
+            <h3>…lub zabierz do innego magazynu</h3>
         }
     } else if (magazineSelectList.Count() > 0) {
-        <h3>Choose the magazine to store the item in</h3>
+        <h3>Wybierz magazyn, w którym będzie przechowywany przedmiot</h3>
     } else {
-        <h3>No magazines available!</h3>
+        <h3>Brak dostępnych magazynów!</h3>
     }
 
     @if (magazineSelectList.Count() > 0) {
@@ -79,7 +79,7 @@
                     <select asp-items="@magazineSelectList" name="MagazineId" class="form-control"></select>
                 </div>
                 <div class="col-md-2">
-                    <input type="submit" class="btn btn-success" value="Return here" />
+                    <input type="submit" class="btn btn-success" value="Zwróć tutaj" />
                 </div>
             </div>
         </form>
@@ -88,5 +88,5 @@
 </div>
 
 
-<a asp-action="AcceptReturnView" class="btn btn-primary">Back</a>
+<a asp-action="AcceptReturnView" class="btn btn-primary">Wróć</a>
 

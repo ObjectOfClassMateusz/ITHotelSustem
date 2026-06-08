@@ -1,29 +1,29 @@
 @using HotelSystemIndustry.Models.Trading
 
 @{
-    ViewData["Title"] = "Accept Return";
+    ViewData["Title"] = "Przyjmij zwrot wypożyczonego przedmiotu";
     ViewBag.LowerNavPartial = "_TradingNavPartial";
 
     var items = (IList<PurchaseItem>)ViewBag.Items;
 }
 
-<h1>Accept Return</h1>
+<h1>Przyjmij zwrot</h1>
 <hr />
 
 
 <div class="container my-4">
 
-    <h3>Rented items that have not been returned yet</h3>
+    <h3>Wypożyczone przedmioty, które nie zostały jeszcze zwrócone</h3>
 
     @if (items.Count > 0) {
     
         <table class="table">
             <thead>
                 <tr>
-                    <th>Item</th>
-                    <th>Variant</th>
-                    <th>Count</th>
-                    <th>Unit price</th>
+                    <th>Przedmiot</th>
+                    <th>Wariant</th>
+                    <th>Ilość</th>
+                    <th>Cena jednostkowa</th>
                     <th></th>
                 </tr>
             </thead>
@@ -38,7 +38,7 @@
                             
                             <form method="get" asp-action="ReturnItemMenu" asp-route-purchaseItemId="@item.Id" >
 
-                                <input type="submit" class="btn btn-success" value="Return" />
+                                <input type="submit" class="btn btn-success" value="Zwróć" />
                             </form>
 
                         </td>
@@ -48,10 +48,10 @@
         </table>
 
     } else {
-        <span>There are no rented items to be returned.</span>
+        <span>Nie ma żadnych wypożyczonych, niezwróconych przedmiotów.</span>
     }
 
 </div>
 
-<a asp-action="Index" class="btn btn-primary">Back</a>
+<a asp-action="Index" class="btn btn-primary">Wróć</a>
 

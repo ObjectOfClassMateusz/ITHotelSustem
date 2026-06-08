@@ -4,29 +4,24 @@
 @inject SignInManager<User> SignInManager
 
 @{
-    ViewData["Title"] = "Event Management";
-    @if (User.IsInRole("HotelEmployee"))
-    {
-        ViewBag.LowerNavPartial = "_HotelManagementNavPartial";
-    } else {
-        ViewBag.LowerNavPartial = "_CustomerNavPartial";
-    }
+    ViewData["Title"] = "Zarządzanie wydarzeniami";
+    ViewBag.LowerNavPartial = "_EventsNavPartial";
 }
 
 
-<h1>Event Management</h1>
+<h1>Zarządzanie wydarzeniami</h1>
 <hr />
 
 
 <div class="row justify-content-center my-4">
 
     <div class="text-center col-md-6 my-2">
-        <a class="page-link text-dark" asp-action="StartMakingReservation">Create a new event reservation</a>
+        <a class="page-link text-dark" asp-action="StartMakingReservation">Stwórz nową rezerwację na wydarzenie</a>
     </div>
 
     @if (User.IsInRole("HotelEmployee")) {
         <div class="text-center col-md-6 my-2">
-            <a class="page-link text-dark" asp-action="EventChoosing">Manage events</a>
+            <a class="page-link text-dark" asp-action="EventChoosing">Zarządzaj wydarzeniami</a>
         </div>
     }
 
@@ -36,38 +31,38 @@
 @if (User.IsInRole("HotelEmployee")) {
 
     <h2>
-    Management
+    Zarządzanie
     </h2>
 
     <hr />
 
     <ul>
         <li>
-            <a asp-controller="EventType" asp-action="Index">Types of events</a>
+            <a asp-controller="EventType" asp-action="Index">Typy wydarzeń</a>
         </li>
 
         <li>
-            <a asp-controller="EventReservationStatus" asp-action="Index">Event statuses</a>
+            <a asp-controller="EventReservationStatus" asp-action="Index">Statusy wydarzeń</a>
         </li>
 
         <li>
-            <a asp-controller="EquipmentType" asp-action="Index">Types of equipment</a>
+            <a asp-controller="EquipmentType" asp-action="Index">Typy sprzętu</a>
         </li>
 
         <li>
-            <a asp-controller="Equipment" asp-action="Index">Equipment</a>
+            <a asp-controller="Equipment" asp-action="Index">Sprzęt</a>
         </li>
 
         <li>
-            <a asp-controller="EquipmentInstance" asp-action="Index">Equipment instances</a>
+            <a asp-controller="EquipmentInstance" asp-action="Index">Wystąpienia sprzętu</a>
         </li>
 
         <li>
-            <a asp-controller="EventHall" asp-action="Index">Event halls</a>
+            <a asp-controller="EventHall" asp-action="Index">Sale na wydarzenia</a>
         </li>
 
         <li>
-            <a asp-controller="EventReservation" asp-action="Index">Reservations</a>
+            <a asp-controller="EventReservation" asp-action="Index">Rezerwacje</a>
         </li>
     </ul>
 }

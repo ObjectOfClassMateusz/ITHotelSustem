@@ -3,11 +3,11 @@
 @model KitchenDeliveryArticleViewModel
 
 @{
-    ViewData["Title"] = "Handle Kitchen Articles Delivery";
+    ViewData["Title"] = "Zarejestruj dostawę artykułów";
     ViewBag.LowerNavPartial = "_KitchenNavPartial";
 }
 
-<h1>Handle Kitchen Articles Delivery</h1>
+<h1>Zarejestruj dostawę artykułów</h1>
 <hr />
 
 <div class="container">
@@ -70,9 +70,9 @@
             <span asp-validation-for="ToAdd.AddCount" class="text-danger"></span>
         </div>
 
-        <input type="submit" asp-action="AddDeliveryArticle" class="btn btn-primary" value="Register article" /><br />
+        <input type="submit" asp-action="AddDeliveryArticle" class="btn btn-primary" value="Zarejestruj artykuł" /><br />
 
-        <input type="submit" asp-action="RegisterDeliveredArticles" class="btn btn-success my-2" value="Finish" />
+        <input type="submit" asp-action="RegisterDeliveredArticles" class="btn btn-success my-2" value="Zakończ" />
     </form>
 
 </div>

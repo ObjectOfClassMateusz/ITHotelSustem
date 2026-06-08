@@ -3,24 +3,24 @@
 @model KitchenRecipe
 
 @{
-    ViewData["Title"] = "Cook with recipe";
+    ViewData["Title"] = "Gotuj z przepisem";
     ViewBag.LowerNavPartial = "_KitchenNavPartial";
 }
 
-<h1>Cooking help for @Model.OutcomeProduct!.Name</h1>
+<h1>Pomoc kucharska do produktu @Model.OutcomeProduct!.Name</h1>
 <hr />
 
 <div class="container">
-    <h2>Ingredients</h2>
+    <h2>Składniki</h2>
 
     
 
     <table class="table">
         <thead>
             <tr>
-                <th>Ingredient</th>
-                <th>Count</th>
-                <th>Storage</th>
+                <th>Składnik</th>
+                <th>Ilość</th>
+                <th>Miejsce przechowywania</th>
             </tr>
         </thead>
 
@@ -61,7 +61,7 @@
     }
 
 
-    <h2>Recipe</h2>
+    <h2>Przepis</h2>
 
     <div class="panel panel-default my-4">
         <div class="panel-body">
@@ -71,7 +71,7 @@
 
 
     <div class="my-4">
-        <a asp-action="ChooseProductCookingHelp" asp-controller="Kitchen" class="btn btn-primary">Ready</a> 
+        <a asp-action="ChooseProductCookingHelp" asp-controller="Kitchen" class="btn btn-primary">Gotowe</a> 
     </div>
 
 </div>

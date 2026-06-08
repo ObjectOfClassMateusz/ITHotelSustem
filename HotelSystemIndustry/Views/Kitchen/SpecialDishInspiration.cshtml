@@ -2,12 +2,12 @@
 
 
 @{
-    ViewData["Title"] = "Special dish inspirations";
+    ViewData["Title"] = "Specjalne przepisy zewnętrzne";
     ViewBag.LowerNavPartial = "_KitchenNavPartial";
 }
 
 
-<h1>Find an interesting dish</h1>
+<h1>Znajdź nowy przepis na wyśmienitą potrawę</h1>
 <hr />
 
 
@@ -15,25 +15,25 @@
     <div class="row justify-content-center my-4">
 
         <div class="col-md-4 text-center my-2">
-            <a asp-action="SearchForDishCategory" class="page-link text-dark">Search by category</a>
+            <a asp-action="SearchForDishCategory" class="page-link text-dark">Szukaj ze względu na kategorię</a>
         </div>
 
         <div class="col-md-4 text-center my-2">
-            <a asp-action="SearchForDishArea" class="page-link text-dark">Search by area</a>
+            <a asp-action="SearchForDishArea" class="page-link text-dark">Szukaj ze względu na rejon</a>
         </div>
 
         <div class="col-md-4 text-center my-2">
-            <a asp-action="SearchForDishByName" class="page-link text-dark">Search by name</a>
+            <a asp-action="SearchForDishByName" class="page-link text-dark">Szukaj po nazwie</a>
         </div>
 
         <div class="col-md-4 text-center my-2">
-            <a asp-action="RandomSpecialDish" class="page-link text-dark">Random</a>
+            <a asp-action="RandomSpecialDish" class="page-link text-dark">Losowy przepis</a>
         </div>
 
     </div>
 </div>
 
 <div class="my-4">
-    <a asp-action="Index" asp-controller="Kitchen" class="btn btn-primary">Back</a>
+    <a asp-action="Index" asp-controller="Kitchen" class="btn btn-primary">Wróć</a>
 </div>
 

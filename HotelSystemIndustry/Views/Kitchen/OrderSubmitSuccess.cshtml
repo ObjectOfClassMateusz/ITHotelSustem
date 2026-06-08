@@ -1,17 +1,17 @@
 
 @{
-    ViewData["Title"] = "Order Submitted";
+    ViewData["Title"] = "Zamówienie złożone";
     @if (User.IsInRole("KitchenEmployee"))
     {
         ViewBag.LowerNavPartial = "_KitchenNavPartial";
     }
 }
 
-<h1>Order Successfully Submitted</h1>
+<h1>Pomyślnie złożono zamówienie</h1>
 
 <hr />
 
-<div>Thank you for placing your order.</div>
+<div>Dziękujemy za złożenie zamówienia.</div>
 
-<a asp-action="Index" asp-controller="Home">Go to Home</a>
+<a asp-action="Index" asp-controller="Kitchen">Wróć</a>
 

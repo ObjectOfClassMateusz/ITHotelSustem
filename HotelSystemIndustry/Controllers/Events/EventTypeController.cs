@@ -21,12 +21,14 @@ namespace HotelSystemIndustry.Controllers.Events
         }
 
         // GET: EventType
+        [Authorize(Roles = "Admin,HotelEmployee")]
         public async Task<IActionResult> Index()
         {
             return View(await _context.EventTypes.ToListAsync());
         }
 
         // GET: EventType/Details/5
+        [Authorize(Roles = "Admin,HotelEmployee")]
         public async Task<IActionResult> Details(Guid? id)
         {
             if (id == null)

@@ -4,12 +4,12 @@
 @model ExternalMeal
 
 @{
-    ViewData["Title"] = "Special dish inspirations";
+    ViewData["Title"] = "Specjalne przepisy zewnętrzne";
     ViewBag.LowerNavPartial = "_KitchenNavPartial";
 }
 
 
-<h1 class="fs-2">Special dish inspirations</h1>
+<h1 class="fs-2">Specjalne przepisy zewnętrzne</h1>
 <h2 class="fs-1">@Model.StrMeal</h2>
 <hr />
 
@@ -24,7 +24,7 @@
     <dl>
         <div class="row">
             <dt class="col-md-1">
-                Category:
+                Kategoria:
             </dt>
             <dd class="col-md-4">
                 @Model.StrCategory
@@ -33,7 +33,7 @@
         @if (!string.IsNullOrEmpty(Model.StrArea)) {
             <div class="row">
                 <dt class="col-md-1">
-                    Area:
+                    Rejon:
                 </dt>
                 <dd class="col-md-4">
                     @Model.StrArea
@@ -42,7 +42,7 @@
         }
         <div class="row">
             <dt class="col-md-1">
-                Country:
+                Kraj:
             </dt>
             <dd class="col-md-4">
                 @Model.StrCountry
@@ -51,7 +51,7 @@
         @if (Model.StrTags != null) {
             <div class="row">
                 <dt class="col-md-1">
-                    Tags:
+                    Tagi:
                 </dt>
                 <dd class="col-md-4">
                     @Model.StrTags.Replace(",", ", ")
@@ -60,7 +60,7 @@
         }
     </dl>
 
-    <h3 class="my-4">Ingredients</h3>
+    <h3 class="my-4">Składniki</h3>
 
     
     <ul>
@@ -92,17 +92,17 @@
         }
     </ul>
 
-    <h3>Recipe</h3>
+    <h3>Przepis</h3>
     <div class="my-4">
         @Model.StrInstructions
     </div>
 
     @if (!string.IsNullOrEmpty(Model.StrYoutube)) {
-        <a class="my-4" href="@Model.StrYoutube">See on Youtube</a>
+        <a class="my-4" href="@Model.StrYoutube">Zobacz na Youtube</a>
     }
 </div>
 
 <div class="my-4">
-    <a asp-action="SpecialDishInspiration" asp-controller="Kitchen" class="btn btn-primary">Back</a>
+    <a asp-action="SpecialDishInspiration" asp-controller="Kitchen" class="btn btn-primary">Wróć</a>
 </div>
 

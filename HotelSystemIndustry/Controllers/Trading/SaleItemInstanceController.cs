@@ -21,6 +21,7 @@ namespace HotelSystemIndustry.Controllers.Trading
         }
 
         // GET: SaleItemInstance
+        [Authorize(Roles = "Admin,TradingEmployee")]
         public async Task<IActionResult> Index()
         {
             var hotelId = await GetCurrentHotelId();
@@ -33,6 +34,7 @@ namespace HotelSystemIndustry.Controllers.Trading
         }
 
         // GET: SaleItemInstance/Details/5
+        [Authorize(Roles = "Admin,TradingEmployee")]
         public async Task<IActionResult> Details(Guid? id)
         {
             if (id == null)
@@ -53,11 +55,13 @@ namespace HotelSystemIndustry.Controllers.Trading
         }
 
         // GET: SaleItemInstance/Create
-        [Authorize(Roles = "Admin,TradingEmployee,MaintenanceEmployee")]
-        public IActionResult Create()
+        [Authorize(Roles = "Admin,TradingEmployee")]
+        public async Task<IActionResult> Create()
         {
+            var hotelId = await GetCurrentHotelId();
+
             ViewData["ItemId"] = new SelectList(_context.SaleItems, "Id", "Name");
-            ViewData["MagazineId"] = new SelectList(_context.ShopMagazines, "Id", "Location");
+            ViewData["MagazineId"] = await GetMagazinesSelectList(hotelId);
             return View();
         }
 
@@ -66,7 +70,7 @@ namespace HotelSystemIndustry.Controllers.Trading
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin,TradingEmployee,MaintenanceEmployee")]
+        [Authorize(Roles = "Admin,TradingEmployee")]
         public async Task<IActionResult> Create([Bind("Id,ItemId,MagazineId,Variant,Count,Price,ExpireDate")] SaleItemInstance saleItemInstance)
         {
             if (ModelState.IsValid &&
@@ -83,13 +87,16 @@ namespace HotelSystemIndustry.Controllers.Trading
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+
+            var hotelId = await GetCurrentHotelId();
+
             ViewData["ItemId"] = new SelectList(_context.SaleItems, "Id", "Name", saleItemInstance.ItemId);
-            ViewData["MagazineId"] = new SelectList(_context.ShopMagazines, "Id", "Location", saleItemInstance.MagazineId);
+            ViewData["MagazineId"] = await GetMagazinesSelectList(hotelId, saleItemInstance.MagazineId);
             return View(saleItemInstance);
         }
 
         // GET: SaleItemInstance/Edit/5
-        [Authorize(Roles = "Admin,TradingEmployee,MaintenanceEmployee")]
+        [Authorize(Roles = "Admin,TradingEmployee")]
         public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null)
@@ -102,8 +109,11 @@ namespace HotelSystemIndustry.Controllers.Trading
             {
                 return NotFound();
             }
+
+            var hotelId = await GetCurrentHotelId();
+
             ViewData["ItemId"] = new SelectList(_context.SaleItems, "Id", "Name", saleItemInstance.ItemId);
-            ViewData["MagazineId"] = new SelectList(_context.ShopMagazines, "Id", "Location", saleItemInstance.MagazineId);
+            ViewData["MagazineId"] = await GetMagazinesSelectList(hotelId, saleItemInstance.MagazineId);
             return View(saleItemInstance);
         }
 
@@ -112,7 +122,7 @@ namespace HotelSystemIndustry.Controllers.Trading
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin,TradingEmployee,MaintenanceEmployee")]
+        [Authorize(Roles = "Admin,TradingEmployee")]
         public async Task<IActionResult> Edit(Guid id, [Bind("Id,ItemId,MagazineId,Variant,Count,Price,ExpireDate")] SaleItemInstance saleItemInstance)
         {
             if (id != saleItemInstance.Id)
@@ -145,13 +155,16 @@ namespace HotelSystemIndustry.Controllers.Trading
                 }
                 return RedirectToAction(nameof(Index));
             }
+
+            var hotelId = await GetCurrentHotelId();
+
             ViewData["ItemId"] = new SelectList(_context.SaleItems, "Id", "Name", saleItemInstance.ItemId);
-            ViewData["MagazineId"] = new SelectList(_context.ShopMagazines, "Id", "Location", saleItemInstance.MagazineId);
+            ViewData["MagazineId"] = await GetMagazinesSelectList(hotelId, saleItemInstance.MagazineId);
             return View(saleItemInstance);
         }
 
         // GET: SaleItemInstance/Delete/5
-        [Authorize(Roles = "Admin,TradingEmployee,MaintenanceEmployee")]
+        [Authorize(Roles = "Admin,TradingEmployee")]
         public async Task<IActionResult> Delete(Guid? id)
         {
             if (id == null)
@@ -174,7 +187,7 @@ namespace HotelSystemIndustry.Controllers.Trading
         // POST: SaleItemInstance/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin,TradingEmployee,MaintenanceEmployee")]
+        [Authorize(Roles = "Admin,TradingEmployee")]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
             var saleItemInstance = await _context.SaleItemInstances.FindAsync(id);
@@ -190,6 +203,19 @@ namespace HotelSystemIndustry.Controllers.Trading
         private bool SaleItemInstanceExists(Guid id)
         {
             return _context.SaleItemInstances.Any(e => e.Id == id);
+        }
+
+
+        private async Task<SelectList> GetMagazinesSelectList(Guid hotelId, Guid? selectedMagazine = null)
+        {
+            var magazineList = await _context.ShopMagazines
+                .Where(ks => ks.HotelId == hotelId)
+                .ToListAsync();
+
+            if (selectedMagazine == null)
+                return new SelectList(magazineList, "Id", "Location");
+            else
+                return new SelectList(magazineList, "Id", "Location", selectedMagazine.Value);
         }
 
 

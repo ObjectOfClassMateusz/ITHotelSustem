@@ -1,4 +1,5 @@
 using HotelSystemIndustry.Infrastructure;
+using HotelSystemIndustry.Models;
 using HotelSystemIndustry.Models.Kitchen;
 using HotelSystemIndustry.ViewModels.Kitchen;
 using Microsoft.AspNetCore.Authorization;
@@ -9,6 +10,7 @@ namespace HotelSystemIndustry.Controllers.Kitchen
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize(Roles="KitchenEmployee")]
     public class KitchenApiController : Controller
     {
         private HotelDbContext _context;
@@ -18,9 +20,14 @@ namespace HotelSystemIndustry.Controllers.Kitchen
             _context = context;
         }
 
+        [HttpGet("[action]")]
+        public async Task<IList<Hotel>> GetHotels()
+        {
+            return await _context.Hotels.ToListAsync();
+        }
+
 
         [HttpGet("[action]")]
-        [Authorize(Roles="KitchenEmployee")]
         public async Task<List<KitchenArticle>> GetArticleList()
         {
             var articles = await _context.KitchenArticles
@@ -32,7 +39,6 @@ namespace HotelSystemIndustry.Controllers.Kitchen
 
 
         [HttpGet("[action]/{hotelId}/{articleId}")]
-        [Authorize(Roles="KitchenEmployee")]
         public async Task<List<ArticleInstance>> GetArticleInstanceList(Guid hotelId, Guid articleId)
         {
             var articleInstances = await _context.KitchenArticleInstances
@@ -45,7 +51,6 @@ namespace HotelSystemIndustry.Controllers.Kitchen
 
 
         [HttpGet("[action]/{hotelId}")]
-        [Authorize(Roles="KitchenEmployee")]
         public async Task<List<Storage>> GetStorageList(Guid hotelId)
         {
             var storages = await _context.KitchenStorages
@@ -57,7 +62,6 @@ namespace HotelSystemIndustry.Controllers.Kitchen
 
 
         [HttpGet("[action]")]
-        [Authorize(Roles="KitchenEmployee")]
         public async Task<List<KitchenProduct>> GetProductList()
         {
             var products = await _context.KitchenProducts
@@ -68,7 +72,6 @@ namespace HotelSystemIndustry.Controllers.Kitchen
 
 
         [HttpGet("[action]/{id}")]
-        [Authorize(Roles="KitchenEmployee")]
         public async Task<List<KitchenRecipe>> GetRecipesForProduct(Guid id)
         {
             var recipes = await _context.KitchenRecipes
@@ -84,7 +87,6 @@ namespace HotelSystemIndustry.Controllers.Kitchen
 
 
         [HttpPost("[action]")]
-        [Authorize(Roles="KitchenEmployee")]
         public async Task<bool> TakeArticleInstances(Guid instanceId, decimal count)
         {
             if (count < 0.0m)
@@ -119,7 +121,6 @@ namespace HotelSystemIndustry.Controllers.Kitchen
 
 
         [HttpPost("[action]")]
-        [Authorize(Roles="KitchenEmployee")]
         public async Task<bool> RegisterDeliveredArticles(IList<KitchenArticleDelivery> delivery)
         {
             foreach (var deliveredArticle in delivery)

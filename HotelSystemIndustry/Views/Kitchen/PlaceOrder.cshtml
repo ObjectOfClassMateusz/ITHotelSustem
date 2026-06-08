@@ -2,7 +2,7 @@
 @model NewOrderViewModel
 
 @{
-    ViewData["Title"] = "Place an Order";
+    ViewData["Title"] = "Złóż zamówienie";
     @if (User.IsInRole("KitchenEmployee"))
     {
         ViewBag.LowerNavPartial = "_KitchenNavPartial";
@@ -10,7 +10,7 @@
 }
 
 
-<h1>Place an order</h1>
+<h1>Złóż zamówienie</h1>
 <hr />
 
 
@@ -22,7 +22,7 @@
     
     <div class="form-group row my-2">
         <div class="col-md-4">
-            @Html.LabelFor(m => m.Type, "Type of the order: ", new {@class = "control-label"})
+            @Html.LabelFor(m => m.Type, "Typ zamówienia: ", new {@class = "control-label"})
         </div>
         <div class="col-md-6">
             @Html.DropDownListFor(m => m.Type, (IEnumerable<SelectListItem>)ViewBag.OrderTypes, new {@class = "form-control"})
@@ -32,16 +32,16 @@
 
     <div class="form-group row my-2">
         <div class="col-md-4">
-            @Html.LabelFor(m => m.Destination, "Destination: ", new {@class = "control-label"})
+            @Html.LabelFor(m => m.Destination, "Miejsce docelowe: ", new {@class = "control-label"})
         </div>
         <div class="col-md-6">
-            @Html.TextBoxFor(m => m.Destination, new {@class = "form-control", @placeholder = "Enter a table number / a room number / an address to deliver to"})
+            @Html.TextBoxFor(m => m.Destination, new {@class = "form-control", @placeholder = "Wprowadź numer stolika / numer pokoju / adres docelowy…"})
         </div>
         <span asp-validation-for="Destination" class="text-danger"></span>
     </div>
 
     <div class="form-group">
-        <input type="submit" class="btn btn-primary" value="Choose products" />
+        <input type="submit" class="btn btn-primary" value="Wybierz produkty" />
     </div>
 
 </form>

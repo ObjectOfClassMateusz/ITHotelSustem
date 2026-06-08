@@ -3,13 +3,13 @@
 @model KitchenDeliveryArticleViewModel
 
 @{
-    ViewData["Title"] = "Cooking help";
+    ViewData["Title"] = "Pomoc kucharska";
     ViewBag.LowerNavPartial = "_KitchenNavPartial";
 
     var productsWithRecipes = (IList<ChooseProductCookingHelpViewModel>)ViewBag.ProductRecipes;
 }
 
-<h1>Cooking help</h1>
+<h1>Pomoc kucharska</h1>
 <hr />
 
 <div class="container">
@@ -20,8 +20,8 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th>Kitchen product</th>
-                    <th>Available recipes</th>
+                    <th>Produkty</th>
+                    <th>Dostępne zamówienia</th>
                 </tr>
             </thead>
 
@@ -40,7 +40,7 @@
 
                             <div class="row">
                                 <div class="col-md-3">
-                                    Recipe:
+                                    Przepis:
                                     <ul>
                                         @foreach (var ing in recipe.Ingredients!)
                                         {
@@ -50,7 +50,7 @@
                                 </div>
 
                                 <div class="col-md-3 text-end my-auto">
-                                    <input type="submit" asp-action="CookWithRecipe" asp-route-id="@recipe.Id" class="btn btn-success my-2" value="Cook" />
+                                    <input type="submit" asp-action="CookWithRecipe" asp-route-id="@recipe.Id" class="btn btn-success my-2" value="Przyrządź" />
                                 </div>
 
                                 @if (i+1 < prod.ProductRecipes.Count) {
@@ -69,7 +69,7 @@
 
 
     <div class="my-4">
-        <a asp-action="Index" asp-controller="Kitchen" class="btn btn-primary">Back</a> 
+        <a asp-action="Index" asp-controller="Kitchen" class="btn btn-primary">Wróć</a> 
     </div>
 
 </div>

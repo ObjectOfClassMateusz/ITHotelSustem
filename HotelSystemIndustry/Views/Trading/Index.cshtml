@@ -1,29 +1,29 @@
 
 @{
-    ViewData["Title"] = "Trading";
+    ViewData["Title"] = "Moduł sprzedaży";
     ViewBag.LowerNavPartial = "_TradingNavPartial";
 }
 
 
-<h1>Shop</h1>
+<h1>Sprzedaż</h1>
 
 
 <div class="row justify-content-center my-4">
 
     <div class="col-md-4 text-center my-2">
-        <a class="page-link text-dark" asp-action="SellOrRentItemsView">Sell/rent items</a>
+        <a class="page-link text-dark" asp-action="SellOrRentItemsView">Sprzedaj/wypożycz przedmioty</a>
     </div>
 
     <div class="col-md-4 text-center my-2">
-        <a class="page-link text-dark" asp-action="AcceptReturnView">Accept return</a>
+        <a class="page-link text-dark" asp-action="AcceptReturnView">Przyjmij zwrot wypożyczonego przedmiotu</a>
     </div>
 
     <div class="col-md-4 text-center my-2">
-        <a class="page-link text-dark" asp-action="AcceptDeliveryView">Accept delivery</a>
+        <a class="page-link text-dark" asp-action="AcceptDeliveryView">Zaakceptuj dostawę</a>
     </div>
 
     <div class="col-md-4 text-center my-2">
-        <a class="page-link text-dark" asp-action="PruneExpiredItems">Prune expired items</a>
+        <a class="page-link text-dark" asp-action="PruneExpiredItems">Pozbądź się przeterminowanych przedmiotów</a>
     </div>
 
 </div>
@@ -44,34 +44,34 @@
 </form>
 
 
-<h2>Management</h2>
+<h2>Zarządzanie</h2>
 
 <hr />
 
 
 <ul>
     <li>
-        <a asp-controller="SaleItemType" asp-action="Index">Types of items to sell</a>
+        <a asp-controller="SaleItemType" asp-action="Index">Typy przedmiotów na sprzedaż</a>
     </li>
 
     <li>
-        <a asp-controller="SaleItem" asp-action="Index">Items to sell</a>
+        <a asp-controller="SaleItem" asp-action="Index">Przedmioty na sprzedaż</a>
     </li>
 
     <li>
-        <a asp-controller="SaleItemInstance" asp-action="Index">Instances of items to sell</a>
+        <a asp-controller="SaleItemInstance" asp-action="Index">Wystąpienia przedmiotów na sprzedaż</a>
     </li>
 
     <li>
-        <a asp-controller="ShopMagazine" asp-action="Index">Magazines</a>
+        <a asp-controller="ShopMagazine" asp-action="Index">Magazyny</a>
     </li>
 
     <li>
-        <a asp-controller="ShopPoint" asp-action="Index">Shop points</a>
+        <a asp-controller="ShopPoint" asp-action="Index">Punkty sprzedaży</a>
     </li>
     
     <li>
-        <a asp-controller="Purchase" asp-action="Index">Purchases</a>
+        <a asp-controller="Purchase" asp-action="Index">Zakupy</a>
     </li>
 </ul>
 

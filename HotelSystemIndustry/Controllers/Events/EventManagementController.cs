@@ -53,13 +53,13 @@ namespace HotelSystemIndustry.Controllers.Events
 
             if (model.StartTime < DateTime.UtcNow || model.EndTime < DateTime.UtcNow)
             {
-                ModelState.AddModelError(string.Empty, "Event reservation time can not be in the past!");
+                ModelState.AddModelError(string.Empty, "Wydarzenie nie może zostać zorganizowane w przeszłości!");
                 ViewBag.EventTypes = new SelectList(_context.EventTypes, "Id", "Name");
                 return View("StartMakingReservation", model);
             }
             if (model.StartTime >= model.EndTime)
             {
-                ModelState.AddModelError(string.Empty, "A reservation can not end before it begins!");
+                ModelState.AddModelError(string.Empty, "Wydarzenie nie może się skończyć, zanim się rozpocznie!");
                 ViewBag.EventTypes = new SelectList(_context.EventTypes, "Id", "Name");
                 return View("StartMakingReservation", model);
             }
@@ -138,7 +138,7 @@ namespace HotelSystemIndustry.Controllers.Events
             uint numMaxGuests = await GetApiController().CalcMaxGuestCount(selectedHallIds);
             if (model.NumGuests > numMaxGuests)
             {
-                ModelState.AddModelError("NumGuests", $"Number of guests can't exceed {numMaxGuests} with the chosen halls.");
+                ModelState.AddModelError("NumGuests", $"Liczba gości nie może przekroczyć {numMaxGuests} przy wybranych halach.");
                 return View("FillEventDetails", model);
             }
 
@@ -180,9 +180,9 @@ namespace HotelSystemIndustry.Controllers.Events
             
 
             if (result == ReservationUploadResult.FileUploadingError)
-                ModelState.AddModelError("AgreementFile", "Error while uploading the agreement document!");
+                ModelState.AddModelError("AgreementFile", "Wystąpił błąd przy przesyłaniu dokumentu z umową!");
             else
-                ModelState.AddModelError(string.Empty, "Error while making a reservation!");
+                ModelState.AddModelError(string.Empty, "Wystąpił błąd przy dokonywaniu rezerwacji!");
 
             var eventHalls = await _context.EventHalls
                 .AsNoTracking()
