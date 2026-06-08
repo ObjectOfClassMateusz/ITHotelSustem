@@ -3,18 +3,18 @@
 @model RegistrationViewModel
 
 @{
-    ViewData["Title"] = "Register account";
+    ViewData["Title"] = "Zarejestruj konto";
 }
 
 <div class="row">
     <div class="col-md-4">
         <section>
-            <h2 class="text-center mb-4">Register account</h2>
+            <h2 class="text-center mb-4">Zarejestruj konto</h2>
             <form asp-action="Register" method="post">
                 @Html.AntiForgeryToken()
                 <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
                 <div class="form-floating mb-3">
-                    <input asp-for="FullName" class="form-control" aria-required="true" placeholder="Firstname Lastname"/>
+                    <input asp-for="FullName" class="form-control" aria-required="true" placeholder="Imię Nazwisko"/>
                     <label asp-for="FullName" class="form-label"></label>
                     <span asp-validation-for="FullName" class="text-danger"></span>
                 </div>
@@ -24,17 +24,17 @@
                     <span asp-validation-for="Email" class="text-danger"></span>
                 </div>
                 <div class="form-floating mb-3">
-                    <input asp-for="Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="password"/>
+                    <input asp-for="Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="hasło"/>
                     <label asp-for="Password" class="form-label"></label>
                     <span asp-validation-for="Password" class="text-danger"></span>
                 </div>
                 <div class="form-floating mb-3">
-                    <input asp-for="ConfirmedPassword" class="form-control" autocomplete="current-password" aria-required="true" placeholder="password"/>
+                    <input asp-for="ConfirmedPassword" class="form-control" autocomplete="current-password" aria-required="true" placeholder="hasło"/>
                     <label asp-for="ConfirmedPassword" class="form-label"></label>
                     <span asp-validation-for="ConfirmedPassword" class="text-danger"></span>
                 </div>
                 
-                <input type="submit" value="Register" class="btn btn-success"/>
+                <input type="submit" value="Zarejestruj" class="btn btn-success"/>
             </form>
         </section>
     </div>

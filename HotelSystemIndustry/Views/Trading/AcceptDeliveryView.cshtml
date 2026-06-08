@@ -4,7 +4,7 @@
 @model AcceptTradingDeliveryViewModel
 
 @{
-    ViewData["Title"] = "Accept Delivery";
+    ViewData["Title"] = "Zaakceptuj dostawę";
     ViewBag.LowerNavPartial = "_TradingNavPartial";
 
     var items = (IList<SaleItem>)ViewBag.Items;
@@ -12,7 +12,7 @@
     var magazines = (IList<ShopMagazine>)ViewBag.Magazines;
 }
 
-<h1>Accept Delivery</h1>
+<h1>Zaakceptuj dostawę</h1>
 <hr />
 
 
@@ -20,7 +20,7 @@
 
     @if (Model.Items.Count > 0) {
         <div>
-            <h2 class="my-4">Delivered items</h2>
+            <h2 class="my-4">Dostarczone przedmioty</h2>
 
             <ul>
                 @foreach (var item in Model.Items) {
@@ -28,9 +28,9 @@
                     var magazine = magazines.FirstOrDefault(m => m.Id == item.MagazineId);
 
                     @if (string.IsNullOrEmpty(item.Variant)) {
-                        <li><span class="fw-bold">@saleItem!.Name</span> x @item.Count to <span class="fw-bold">@magazine!.Location</span> – @Html.DisplayFor(m => item.Price)</li>
+                        <li><span class="fw-bold">@saleItem!.Name</span> x @item.Count do <span class="fw-bold">@magazine!.Location</span> – @Html.DisplayFor(m => item.Price)</li>
                     } else {
-                        <li><span class="fw-bold">@saleItem!.Name</span> (@item.Variant) x @item.Count to <span class="fw-bold">@magazine!.Location</span> – @Html.DisplayFor(m => item.Price)</li>
+                        <li><span class="fw-bold">@saleItem!.Name</span> (@item.Variant) x @item.Count do <span class="fw-bold">@magazine!.Location</span> – @Html.DisplayFor(m => item.Price)</li>
                     }
                 }
             </ul>
@@ -52,11 +52,11 @@
             @Html.HiddenFor(m => m.Items[i].ExpireDate)
         }
 
-        <h2 class="my-4">Add new item</h2>
+        <h2 class="my-4">Dodaj przedmiot</h2>
 
         <div class="form-group row my-2">
             <div class ="col-md-2">
-                <label asp-for="NewItem.SaleItemId" class="control-label">Item:</label>
+                <label asp-for="NewItem.SaleItemId" class="control-label">Przedmiot:</label>
             </div>
             <div class="col-md-4">
                 <select asp-items="ViewBag.ItemSelectList" asp-for="NewItem.SaleItemId" class="form-control"></select>
@@ -65,16 +65,16 @@
         </div>
         <div class="form-group row my-2">
             <div class ="col-md-2">
-                <label asp-for="NewItem.Variant" class="control-label">Item variant:</label>
+                <label asp-for="NewItem.Variant" class="control-label">Wariant przedmiotu:</label>
             </div>
             <div class="col-md-4">
-                <input type="text" asp-for="NewItem.Variant" class="form-control" placeholder="Enter item variant here …" />
+                <input type="text" asp-for="NewItem.Variant" class="form-control" placeholder="Wprowadź tutaj opis wariantu…" />
             </div>
             <span asp-validation-for="NewItem.Variant" class="text-danger"></span>
         </div>
         <div class="form-group row my-2">
             <div class ="col-md-2">
-                <label asp-for="NewItem.ExpireDate" class="control-label">Expire date:</label>
+                <label asp-for="NewItem.ExpireDate" class="control-label">Data ważności:</label>
             </div>
             <div class="col-md-4">
                 <input asp-for="NewItem.ExpireDate" class="form-control" />
@@ -83,7 +83,7 @@
         </div>
         <div class="form-group row my-2">
             <div class ="col-md-2">
-                <label asp-for="NewItem.Count" class="control-label">Amount of item:</label>
+                <label asp-for="NewItem.Count" class="control-label">Ilość przedmiotu:</label>
             </div>
             <div class="col-md-4">
                 <input type="number" value="1" asp-for="NewItem.Count" class="form-control" />
@@ -92,7 +92,7 @@
         </div>
         <div class="form-group row my-2">
             <div class ="col-md-2">
-                <label asp-for="NewItem.Price" class="control-label">Unit price:</label>
+                <label asp-for="NewItem.Price" class="control-label">Cena jednostkowa:</label>
             </div>
             <div class="col-md-4">
                 <input type="number" asp-for="NewItem.Price" class="form-control" />
@@ -101,7 +101,7 @@
         </div>
         <div class="form-group row my-2">
             <div class ="col-md-2">
-                <label asp-for="NewItem.MagazineId" class="control-label">To magazine:</label>
+                <label asp-for="NewItem.MagazineId" class="control-label">Do magazynu:</label>
             </div>
             <div class="col-md-4">
                 <select asp-items="ViewBag.MagazineSelectList" asp-for="NewItem.MagazineId" class="form-control"></select>
@@ -109,7 +109,7 @@
             <span asp-validation-for="NewItem.MagazineId" class="text-danger"></span>
         </div>
 
-        <input type="submit" class="btn btn-primary my-2" value="Add item" />
+        <input type="submit" class="btn btn-primary my-2" value="Dodaj" />
     </form>
 
     <form method="post" asp-action="SubmitDelivery" class="my-4">
@@ -125,7 +125,7 @@
             @Html.HiddenFor(m => m.Items[i].ExpireDate)
         }
 
-        <input type="submit" class="btn btn-success" value="Submit" />
+        <input type="submit" class="btn btn-success" value="Zatwierdź" />
     </form>
 
 </div>

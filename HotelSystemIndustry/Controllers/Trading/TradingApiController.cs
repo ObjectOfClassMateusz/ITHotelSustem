@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using HotelSystemIndustry.Infrastructure;
+using HotelSystemIndustry.Models;
 using HotelSystemIndustry.Models.Trading;
 using HotelSystemIndustry.ViewModels.Trading;
 using Microsoft.AspNetCore.Authorization;
@@ -19,6 +20,13 @@ namespace HotelSystemIndustry.Controllers.Trading
         public TradingApiController(HotelDbContext context)
         {
             _context = context;
+        }
+
+
+        [HttpGet("[action]")]
+        public async Task<IList<Hotel>> GetHotels()
+        {
+            return await _context.Hotels.ToListAsync();
         }
 
 

@@ -16,14 +16,14 @@
 
     <div class="row">
         <div class="col-md-6">
-            @instance.Count @Html.DisplayFor(m => ing.Article!.Unit) <span>in</span> <span class="fw-bold">@instance.Storage!.Name</span>
+            @instance.Count @Html.DisplayFor(m => ing.Article!.Unit) <span>w</span> <span class="fw-bold">@instance.Storage!.Name</span>
         </div>
         <div class="col-md-2">
             <input asp-for="Count" type="number" min="0" max="@instance.Count" step="any" value="@ing.Count" class="form-control" />
             <span asp-validation-for="Count" class="text-danger"></span>
         </div>
         <div class="col-md-2">
-            <input type="submit" class="btn btn-success" value="Take" />
+            <input type="submit" class="btn btn-success" value="Weź" />
         </div>
     </div>
 

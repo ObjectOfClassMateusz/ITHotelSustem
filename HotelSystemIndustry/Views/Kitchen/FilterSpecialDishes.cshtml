@@ -4,18 +4,18 @@
 @model IList<ExternalFilteredMeal>
 
 @{
-    ViewData["Title"] = "Special dish inspirations";
+    ViewData["Title"] = "Specjalne przepisy zewnętrzne";
     ViewBag.LowerNavPartial = "_KitchenNavPartial";
 }
 
 
-<h1 class="fs-1">Special dish inspirations</h1>
+<h1 class="fs-1">Specjalne przepisy zewnętrzne</h1>
 <hr />
 
 
 <div class="container my-4">
     @if (Model.Count == 0) {
-        <h2>There are no meals for the given filter!</h2>
+        <h2>Nie znaleziono przepisów, które spełniają zadany filtr!</h2>
     }
 
     @foreach (var meal in Model) {
@@ -29,15 +29,15 @@
 
             @if (!string.IsNullOrEmpty(meal.StrArea)) {
                 <div>
-                    <span class="fw-bold">Area:</span> @meal.StrArea
+                    <span class="fw-bold">Rejon:</span> @meal.StrArea
                 </div>
             }
             <div>
-                <span class="fw-bold">Country:</span> @meal.StrCountry
+                <span class="fw-bold">Kraj:</span> @meal.StrCountry
             </div>
 
             <div class="my-4">
-                <a class="btn btn-primary" asp-action="DisplaySpecialDish" asp-route-id="@meal.IdMeal">Show</a>
+                <a class="btn btn-primary" asp-action="DisplaySpecialDish" asp-route-id="@meal.IdMeal">Pokaż</a>
             </div>
 
             <hr />
@@ -46,6 +46,6 @@
 
 
 <div class="my-4">
-    <a asp-action="SpecialDishInspiration" asp-controller="Kitchen" class="btn btn-primary">Back</a>
+    <a asp-action="SpecialDishInspiration" asp-controller="Kitchen" class="btn btn-primary">Wróć</a>
 </div>
 

@@ -2,14 +2,14 @@
 @model EventReservation
 
 @{
-    ViewData["Title"] = "Manage event";
-    ViewBag.LowerNavPartial = "_HotelManagementNavPartial";
+    ViewData["Title"] = "Zarządzaj wydarzeniem";
+    ViewBag.LowerNavPartial = "_EventsNavPartial";
 }
 
 
-<h1 class="my-4">Event management – @Model.Name</h1>
+<h1 class="my-4">Zarządzanie wydarzeniem – @Model.Name</h1>
 
-<h2>@Model.EventType?.Name from @Model.StartTime.ToLocalTime() to @Model.EndTime.ToLocalTime()</h2>
+<h2>@Model.EventType?.Name od @Model.StartTime.ToLocalTime() do @Model.EndTime.ToLocalTime()</h2>
 
 <hr />
 
@@ -21,7 +21,7 @@
 
         <div class="row form-group">
             <div class="col-md-3">
-                <label class="control-label fs-6" for="statusId">Edit status:</label>
+                <label class="control-label fs-6" for="statusId">Edituj status:</label>
             </div>
             <div class="col-md-4">
                 <select asp-items="ViewBag.StatusList" id="statusId" name="statusId" class="form-control"></select>
@@ -30,27 +30,27 @@
 
         <div class="row form-group">
             <div class="col-md-3">
-                <label class="control-label fs-6">Agreement document:</label>
+                <label class="control-label fs-6">Umowa rezerwacji:</label>
             </div>
             <div class="col-md-4">
-                <a asp-action="GetEventAgreementDocument" asp-route-id="@Model.Id">download PDF</a>
+                <a asp-action="GetEventAgreementDocument" asp-route-id="@Model.Id">pobierz plik PDF</a>
             </div>
         </div>
 
         <div class="my-4">
-            <input type="submit" class="btn btn-success" value="Save" />
+            <input type="submit" class="btn btn-success" value="Zapisz" />
         </div>
 
     </form>
 
     <div class="container fs-5 my-2">
-        Number of guests: <span class="fw-bold">@Model.NumGuests</span>
+        Liczba gości: <span class="fw-bold">@Model.NumGuests</span>
     </div>
     <div class="container fs-5 my-2">
-        Number of servant stuff: <span class="fw-bold">@Model.NumRequiredStaff</span>
+        Ilość personelu usługującego: <span class="fw-bold">@Model.NumRequiredStaff</span>
     </div>
 
-    <h3>Halls</h3>
+    <h3>Sale</h3>
     <ul>
         @foreach (var hall in Model.Halls!) {
             <li class="fs-5 fw-bold">
@@ -59,24 +59,24 @@
         }
     </ul>
 
-    <h3>Equipment</h3>
+    <h3>Sprzęt</h3>
     <ul>
         @foreach (var equipment in Model.Equipment!) {
             var eqHall = Model.Halls.FirstOrDefault(h => h.Id == equipment.EventHallId);
 
             <li class="fs-5">
-                <span class="fw-bold">@equipment.Equipment!.Name</span> from @eqHall?.Name
+                <span class="fw-bold">@equipment.Equipment!.Name</span> z @eqHall?.Name
             </li>
         }
     </ul>
 
     <div class="my-5">
-        <a class="btn btn-danger" asp-action="CancelEventView" asp-route-id="@Model.Id">Cancel event</a>
+        <a class="btn btn-danger" asp-action="CancelEventView" asp-route-id="@Model.Id">Anuluj wydarzenie</a>
     </div>
 </div>
 
 <div class="my-5">
-    <a class="btn btn-primary" asp-action="EventChoosing">Back</a>
+    <a class="btn btn-primary" asp-action="EventChoosing">Wróć</a>
 </div>
 
 

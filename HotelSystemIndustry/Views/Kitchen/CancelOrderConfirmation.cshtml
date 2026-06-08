@@ -3,12 +3,12 @@
 @model Order
 
 @{
-    ViewData["Title"] = "Cancel Order";
+    ViewData["Title"] = "Anuluj zamówienie";
     ViewBag.LowerNavPartial = "_KitchenNavPartial";
 }
 
 
-<h1>Confirm Order Cancelation</h1>
+<h1>Potwierdź anulowanie zamówienia</h1>
 <hr />
 
 
@@ -18,21 +18,21 @@
 
     <dl class="row">
         <dt class="col-sm-2">
-            @Html.LabelFor(m => m.SubmissionTime, "Submission Time: ")
+            @Html.LabelFor(m => m.SubmissionTime, "Czas złożenia: ")
         </dt>
         <dd class="col-sm-10">
             @Model.SubmissionTime.ToLocalTime()
         </dd>
 
         <dt class="col-sm-2">
-            @Html.LabelFor(m => m.Type, "Order type: ")
+            @Html.LabelFor(m => m.Type, "Typ zamówienia: ")
         </dt>
         <dd class="col-sm-10">
             @Model.Type!.Name
         </dd>
 
         <dt class="col-sm-2">
-            @Html.LabelFor(m => m.DeliveryDestination, "Delivery destination: ")
+            @Html.LabelFor(m => m.DeliveryDestination, "Miejsce docelowe: ")
         </dt>
         <dd class="col-sm-10">
             @Model.DeliveryDestination
@@ -47,9 +47,9 @@
         }
     </ul>
     
-    <input type="submit" value="Cancel Order" class="btn btn-danger" />
+    <input type="submit" value="Anuluj" class="btn btn-danger" />
 
-    <a asp-action="CancelOrderView" class="btn btn-primary">Do not cancel</a>
+    <a asp-action="CancelOrderView" class="btn btn-primary">Pozostaw</a>
 
 </form>
 

@@ -5,7 +5,7 @@
 @inject UserManager<User> UserManager
 
 @{
-    ViewData["Title"] = "Manage account";
+    ViewData["Title"] = "Zarządzaj kontem";
 
     var user = await UserManager.GetUserAsync(User);
     var fullName = user != null ? user.FullName : "";

@@ -3,7 +3,7 @@
 @model NewOrderViewModel
 
 @{
-    ViewData["Title"] = "Place an Order - Verify Order";
+    ViewData["Title"] = "Złóż zamówienie – weryfikuj zamówienie";
     @if (User.IsInRole("KitchenEmployee"))
     {
         ViewBag.LowerNavPartial = "_KitchenNavPartial";
@@ -14,7 +14,7 @@
 }
 
 
-<h1>Verify your order</h1>
+<h1>Zweryfikuj złożone zamówienie</h1>
 <hr />
 
 
@@ -35,14 +35,14 @@
         </dd>
 
         <dt class="col-sm-2">
-            @Html.LabelFor(m => m.Type, "Order type: ")
+            @Html.LabelFor(m => m.Type, "Typ zamówienia: ")
         </dt>
         <dd class="col-sm-10">
             @OrderTypes.Single(ot => ot.Id == Model.Type).Name
         </dd>
 
         <dt class="col-sm-2">
-            @Html.LabelFor(m => m.Destination, "Delivery destination: ")
+            @Html.LabelFor(m => m.Destination, "Miejsce docelowe: ")
         </dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(m => m.Destination)
@@ -74,14 +74,14 @@
 
     <hr />
     <div class="row mx-2 my-4">
-        <div class="col-md-7 text-start">Total: </div> <div class="col-md-3 text-end">@totalPrice.ToString("C2")</div>
+        <div class="col-md-7 text-start">Razem: </div> <div class="col-md-3 text-end">@totalPrice.ToString("C2")</div>
     </div>
     
-    <input type="submit" value="Submit" asp-action="SubmitOrder" class="btn btn-success" />
+    <input type="submit" value="Prześlij" asp-action="SubmitOrder" class="btn btn-success" />
 
-    <input type="submit" value="Back" asp-action="ChooseOrderProducts" class="btn btn-primary" />
+    <input type="submit" value="Wróć" asp-action="ChooseOrderProducts" class="btn btn-primary" />
 
-    <a asp-action="PlaceOrder" class="btn btn-primary">Cancel</a>
+    <a asp-action="PlaceOrder" class="btn btn-primary">Anuluj</a>
 
 </form>
 

@@ -21,12 +21,14 @@ namespace HotelSystemIndustry.Controllers.Events
         }
 
         // GET: EventReservationStatus
+        [Authorize(Roles = "Admin,HotelEmployee")]
         public async Task<IActionResult> Index()
         {
             return View(await _context.EventReservationStatuses.ToListAsync());
         }
 
         // GET: EventReservationStatus/Details/5
+        [Authorize(Roles = "Admin,HotelEmployee")]
         public async Task<IActionResult> Details(Guid? id)
         {
             if (id == null)
@@ -45,7 +47,7 @@ namespace HotelSystemIndustry.Controllers.Events
         }
 
         // GET: EventReservationStatus/Create
-        [Authorize(Roles = "Admin,HotelEmployee,MaintenanceEmployee")]
+        [Authorize(Roles = "Admin,HotelEmployee")]
         public IActionResult Create()
         {
             return View();
@@ -56,7 +58,7 @@ namespace HotelSystemIndustry.Controllers.Events
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin,HotelEmployee,MaintenanceEmployee")]
+        [Authorize(Roles = "Admin,HotelEmployee")]
         public async Task<IActionResult> Create([Bind("Id,Name,Value,IsActive,Description")] EventReservationStatus eventReservationStatus)
         {
             if (ModelState.IsValid)
@@ -70,7 +72,7 @@ namespace HotelSystemIndustry.Controllers.Events
         }
 
         // GET: EventReservationStatus/Edit/5
-        [Authorize(Roles = "Admin,HotelEmployee,MaintenanceEmployee")]
+        [Authorize(Roles = "Admin,HotelEmployee")]
         public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null)
@@ -91,7 +93,7 @@ namespace HotelSystemIndustry.Controllers.Events
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin,HotelEmployee,MaintenanceEmployee")]
+        [Authorize(Roles = "Admin,HotelEmployee")]
         public async Task<IActionResult> Edit(Guid id, [Bind("Id,Name,Value,IsActive,Description")] EventReservationStatus eventReservationStatus)
         {
             if (id != eventReservationStatus.Id)
@@ -123,7 +125,7 @@ namespace HotelSystemIndustry.Controllers.Events
         }
 
         // GET: EventReservationStatus/Delete/5
-        [Authorize(Roles = "Admin,HotelEmployee,MaintenanceEmployee")]
+        [Authorize(Roles = "Admin,HotelEmployee")]
         public async Task<IActionResult> Delete(Guid? id)
         {
             if (id == null)
@@ -144,7 +146,7 @@ namespace HotelSystemIndustry.Controllers.Events
         // POST: EventReservationStatus/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin,HotelEmployee,MaintenanceEmployee")]
+        [Authorize(Roles = "Admin,HotelEmployee")]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
             var eventReservationStatus = await _context.EventReservationStatuses.FindAsync(id);
