@@ -1,31 +1,31 @@
 @using HotelSystemIndustry.Models.Trading
 
 @{
-    ViewData["Title"] = "Prune Expired Items";
+    ViewData["Title"] = "Pozbądź się przeterminowanych przedmiotów";
     ViewBag.LowerNavPartial = "_TradingNavPartial";
 
     var expiredItems = (IList<SaleItemInstance>)ViewBag.ExpiredItems;
 }
 
-<h1>Prune Expired Items</h1>
+<h1>Pozbądź się przeterminowanych przedmiotów</h1>
 <hr />
 
 
 @if (expiredItems.Count == 0) {
 
-    <h2>There are no expired items to prune!</h2>
-    <div class="my-4">Hurray!</div>
+    <h2>Nie ma żadnych przeterminowanych przedmiotów do wyczyszczenia!</h2>
+    <div class="my-4">Hura!</div>
 
 } else {
-    <h2 class="my-4">These are the items that are expired:</h2>
+    <h2 class="my-4">Poniższe przedmioty są przeterminowane:</h2>
 
     <table class="table">
         <thead>
             <tr>
-                <th>Item</th>
-                <th>Variant</th>
-                <th>Count</th>
-                <th>In magazine</th>
+                <th>Przedmiot</th>
+                <th>Wariant</th>
+                <th>Ilość</th>
+                <th>W magazynie</th>
             </tr>
         </thead>
         <tbody>
@@ -46,11 +46,11 @@
         @Html.AntiForgeryToken()
 
         <div class="form-group my-4">
-            Please remove these items in their magazines and then confirm the operation.
-            <input type="submit" class="btn btn-danger mx-4" value="Confirm prunning" />
+            Proszę pozbyć się tych przedmiotów z magazynów, w których się znajdują, a następnie potwierdzić operację.
+            <input type="submit" class="btn btn-danger mx-4" value="Potwierdź czyszczenie" />
         </div>
     </form>
 }
 
-<a asp-action="Index" class="btn btn-primary">Back</a>
+<a asp-action="Index" class="btn btn-primary">Wróć</a>
 

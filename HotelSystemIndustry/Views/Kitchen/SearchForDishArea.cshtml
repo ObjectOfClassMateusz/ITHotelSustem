@@ -4,13 +4,13 @@
 @model IList<ExternalMealArea>
 
 @{
-    ViewData["Title"] = "Special dish inspirations";
+    ViewData["Title"] = "Specjalne przepisy zewnętrzne";
     ViewBag.LowerNavPartial = "_KitchenNavPartial";
 }
 
 
-<h1 class="fs-2">Special dish inspirations</h1>
-<h2 class="fs-1">Search for dish by area</h2>
+<h1 class="fs-2">Specjalne przepisy zewnętrzne</h1>
+<h2 class="fs-1">Znajdź danie pochodzące z regionu:</h2>
 <hr />
 
 
@@ -20,11 +20,11 @@
             <h3 class="my-4">@area.StrArea</h3>
 
             <div class="my-4">
-                <span class="fw-bold">Country:</span> @area.StrCountry
+                <span class="fw-bold">Kraj:</span> @area.StrCountry
             </div>
 
             <div class="my-4">
-                <a class="btn btn-primary" asp-action="SpecialDishesOfArea" asp-route-area="@area.StrArea">Show</a>
+                <a class="btn btn-primary" asp-action="SpecialDishesOfArea" asp-route-area="@area.StrArea">Pokaż</a>
             </div>
 
             <hr />
@@ -34,6 +34,6 @@
 
 
 <div class="my-4">
-    <a asp-action="SpecialDishInspiration" asp-controller="Kitchen" class="btn btn-primary">Back</a>
+    <a asp-action="SpecialDishInspiration" asp-controller="Kitchen" class="btn btn-primary">Wróć</a>
 </div>
 

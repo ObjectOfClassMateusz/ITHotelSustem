@@ -2,12 +2,12 @@
 @model BookingEventViewModel
 
 @{
-    ViewData["Title"] = "Organize an event";
+    ViewData["Title"] = "Organizuj wydarzenie";
     ViewBag.LowerNavPartial = "_EventsNavPartial";
 }
 
 
-<h1>Organize an event</h1>
+<h1>Organizuj wydarzenie</h1>
 <hr />
 
 
@@ -18,7 +18,7 @@
 
         <div class="form-group row col-md-10 my-2">
             <div class="col-md-5 fs-5">
-                <label asp-for="EventTypeId" class="control-label">Type of event:</label>
+                <label asp-for="EventTypeId" class="control-label">Typ wydarzenia:</label>
             </div>
             <div class="col-md-5">
                 <select asp-for="EventTypeId" asp-items="ViewBag.EventTypes" class="form-control"></select>
@@ -27,7 +27,7 @@
         </div>
         <div class="form-group row col-md-10 my-2">
             <div class="col-md-5 fs-5">
-                <label asp-for="Name" class="control-label">Event name:</label>
+                <label asp-for="Name" class="control-label">Nazwa:</label>
             </div>
             <div class="col-md-5">
                 <input asp-for="Name" class="form-control" />
@@ -36,7 +36,7 @@
         </div>
         <div class="form-group row col-md-10 my-2">
             <div class="col-md-5 fs-5">
-                <label asp-for="StartTime" class="control-label">Choose reservation beginning time:</label>
+                <label asp-for="StartTime" class="control-label">Wybierz czas rozpoczęcia:</label>
             </div>
             <div class="col-md-5">
                 <input asp-for="StartTime" class="form-control" />
@@ -45,7 +45,7 @@
         </div>
         <div class="form-group row col-md-10 my-2">
             <div class="col-md-5 fs-5">
-                <label asp-for="EndTime" class="control-label">Choose reservation ending time:</label>
+                <label asp-for="EndTime" class="control-label">Wybierz czas zakończenia:</label>
             </div>
             <div class="col-md-5">
                 <input asp-for="EndTime" class="form-control" />
@@ -60,7 +60,7 @@
 
 
         <div class="col-md-10 my-2">
-            <input type="submit" class="btn btn-success" value="Check event halls availability" />
+            <input type="submit" class="btn btn-success" value="Sprawdź dostępność sal" />
         </div>
 
     </div>

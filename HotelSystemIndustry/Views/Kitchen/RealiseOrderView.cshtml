@@ -4,22 +4,22 @@
 
 
 @{
-    ViewData["Title"] = "Realise Order";
+    ViewData["Title"] = "Zrealizuj zamówienie";
     ViewBag.LowerNavPartial = "_KitchenNavPartial";
 }
 
 
-<h1>Realise an order</h1>
+<h1>Zrealizuj zamówienie</h1>
 <hr />
 
 
 <table class="table">
     <thead>
         <tr>
-            <th>Submission Time</th>
-            <th>Order Type</th>
-            <th>Destination</th>
-            <th>Products</th>
+            <th>Czas złożenia</th>
+            <th>Typ</th>
+            <th>Miejsce docelowe</th>
+            <th>Produkty</th>
             <th></th>
         </tr>
     </thead>
@@ -51,7 +51,7 @@
                 <td>
                     <form method="post" asp-action="MarkOrderRealised" asp-route-id="@order.Id">
                         @Html.AntiForgeryToken()
-                        <input type="submit" value="Realise" class="btn btn-success" />
+                        <input type="submit" value="Zrealizuj" class="btn btn-success" />
                     </form>
                 </td>
             </tr>
@@ -59,5 +59,5 @@
     </tbody>
 </table>
 
-<a asp-action="Index" asp-controller="Kitchen" class="btn btn-primary">Back</a>
+<a asp-action="Index" asp-controller="Kitchen" class="btn btn-primary">Wróć</a>
 

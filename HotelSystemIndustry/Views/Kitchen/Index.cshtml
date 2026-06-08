@@ -1,37 +1,37 @@
 
 @{
-    ViewData["Title"] = "Kitchen";
+    ViewData["Title"] = "Kuchnia";
     ViewBag.LowerNavPartial = "_KitchenNavPartial";
 }
 
 
-<h1>Orders</h1>
+<h1>Zamówienia</h1>
 
 
 <div class="row justify-content-center my-4">
 
     <div class="col-md-4 text-center my-2">
-        <a asp-action="PlaceOrder" class="page-link text-dark">Place an Order</a>
+        <a asp-action="PlaceOrder" class="page-link text-dark">Złóż zamówienie</a>
     </div>
 
     <div class="col-md-4 text-center my-2">
-        <a asp-action="RealiseOrderView" class="page-link text-dark">Realise Order</a>
+        <a asp-action="RealiseOrderView" class="page-link text-dark">Zrealizuj zamówienie</a>
     </div>
 
     <div class="col-md-4 text-center my-2">
-        <a asp-action="CancelOrderView" class="page-link text-dark">Cancel Order</a>
+        <a asp-action="CancelOrderView" class="page-link text-dark">Anuluj zamówienie</a>
     </div>
 
     <div class="col-md-4 text-center my-2">
-        <a asp-action="HandleDelivery" class="page-link text-dark">Handle Delivery</a>
+        <a asp-action="HandleDelivery" class="page-link text-dark">Zarejestruj dostawę artykułów</a>
     </div>
 
     <div class="col-md-4 text-center my-2">
-        <a asp-action="ChooseProductCookingHelp" class="page-link text-dark">Cooking Help</a>
+        <a asp-action="ChooseProductCookingHelp" class="page-link text-dark">Pomoc kucharska</a>
     </div>
 
     <div class="col-md-4 text-center my-2">
-        <a asp-action="SpecialDishInspiration" class="page-link text-dark">Looking for an inspiration?</a>
+        <a asp-action="SpecialDishInspiration" class="page-link text-dark">Zewnętrzne przepisy</a>
     </div>
 
 </div>
@@ -54,38 +54,38 @@
 
 
 <h2>
-    Management
+    Zarządzanie
 </h2>
 
 <hr />
 
 <ul>
     <li>
-        <a asp-controller="KitchenArticleType" asp-action="Index">Types of articles</a>
+        <a asp-controller="KitchenArticleType" asp-action="Index">Typy artykułów</a>
     </li>
 
     <li>
-        <a asp-controller="KitchenArticle" asp-action="Index">Articles</a>
+        <a asp-controller="KitchenArticle" asp-action="Index">Artykuły</a>
     </li>
 
     <li>
-        <a asp-controller="ArticleInstance" asp-action="Index">Instances of articles</a>
+        <a asp-controller="ArticleInstance" asp-action="Index">Wystąpienia artykułów</a>
     </li>
 
     <li>
-        <a asp-controller="KitchenProduct" asp-action="Index">Kitchen products</a>
+        <a asp-controller="KitchenProduct" asp-action="Index">Dania</a>
     </li>
 
     <li>
-        <a asp-controller="KitchenRecipe" asp-action="Index">Recipes</a>
+        <a asp-controller="KitchenRecipe" asp-action="Index">Przpisy</a>
     </li>
 
     <li>
-        <a asp-controller="Storage" asp-action="Index">Storages</a>
+        <a asp-controller="Storage" asp-action="Index">Miejsca, w których przechowywane są artykuły</a>
     </li>
 
     <li>
-        <a asp-controller="Order" asp-action="Index">Orders</a>
+        <a asp-controller="Order" asp-action="Index">Zamówienia</a>
     </li>
 </ul>
 

@@ -3,17 +3,17 @@
 @model UserManagementInfo
 
 @{
-    ViewData["Title"] = "Confirm user delete";
+    ViewData["Title"] = "Potwierdź usunięcie użytkownika";
 }
 
 <div>
-    <h2>Are you sure you want to delete this user?</h2>
+    <h2>Czy na pewno chcesz usunąć tego użytkownika?</h2>
     <hr />
 
     <dl>
         <div class="row">
             <dt class="col-md-2">
-                Full name:
+                Pełna nazwa:
             </dt>
             <dd class="col-md-4">
                 @Html.DisplayFor(m => Model.FullName)
@@ -22,7 +22,7 @@
 
         <div class="row">
             <dt class="col-md-2">
-                Email: 
+                E-mail: 
             </dt>
             <dd class="col-md-4">
                 @Html.DisplayFor(m => Model.Email)
@@ -31,7 +31,7 @@
             
         <div class="row">
             <dt class="col-md-2">
-                Email verified:
+                E-mail zweryfikowany:
             </dt>
             <dd class="col-md-4">
                 @Html.DisplayFor(m => Model.EmailVerified)
@@ -40,7 +40,7 @@
 
         <div class="row">
         <dt class="col-md-2">
-            Roles:
+            Role:
         </dt>
         <dd class="col-md-4">
             <ul>
@@ -48,7 +48,7 @@
                     <li>@role</li>
                 }
                 @if (Model.Roles.Count == 0) {
-                    <li>Normal customer account</li>
+                    <li>Zwyczajne konto użytkownika</li>
                 }
             </ul>
         </dd>
@@ -58,9 +58,9 @@
     <div class="row">
         <form method="post" asp-controller="Account" asp-action="DeleteUserByAdmin" asp-route-id="@Model.Id">
             @Html.AntiForgeryToken()
-            <input type="submit" value="Delete" class="btn btn-danger"/>
+            <input type="submit" value="Usuń" class="btn btn-danger"/>
 
-            <a asp-controller="Account" asp-action="ManageUsers">Back</a>
+            <a asp-controller="Account" asp-action="ManageUsers">Wróć</a>
         </form>
     </div>
 </div>

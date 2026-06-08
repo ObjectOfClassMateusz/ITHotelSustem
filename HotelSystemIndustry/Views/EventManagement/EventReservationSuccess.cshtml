@@ -1,20 +1,15 @@
 @{
-    ViewData["Title"] = "Event reservation success";
-    @if (User.IsInRole("HotelEmployee"))
-    {
-        ViewBag.LowerNavPartial = "_HotelManagementNavPartial";
-    } else {
-        ViewBag.LowerNavPartial = "_EventsNavPartial";
-    }
+    ViewData["Title"] = "Pomyślnie dokonano rezerwacji";
+    ViewBag.LowerNavPartial = "_EventsNavPartial";
 }
 
 
-<h1>Successfully made an event reservation</h1>
+<h1>Pomyślnie dokonano rezerwacji</h1>
 <hr />
 
-<span class="fs-5">Thank you for making a reservation at our hotel.</span>
+<span class="fs-5">Dziękujemy za złożenie rezerwacji.</span>
 
 <div class="my-2">
-    <a asp-action="Index">Go back</a>
+    <a asp-action="Index">Wróć</a>
 </div>
 

@@ -3,14 +3,14 @@
 @model BookingEventViewModel
 
 @{
-    ViewData["Title"] = "Organize an event - choose equipment";
+    ViewData["Title"] = "Organizacja wydarzenia - wybierz potrzebny sprzęt";
     ViewBag.LowerNavPartial = "_EventsNavPartial";
 
     var eventHalls = (IList<EventHall>)ViewBag.EventHalls;
 }
 
 
-<h1>Reserve event hall equipment</h1>
+<h1>Rezerwuj sprzęt do sali</h1>
 <hr />
 
 <form method="post" asp-action="FillEventDetails">
@@ -22,7 +22,7 @@
     @Html.HiddenFor(m => m.EndTime)
     @Html.HiddenFor(m => m.Name)
 
-    <h2>Choose the equipment that you need from each hall</h2>
+    <h2>Wybierz sprzęt, którego będzie potrzebny w każdej z sal</h2>
 
     @for (var i = 0; i < Model.Halls.Count; i++) {
         @Html.HiddenFor(m => m.Halls[i].HallId)
@@ -55,7 +55,7 @@
         }
     }
 
-    <input type="submit" class="btn btn-success my-4" value="Next" />
+    <input type="submit" class="btn btn-success my-4" value="Dalej" />
 </form>
 
 

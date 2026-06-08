@@ -29,17 +29,17 @@
 
     @if (Model.SaleItem!.Type!.IsForRent) {
         <dt class="col-sm-2">
-            Returned after rent
+            Zwrócony po wypożyczeniu
         </dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.HasBeenReturned)
         </dd>
     } else if (Model.HasBeenReturned) {
         <dt class="col-sm-2">
-            State
+            Status
         </dt>
         <dd class="col-sm-10">
-            Item was returned
+            Przedmiot został zwrócony
         </dd>
     }
 </dl>

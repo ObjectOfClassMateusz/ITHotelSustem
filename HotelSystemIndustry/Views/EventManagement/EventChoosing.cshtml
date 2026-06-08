@@ -1,14 +1,14 @@
 @using HotelSystemIndustry.Models.Events
 
 @{
-    ViewData["Title"] = "Choose event reservation";
+    ViewData["Title"] = "Wybierz rezerwację na wydarzenie";
     ViewBag.LowerNavPartial = "_EventsNavPartial";
 
     var eventReservations = (IList<EventReservation>)ViewBag.EventReservations;
 }
 
 
-<h1>Choose event to manage</h1>
+<h1>Wybierz wydarzenie, którym chcesz zarządzać</h1>
 <hr />
 
 
@@ -17,12 +17,12 @@
     <table class="table">
         <thead>
             <tr>
-                <th>Start Time</th>
-                <th>End Time</th>
-                <th>Name</th>
-                <th>Event Type</th>
-                <th>Event Status</th>
-                <th>Number of guests</th>
+                <th>Czas rozpoczęcia</th>
+                <th>Czas zakończenia</th>
+                <th>Nazwa</th>
+                <th>Typ</th>
+                <th>Status</th>
+                <th>Liczba gości</th>
                 <th></th>
             </tr>
         </thead>
@@ -37,7 +37,7 @@
                     <td>@eventReservation.Status?.Name</td>
                     <td>@eventReservation.NumGuests</td>
                     <td>
-                        <a class="btn btn-success" asp-action="EventRealisation" asp-route-id="@eventReservation.Id">Manage</a>
+                        <a class="btn btn-success" asp-action="EventRealisation" asp-route-id="@eventReservation.Id">Zarządzaj</a>
                     </td>
                 </tr>
             }
@@ -45,7 +45,7 @@
     </table>
 
     <div class="my-4">
-        <a class="btn btn-primary" asp-action="Index">Back</a>
+        <a class="btn btn-primary" asp-action="Index">Wróć</a>
     </div>
 
 </div>

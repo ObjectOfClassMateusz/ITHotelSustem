@@ -7,7 +7,7 @@
 <ul class="navbar-nav flex-grow-1">
 
     <li class="nav-item">
-        <a class="nav-link text-dark" asp-controller="Hotels" asp-action="Index">Hotels</a>
+        <a class="nav-link text-dark" asp-controller="Hotels" asp-action="Index">Hotele</a>
     </li>
     
 
@@ -17,33 +17,33 @@
 
         @if (User.IsInRole("HotelEmployee")) {
             <li class="nav-item">
-                <a id="events-button" class="nav-link text-dark" asp-controller="EventManagement" asp-action="Index">Events</a>
+                <a id="events-button" class="nav-link text-dark" asp-controller="EventManagement" asp-action="Index">Wydarzenia</a>
             </li>
         }
         @if (User.IsInRole("KitchenEmployee")) {
             <li class="nav-item">
-                <a id="kitchen-button" class="nav-link text-dark" asp-controller="Kitchen" asp-action="Index">Kitchen</a>
+                <a id="kitchen-button" class="nav-link text-dark" asp-controller="Kitchen" asp-action="Index">Kuchnia</a>
             </li>
         }
         @if (User.IsInRole("MaintenanceEmployee")) {
             <li class="nav-item">
-                <a id="maintenance-button" class="nav-link text-dark" asp-controller="Maintenance" asp-action="Index">Maintenance</a>
+                <a id="maintenance-button" class="nav-link text-dark" asp-controller="Maintenance" asp-action="Index">Konserwacja</a>
             </li>
         }
         @if (User.IsInRole("HousekeepingEmployee"))
         {
             <li class="nav-item">
-                <a id="housekeeping-button" class="nav-link text-dark" asp-controller="Housekeeping" asp-action="Index">Housekeeping</a>
+                <a id="housekeeping-button" class="nav-link text-dark" asp-controller="Housekeeping" asp-action="Index">Służba pokoi</a>
             </li>
         }
         @if (User.IsInRole("TradingEmployee")) {
             <li class="nav-item">
-                <a id="trading-button" class="nav-link text-dark" asp-controller="Trading" asp-action="Index">Trading</a>
+                <a id="trading-button" class="nav-link text-dark" asp-controller="Trading" asp-action="Index">Sprzedaż</a>
             </li>
         }
         @if (User.IsInRole("RecreationEmployee")) {
             <li class="nav-item">
-                <a id="recreation-button" class="nav-link text-dark" asp-controller="Recreation" asp-action="Index">Recreation</a>
+                <a id="recreation-button" class="nav-link text-dark" asp-controller="Recreation" asp-action="Index">Rekreacja</a>
             </li>
         }
 
@@ -53,7 +53,7 @@
 
 
             <li class="nav-item">
-                <a id="manage-roles" class="nav-link text-dark" asp-controller="Account" asp-action="ManageUsers">Manage users</a>
+                <a id="manage-roles" class="nav-link text-dark" asp-controller="Account" asp-action="ManageUsers">Zarządzaj użytkownikami</a>
             </li>
         }
     }

@@ -12,22 +12,22 @@
             var user = await UserManager.GetUserAsync(User);
             var fullName = user != null ? user.FullName : "";
         }
-            <a id="account-info" class="nav-link text-dark asp-link" asp-controller="Account" asp-action="AccountInfo">Hello @fullName!</a>
+            <a id="account-info" class="nav-link text-dark asp-link" asp-controller="Account" asp-action="AccountInfo">Witaj, @fullName!</a>
     </li>
 
     <li class="nav-item">
             <form id="logoutForm" class="form-inline asp-link" asp-controller="Account" asp-action="Logout">
-            <button id="logout" type="submit" class="nav-link btn btn-link text-dark border-0">Logout</button>
+            <button id="logout" type="submit" class="nav-link btn btn-link text-dark border-0">Wyloguj</button>
         </form>
     </li>
 }
 else
 {
     <li class="nav-item">
-            <a class="nav-link text-dark asp-link" id="register" asp-controller="Account" asp-action="Register">Register</a>
+            <a class="nav-link text-dark asp-link" id="register" asp-controller="Account" asp-action="Register">Zarejestruj się</a>
     </li>
     <li class="nav-item">
-            <a class="nav-link text-dark asp-link" id="login" asp-controller="Account" asp-action="Login">Login</a>
+            <a class="nav-link text-dark asp-link" id="login" asp-controller="Account" asp-action="Login">Zaloguj się</a>
     </li>
 }
 </ul>

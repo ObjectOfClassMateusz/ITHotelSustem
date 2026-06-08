@@ -3,7 +3,7 @@
 @model NewOrderNewProductViewModel
 
 @{
-    ViewData["Title"] = "Place an Order - Add products";
+    ViewData["Title"] = "Składanie zamówienia – dodaj produkty";
     @if (User.IsInRole("KitchenEmployee"))
     {
         ViewBag.LowerNavPartial = "_KitchenNavPartial";
@@ -13,7 +13,7 @@
 }
 
 
-<h1>Add products to order</h1>
+<h1>Dodaj produkty do zamówienia</h1>
 <hr />
 
 
@@ -42,14 +42,14 @@
             </div>
 
             <div class="col-md-1">
-                <input type="submit" asp-action="AddOrderProduct" class="btn btn-primary" value="Add product" />
+                <input type="submit" asp-action="AddOrderProduct" class="btn btn-primary" value="Dodaj" />
             </div>
 
             <span asp-validation-for="NewProductCount" class="text-danger"></span>
         </div>
 
         <div class="form-group">
-            <input type="submit" asp-action="VerifyOrder" class="btn btn-success" value="Finish" />
+            <input type="submit" asp-action="VerifyOrder" class="btn btn-success" value="Dalej" />
         </div>
     </div>
 
@@ -82,7 +82,7 @@
 
             <hr />
             <div class="row mx-2">
-                <div class="col-md-8 text-start">Total: </div> <div class="col-md-3 text-end">@totalPrice.ToString("C2")</div>
+                <div class="col-md-8 text-start">Razem: </div> <div class="col-md-3 text-end">@totalPrice.ToString("C2")</div>
             </div>
         }
     </div>
