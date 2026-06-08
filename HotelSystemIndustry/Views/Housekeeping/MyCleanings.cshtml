@@ -1,0 +1,66 @@
+﻿@model IEnumerable<HotelSystemIndustry.Models.HousekeepingMaintenance.RoomCleaning>
+
+@{
+    ViewData["Title"] = "Moje Sprzątania";
+    ViewBag.LowerNavPartial = "_HousekeepingNavPartial";
+}
+
+<div class="container mt-4">
+    <h2>Moje Sprzątania</h2>
+    <hr />
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">Nie masz żadnych przypisanych sprzątań.</div>
+    }
+    else
+    {
+        <table class="table table-hover bg-white shadow-sm">
+            <thead class="thead-light">
+                <tr>
+                    <th>Pokój</th>
+                    <th>Piętro</th>
+                    <th>Zaplanowane na</th>
+                    <th>Status</th>
+                    <th class="text-center">Akcja</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var cleaning in Model)
+                {
+                    <tr>
+                        <td class="align-middle">Pokój @cleaning.Room.RoomNumber</td>
+                        <td class="align-middle">Piętro @cleaning.Room.Floor</td>
+                        <td class="align-middle">@cleaning.ScheduledDate.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</td>
+                        <td class="align-middle">
+                            @if (cleaning.Status == HotelSystemIndustry.Models.HousekeepingMaintenance.CleaningStatus.SCHEDULED)
+                            {
+                                <span class="badge" style="background-color:#ffc107; color:black;">Zaplanowane</span>
+                            }
+                            else if (cleaning.Status == HotelSystemIndustry.Models.HousekeepingMaintenance.CleaningStatus.IN_PROGRESS)
+                            {
+                                <span class="badge" style="background-color:#0d6efd; color:white;">W trakcie</span>
+                            }
+                            else
+                            {
+                                <span class="badge" style="background-color:#32CD32; color:white;">Zakończone</span>
+                            }
+                        </td>
+                        <td class="align-middle text-center">
+                            @if (cleaning.Status == HotelSystemIndustry.Models.HousekeepingMaintenance.CleaningStatus.SCHEDULED)
+                            {
+                                <form asp-action="StartCleaning" asp-route-id="@cleaning.Id" method="post">
+                                    <button type="submit" class="btn btn-sm btn-primary">Rozpocznij</button>
+                                </form>
+                            }
+                            else if (cleaning.Status == HotelSystemIndustry.Models.HousekeepingMaintenance.CleaningStatus.IN_PROGRESS)
+                            {
+                                <a asp-action="CompleteCleaning" asp-route-id="@cleaning.Id" class="btn btn-sm btn-success">Zakończ</a>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>

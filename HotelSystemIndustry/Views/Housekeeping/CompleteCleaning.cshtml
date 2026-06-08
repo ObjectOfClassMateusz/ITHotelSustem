@@ -1,0 +1,40 @@
+﻿@model HotelSystemIndustry.Models.HousekeepingMaintenance.RoomCleaning
+@using HotelSystemIndustry.Models.HousekeepingMaintenance
+
+@{
+    ViewData["Title"] = "Zakończ Sprzątanie";
+    ViewBag.LowerNavPartial = "_HousekeepingNavPartial";
+    var supplies = ViewBag.Supplies as List<HousekeepingSupply>;
+}
+
+<h4>Zakończ sprzątanie — Pokój @Model.Room.RoomNumber</h4>
+<hr />
+
+<form asp-action="CompleteCleaning" method="post">
+    <input type="hidden" name="cleaningId" value="@Model.Id" />
+
+    <table class="table mt-3">
+        <tr>
+            <th>Środek</th>
+            <th>Dostępna ilość</th>
+            <th>Użyta ilość</th>
+        </tr>
+        
+        @foreach (var s in supplies!)
+        {
+            <tr>
+                <td>@s.Name</td>
+                <td>@s.QuantityInStock @s.Unit</td>
+                <td>
+                    <input type="hidden" name="supplyIds" value="@s.Id" />
+                    <input type="number" name="amounts" class="form-control form-control-sm" step="0.01" min="0" max="@s.QuantityInStock" value="0" />
+                </td>
+            </tr>
+        }
+    </table>
+
+    <div class="mt-4">
+        <a asp-action="MyCleanings" class="btn btn-outline-secondary">Powrót</a>
+        <button type="submit" class="btn btn-success">Zakończ i zapisz</button>
+    </div>
+</form>

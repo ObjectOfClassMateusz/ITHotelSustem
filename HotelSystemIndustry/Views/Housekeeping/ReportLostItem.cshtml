@@ -1,0 +1,37 @@
+﻿@{
+    ViewData["Title"] = "Zgłoś Znalezisko";
+    ViewBag.LowerNavPartial = "_HousekeepingNavPartial";
+}
+
+<div class="container mt-4">
+    <div class="card shadow-sm col-md-6 mx-auto">
+        <div class="card-body p-4">
+            <h4 class="mb-3">Zgłoś znaleziony przedmiot</h4>
+            <hr />
+
+            <form asp-action="ReportLostItem" method="post">
+                <div class="form-group mb-3">
+                    <label class="control-label font-weight-bold">Pokój gdzie znaleziono</label>
+                    <select name="roomId" class="form-control" asp-items="ViewBag.RoomsSelectList">
+                        <option value="">-- Wybierz pokój --</option>
+                    </select>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label class="control-label font-weight-bold">Nazwa przedmiotu</label>
+                    <input type="text" name="name" class="form-control" placeholder="np. portfel, klucze..." />
+                </div>
+
+                <div class="form-group mb-4">
+                    <label class="control-label font-weight-bold">Opis (opcjonalnie)</label>
+                    <textarea name="description" class="form-control" rows="3" placeholder="Dodatkowy opis..."></textarea>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <a asp-action="Index" class="btn btn-outline-secondary">Powrót</a>
+                    <button type="submit" class="btn btn-primary">Zgłoś przedmiot</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

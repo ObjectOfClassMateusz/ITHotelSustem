@@ -1,0 +1,45 @@
+﻿@model IEnumerable<HotelSystemIndustry.Models.HousekeepingMaintenance.EmployeeShift>
+@{
+    ViewData["Title"] = "Zmiany";
+    ViewBag.LowerNavPartial = "_MaintenanceNavPartial";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Zmiany Pracowników</h2>
+        <a asp-action="CreateShift" class="btn btn-primary">+ Dodaj zmianę</a>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">Brak zaplanowanych zmian.</div>
+    }
+    else
+    {
+        <table class="table table-hover bg-white shadow-sm">
+            <thead class="thead-light">
+                <tr>
+                    <th>Pracownik</th>
+                    <th>Początek</th>
+                    <th>Koniec</th>
+                    <th class="text-center">Akcja</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var s in Model)
+                {
+                    <tr>
+                        <td>@s.EmployeeName</td>
+                        <td>@s.StartTime.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</td>
+                        <td>@s.EndTime.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</td>
+                        <td class="text-center">
+                            <form asp-action="DeleteShift" asp-route-id="@s.Id" method="post" style="display:inline">
+                                <button type="submit" class="btn btn-sm btn-danger">Usuń</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>

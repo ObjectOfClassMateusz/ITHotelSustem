@@ -1,0 +1,64 @@
+﻿@model IEnumerable<HotelSystemIndustry.Models.HousekeepingMaintenance.MaintenanceRequest>
+@{
+    ViewData["Title"] = "Usterki";
+    ViewBag.LowerNavPartial = "_MaintenanceNavPartial";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-3">Zgłoszenia Usterek</h2>
+    <form asp-action="MaintenanceList" method="get" class="mb-3 d-flex gap-2">
+        <select name="status" class="form-control w-auto">
+            <option value="">Wszystkie</option>
+            <option value="AWAITING_DECISION" selected="@(ViewBag.CurrentStatus == "AWAITING_DECISION")">Oczekuje</option>
+            <option value="IN_PROGRESS" selected="@(ViewBag.CurrentStatus == "IN_PROGRESS")">W trakcie</option>
+            <option value="RESOLVED" selected="@(ViewBag.CurrentStatus == "RESOLVED")">Rozwiązane</option>
+        </select>
+        <button type="submit" class="btn btn-outline-secondary">Filtruj</button>
+    </form>
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">Brak zgłoszeń.</div>
+    }
+    else
+    {
+        
+        <table class="table table-hover bg-white shadow-sm">
+            <thead class="thead-light">
+                <tr>
+                    <th>Pokój</th>
+                    <th>Opis</th>
+                    <th>Priorytet</th>
+                    <th>Status</th>
+                    <th>Data zgłoszenia</th>
+                    <th class="text-center">Akcja</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var r in Model)
+                {
+                    <tr>
+                        <td>Pokój @r.Room.RoomNumber</td>
+                        <td>@r.Description</td>
+                        <td>@r.Priority</td>
+                        <td>@r.Status</td>
+                        <td>@r.ReportedDate.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</td>
+                        <td class="text-center">
+                            <form asp-action="UpdateMaintenanceStatus" method="post" style="display:inline">
+                                <input type="hidden" name="id" value="@r.Id" />
+                                <select name="status" class="form-control form-control-sm d-inline w-auto">
+                                    <option value="0">Oczekuje</option>
+                                    <option value="1">W trakcie</option>
+                                    <option value="2">Rozwiązane</option>
+                                </select>
+                                <button type="submit" class="btn btn-sm btn-warning">Zmień</button>
+                            </form>
+                            <form asp-action="DeleteMaintenance" asp-route-id="@r.Id" method="post" style="display:inline">
+                                <button type="submit" class="btn btn-sm btn-danger">Zamknij</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>

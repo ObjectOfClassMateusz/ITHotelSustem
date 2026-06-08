@@ -30,5 +30,7 @@ namespace HotelSystemIndustry.Models.HousekeepingMaintenance
         public decimal QuantityInStock { get; set; }
         [Range(typeof(decimal), "0", "79228162514264337593543950335")]
         public decimal MinimumRequiredQuantity { get; set; }
+        public Guid HotelId { get; set; }
+        public Hotel Hotel { get; set; } = null!;
     }
 }

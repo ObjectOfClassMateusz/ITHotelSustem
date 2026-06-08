@@ -1,0 +1,34 @@
+﻿@{
+    ViewData["Title"] = "Dodaj Zmianę";
+    ViewBag.LowerNavPartial = "_MaintenanceNavPartial";
+}
+
+<div class="container mt-4">
+    <div class="card shadow-sm col-md-6 mx-auto">
+        <div class="card-body p-4">
+            <h4 class="mb-3">Zaplanuj zmianę</h4>
+            <hr />
+            
+            <form asp-action="CreateShift" method="post">
+                <div class="form-group mb-3">
+                    <label class="control-label font-weight-bold">Pracownik</label>
+                    <select name="employeeEmail" class="form-control" asp-items="ViewBag.EmployeesSelectList">
+                        <option value="">-- Wybierz pracownika --</option>
+                    </select>
+                </div>
+                <div class="form-group mb-3">
+                    <label class="control-label font-weight-bold">Początek zmiany</label>
+                    <input type="datetime-local" name="startTime" class="form-control" />
+                </div>
+                <div class="form-group mb-4">
+                    <label class="control-label font-weight-bold">Koniec zmiany</label>
+                    <input type="datetime-local" name="endTime" class="form-control" />
+                </div>
+                <div class="d-flex justify-content-between">
+                    <a asp-action="ShiftList" class="btn btn-outline-secondary">Powrót</a>
+                    <button type="submit" class="btn btn-primary">Zapisz</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

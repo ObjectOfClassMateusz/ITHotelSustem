@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace HotelSystemIndustry.Controllers.Kitchen
 {
-    [Authorize(Roles="KitchenEmployee,MaintainanceEmployee,Admin")]
+    [Authorize(Roles="KitchenEmployee,MaintenanceEmployee,Admin")]
     public class KitchenArticleController : Controller
     {
         private readonly HotelDbContext _context;

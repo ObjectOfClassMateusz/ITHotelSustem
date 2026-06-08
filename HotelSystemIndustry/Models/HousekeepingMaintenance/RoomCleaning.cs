@@ -23,6 +23,8 @@ namespace HotelSystemIndustry.Models.HousekeepingMaintenance
         public Guid RoomId { get; set; }
         [Required]
         public required Room Room { get; set; }
-        public EmployeeProfile? AssignedEmployee { get; set; }
+        public string? AssignedEmployeeName { get; set; }
+        public string? AssignedEmployeeEmail { get; set; }
+        public ICollection<SupplyUsage>? SupplyUsages { get; set; }
     }
 }

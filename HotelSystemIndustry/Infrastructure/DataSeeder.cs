@@ -1,8 +1,9 @@
+using HotelSystemIndustry.Models;
 using HotelSystemIndustry.Models.Events;
 using HotelSystemIndustry.Models.Kitchen;
+using HotelSystemIndustry.Models.Recreation;
 using HotelSystemIndustry.Models.Trading;
 using Microsoft.AspNetCore.Identity;
-using HotelSystemIndustry.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace HotelSystemIndustry.Infrastructure;
@@ -26,6 +27,7 @@ public class DataSeeder
             await SeedEvents(context);
             await SeedKitchen(context);
             await SeedTrading(context);
+            await SeedHousekeepingAndRecreation(context);
 
             await context.SaveChangesAsync();
         }
@@ -41,14 +43,16 @@ public class DataSeeder
         await AddRoleAsync(roleManager, "Admin");
         await AddRoleAsync(roleManager, "HotelEmployee");
         await AddRoleAsync(roleManager, "KitchenEmployee");
-        await AddRoleAsync(roleManager, "MaintainanceEmployee");
+        await AddRoleAsync(roleManager, "MaintenanceEmployee");
+        await AddRoleAsync(roleManager, "HousekeepingEmployee");
         await AddRoleAsync(roleManager, "TradingEmployee");
         await AddRoleAsync(roleManager, "RecreationEmployee");
 
         await AddUserAsync(userManager, "admin@admin.com", "Właściciel Hotelu", "admin123$N", "Admin");
         await AddUserAsync(userManager, "hotellady@hotel.com", "Anna Machelska", "admin123$N", "HotelEmployee");
         await AddUserAsync(userManager, "kitchenlady@kitchen.com", "Anna Niedzielska", "admin123$N", "KitchenEmployee");
-        await AddUserAsync(userManager, "maintainanceguy@maintainance.com", "Marek Niedzielski", "admin123$N", "MaintainanceEmployee");
+        await AddUserAsync(userManager, "maintenanceguy@maintenance.com", "Marek Niedzielski", "admin123$N", "MaintenanceEmployee");
+        await AddUserAsync(userManager, "housekeepinglady@housekeeping.com", "Zofia Kowalska", "admin123$N", "HousekeepingEmployee");
         await AddUserAsync(userManager, "tradingperson@trading.com", "Orestes Niedzielski", "admin123$N", "TradingEmployee");
         await AddUserAsync(userManager, "recreationguy@recreation.com", "Sławomir Niedzielski", "admin123$N", "RecreationEmployee");
 
@@ -57,7 +61,7 @@ public class DataSeeder
         if (malwiech != null)
         {
             await userManager.AddToRoleAsync(malwiech, "KitchenEmployee");
-            await userManager.AddToRoleAsync(malwiech, "MaintainanceEmployee");
+            await userManager.AddToRoleAsync(malwiech, "MaintenanceEmployee");
             await userManager.AddToRoleAsync(malwiech, "TradingEmployee");
             await userManager.AddToRoleAsync(malwiech, "RecreationEmployee");
         }
@@ -1185,6 +1189,58 @@ public class DataSeeder
         if (context.Phones.Count() == 0)
         {
             context.Phones.Add(phone);
+            await context.SaveChangesAsync();
+        }
+    }
+    private static async Task SeedHousekeepingAndRecreation(HotelDbContext context)
+    {
+        var hotel = await context.Hotels.FirstOrDefaultAsync(h => h.Name == "Hotel Alfa Dominicana");
+        if (hotel == null)
+            hotel = await context.Hotels.FirstOrDefaultAsync();
+        if (hotel == null)
+            throw new Exception("Błąd przy seedowaniu: nie znaleziono żadnego hotelu!");
+
+        if (!await context.Guests.AnyAsync())
+        {
+            context.Guests.Add(new Guest
+            {
+                Id = Guid.NewGuid(),
+                FirstName = "Jan",
+                LastName = "Kowalski",
+                HotelId = hotel.Id
+            });
+            context.Guests.Add(new Guest
+            {
+                Id = Guid.NewGuid(),
+                FirstName = "Maria",
+                LastName = "Nowak",
+                HotelId = hotel.Id
+            });
+
+            await context.SaveChangesAsync();
+        }
+
+        if (!await context.RecreationFacilities.AnyAsync())
+        {
+            context.RecreationFacilities.Add(new RecreationFacility
+            {
+                Id = Guid.NewGuid(),
+                Name = "Swimming Pool",
+                Description = "Outdoor swimming pool",
+                MaxCapacity = 20,
+                PricePerHour = 15.00m,
+                HotelId = hotel.Id
+            });
+            context.RecreationFacilities.Add(new RecreationFacility
+            {
+                Id = Guid.NewGuid(),
+                Name = "Tennis Court",
+                Description = "Indoor tennis court",
+                MaxCapacity = 4,
+                PricePerHour = 30.00m,
+                HotelId = hotel.Id
+            });
+
             await context.SaveChangesAsync();
         }
     }

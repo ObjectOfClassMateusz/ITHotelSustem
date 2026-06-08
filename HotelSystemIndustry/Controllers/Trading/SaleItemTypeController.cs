@@ -45,7 +45,7 @@ namespace HotelSystemIndustry.Controllers.Trading
         }
 
         // GET: SaleItemType/Create
-        [Authorize(Roles = "Admin,TradingEmployee,MaintainanceEmployee")]
+        [Authorize(Roles = "Admin,TradingEmployee,MaintenanceEmployee")]
         public IActionResult Create()
         {
             return View();
@@ -56,7 +56,7 @@ namespace HotelSystemIndustry.Controllers.Trading
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin,TradingEmployee,MaintainanceEmployee")]
+        [Authorize(Roles = "Admin,TradingEmployee,MaintenanceEmployee")]
         public async Task<IActionResult> Create([Bind("Id,Name,Value,IsActive,Description")] SaleItemType saleItemType)
         {
             if (ModelState.IsValid)
@@ -70,7 +70,7 @@ namespace HotelSystemIndustry.Controllers.Trading
         }
 
         // GET: SaleItemType/Edit/5
-        [Authorize(Roles = "Admin,TradingEmployee,MaintainanceEmployee")]
+        [Authorize(Roles = "Admin,TradingEmployee,MaintenanceEmployee")]
         public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null)
@@ -91,7 +91,7 @@ namespace HotelSystemIndustry.Controllers.Trading
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin,TradingEmployee,MaintainanceEmployee")]
+        [Authorize(Roles = "Admin,TradingEmployee,MaintenanceEmployee")]
         public async Task<IActionResult> Edit(Guid id, [Bind("Id,Name,Value,IsActive,Description")] SaleItemType saleItemType)
         {
             if (id != saleItemType.Id)
@@ -123,7 +123,7 @@ namespace HotelSystemIndustry.Controllers.Trading
         }
 
         // GET: SaleItemType/Delete/5
-        [Authorize(Roles = "Admin,TradingEmployee,MaintainanceEmployee")]
+        [Authorize(Roles = "Admin,TradingEmployee,MaintenanceEmployee")]
         public async Task<IActionResult> Delete(Guid? id)
         {
             if (id == null)
@@ -144,7 +144,7 @@ namespace HotelSystemIndustry.Controllers.Trading
         // POST: SaleItemType/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin,TradingEmployee,MaintainanceEmployee")]
+        [Authorize(Roles = "Admin,TradingEmployee,MaintenanceEmployee")]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
             var saleItemType = await _context.SaleItemTypes.FindAsync(id);

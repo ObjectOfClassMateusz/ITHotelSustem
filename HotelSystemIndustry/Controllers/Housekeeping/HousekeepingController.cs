@@ -1,0 +1,233 @@
+﻿using HotelSystemIndustry.Controllers;
+using HotelSystemIndustry.Infrastructure;
+using HotelSystemIndustry.Models;
+using HotelSystemIndustry.Models.HousekeepingMaintenance;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+
+namespace HotelSystemIndustry.Controllers.Housekeeping
+{
+    [Authorize(Roles = "HousekeepingEmployee")]
+    public class HousekeepingController : Controller
+    {
+        private readonly HotelDbContext _context;
+        private readonly UserManager<User> _userManager;
+
+        public HousekeepingController(HotelDbContext context, UserManager<User> userManager)
+        {
+            _context = context;
+            _userManager = userManager;
+        }
+
+        private async Task<User?> GetCurrentUser()
+        {
+            return await _userManager.GetUserAsync(User);
+        }
+
+        private async Task<Guid> GetCurrentHotelId()
+        {
+            HotelChangeController hotelChangeController = new HotelChangeController(_context)
+            {
+                ControllerContext = this.ControllerContext
+            };
+            return await hotelChangeController.GetCurrentHotel();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Index()
+        {
+            var user = await GetCurrentUser();
+            Guid currentHotelId = await GetCurrentHotelId();
+
+            ViewBag.HotelChangePartialHotelList = new SelectList(_context.Hotels, "Id", "Name", currentHotelId);
+
+            var myCleanings = await _context.RoomCleanings
+                .Include(rc => rc.Room)
+                .Where(rc => rc.AssignedEmployeeEmail == user!.Email &&
+                             rc.Room.HotelId == currentHotelId &&
+                             rc.ScheduledDate.Date == DateTime.Now.ToUniversalTime().Date &&
+                             rc.Status != CleaningStatus.COMPLETED)
+                .OrderBy(rc => rc.ScheduledDate)
+                .ToListAsync();
+
+            ViewBag.EmployeeName = user?.FullName;
+            ViewBag.MyCleanings = myCleanings;
+
+            return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> MyCleanings()
+        {
+            var user = await GetCurrentUser();
+            Guid currentHotelId = await GetCurrentHotelId();
+
+            var cleanings = await _context.RoomCleanings
+                .Include(rc => rc.Room)
+                .Where(rc => rc.AssignedEmployeeEmail == user!.Email && rc.Room.HotelId == currentHotelId)
+                .OrderByDescending(rc => rc.ScheduledDate)
+                .ToListAsync();
+
+            return View(cleanings);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> StartCleaning(Guid id)
+        {
+            var cleaning = await _context.RoomCleanings.FindAsync(id);
+            if (cleaning == null) return NotFound();
+
+            cleaning.Status = CleaningStatus.IN_PROGRESS;
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(MyCleanings));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> CompleteCleaning(Guid id)
+        {
+            var cleaning = await _context.RoomCleanings
+                .Include(rc => rc.Room)
+                .FirstOrDefaultAsync(rc => rc.Id == id);
+
+            if (cleaning == null) return NotFound();
+
+            Guid currentHotelId = await GetCurrentHotelId();
+
+            var supplies = await _context.HousekeepingSupplies
+                .AsNoTracking()
+                .Where(s => s.HotelId == currentHotelId && s.QuantityInStock > 0)
+                .ToListAsync();
+
+            ViewBag.Supplies = supplies;
+            return View(cleaning);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CompleteCleaning(Guid cleaningId, List<Guid> supplyIds, List<decimal> amounts)
+        {
+            var cleaning = await _context.RoomCleanings
+                .Include(rc => rc.Room)
+                .FirstOrDefaultAsync(rc => rc.Id == cleaningId);
+
+            if (cleaning == null) return NotFound();
+
+            for (int i = 0; i < supplyIds.Count; i++)
+            {
+                if (amounts[i] <= 0) continue;
+
+                var supply = await _context.HousekeepingSupplies.FindAsync(supplyIds[i]);
+                if (supply == null) continue;
+
+                _context.SupplyUsages.Add(new SupplyUsage
+                {
+                    Id = Guid.NewGuid(),
+                    RoomCleaning = cleaning,
+                    Supply = supply,
+                    AmountUsed = amounts[i]
+                });
+
+                supply.QuantityInStock -= amounts[i];
+            }
+
+            cleaning.Status = CleaningStatus.COMPLETED;
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(MyCleanings));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ReportMaintenance()
+        {
+            Guid currentHotelId = await GetCurrentHotelId();
+
+            var rooms = await _context.Rooms
+                .Where(r => r.HotelId == currentHotelId)
+                .AsNoTracking().ToListAsync();
+            ViewBag.RoomsSelectList = new SelectList(rooms, "Id", "RoomNumber");
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ReportMaintenance(Guid roomId, string description, MaintenancePriority priority)
+        {
+            var room = await _context.Rooms.FindAsync(roomId);
+            if (room == null) return NotFound();
+
+            var request = new MaintenanceRequest
+            {
+                Id = Guid.NewGuid(),
+                RoomId = roomId,
+                Room = room,
+                Description = description,
+                Priority = priority,
+                Status = MaintenanceStatus.AWAITING_DECISION,
+                ReportedDate = DateTime.UtcNow
+            };
+
+            _context.MaintenanceRequests.Add(request);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ReportLostItem()
+        {
+            Guid currentHotelId = await GetCurrentHotelId();
+
+            var rooms = await _context.Rooms
+                .Where(r => r.HotelId == currentHotelId)
+                .AsNoTracking().ToListAsync();
+            ViewBag.RoomsSelectList = new SelectList(rooms, "Id", "RoomNumber");
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ReportLostItem(Guid roomId, string name, string? description)
+        {
+            var user = await GetCurrentUser();
+            var room = await _context.Rooms.FindAsync(roomId);
+
+            if (room == null) return NotFound();
+
+            var item = new LostAndFoundItem
+            {
+                Id = Guid.NewGuid(),
+                Name = name,
+                Description = description,
+                FoundDate = DateTime.UtcNow,
+                Status = LostAndFoundStatus.IN_STORAGE,
+                RoomId = roomId,
+                Room = room,
+                FoundByEmployeeName = user?.FullName ?? user?.Email ?? ""
+            };
+
+            _context.LostAndFoundItems.Add(item);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> MyShifts()
+        {
+            var user = await GetCurrentUser();
+            Guid currentHotelId = await GetCurrentHotelId();
+
+            var shifts = await _context.EmployeeShifts
+                .Where(s => s.EmployeeEmail == user!.Email && s.HotelId == currentHotelId &&
+                            s.EndTime > DateTime.UtcNow)
+                .OrderBy(s => s.StartTime)
+                .ToListAsync();
+
+            return View(shifts);
+        }
+    }
+}

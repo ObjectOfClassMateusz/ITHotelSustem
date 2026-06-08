@@ -1,0 +1,116 @@
+@{
+    ViewData["Title"] = "Dashboard";
+    ViewBag.LowerNavPartial = "_MaintenanceNavPartial";
+}
+
+<div class="container mt-4">
+    <h2>Panel Maintenance</h2>
+    <hr />
+
+    <div class="row">
+        <div class="col-md-6">
+            <h5>Usterki czekające na decyzję</h5>
+            @if (ViewBag.PendingRequests == null || ((List<HotelSystemIndustry.Models.HousekeepingMaintenance.MaintenanceRequest>)ViewBag.PendingRequests).Count == 0)
+            {
+                <div class="alert alert-success">Brak oczekujących zgłoszeń.</div>
+            }
+            else
+            {
+                <table class="table table-hover bg-white shadow-sm">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Pokój</th>
+                            <th>Priorytet</th>
+                            <th>Opis</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var r in (List<HotelSystemIndustry.Models.HousekeepingMaintenance.MaintenanceRequest>)ViewBag.PendingRequests)
+                        {
+                            <tr>
+                                <td>Pokój @r.Room.RoomNumber</td>
+                                <td>
+                                    @if (r.Priority == HotelSystemIndustry.Models.HousekeepingMaintenance.MaintenancePriority.HIGH)
+                                    {
+                                        <span class="badge" style="background-color:#dc3545; color:white;">Wysoki</span>
+                                    }
+                                    else if (r.Priority == HotelSystemIndustry.Models.HousekeepingMaintenance.MaintenancePriority.MEDIUM)
+                                    {
+                                        <span class="badge" style="background-color:#ffc107; color:black;">Średni</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge" style="background-color:#6c757d; color:white;">Niski</span>
+                                    }
+                                </td>
+                                <td>@r.Description</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+
+        <div class="col-md-6">
+            <h5>Środki poniżej minimum</h5>
+            @if (ViewBag.LowSupplies == null || ((List<HotelSystemIndustry.Models.HousekeepingMaintenance.HousekeepingSupply>)ViewBag.LowSupplies).Count == 0)
+            {
+                <div class="alert alert-success">Wszystkie środki w normie.</div>
+            }
+            else
+            {
+                <table class="table table-hover bg-white shadow-sm">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Nazwa</th>
+                            <th>Stan</th>
+                            <th>Minimum</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var s in (List<HotelSystemIndustry.Models.HousekeepingMaintenance.HousekeepingSupply>)ViewBag.LowSupplies)
+                        {
+                            <tr class="table-danger">
+                                <td>@s.Name</td>
+                                <td>@s.QuantityInStock</td>
+                                <td>@s.MinimumRequiredQuantity</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
+    <hr />
+    <form id="hotelchangeform" class="form-group row my-4 justify-content-center">
+        <div class="col-md-1">
+            <label class="control-label" for="hotelid">Hotel:</label>
+        </div>
+        <div class="col-md-4">
+            <select asp-items="ViewBag.HotelChangePartialHotelList" name="hotelid" id="hotelid" class="form-control"></select>
+        </div>
+    </form>
+
+    @section Scripts {
+        <script type="text/javascript">
+                $(document).ready(function () {
+                    $("#hotelid").change(function (e) {
+                        e.preventDefault();
+                        let data = new FormData();
+                        data.append("hotelid", $("#hotelid").val());
+                        $.ajax({
+                            url: '/HotelChange/ChangeHotel',
+                            type: "POST",
+                            processData: false,
+                            data: data,
+                            dataType: 'json',
+                            contentType: false,
+                            success: function (response) {location.reload();},
+                            error: function (er) { console.log(er); }
+                        });
+                        return false;
+                    });
+                });
+        </script>
+    }
+</div>

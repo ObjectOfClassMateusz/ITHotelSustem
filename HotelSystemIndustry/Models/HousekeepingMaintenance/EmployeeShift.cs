@@ -7,10 +7,13 @@ namespace HotelSystemIndustry.Models.HousekeepingMaintenance
         [Key]
         public Guid Id { get; set; }
 
-        public required EmployeeProfile Employee { get; set; }
+        public required string EmployeeName { get; set; }
+        public required string EmployeeEmail { get; set; }
         [DataType(DataType.DateTime)]
         public DateTime StartTime { get; set; }
         [DataType(DataType.DateTime)]
         public DateTime EndTime { get; set; }
+        public Guid HotelId { get; set; }
+        public Hotel Hotel { get; set; } = null!;
     }
 }
