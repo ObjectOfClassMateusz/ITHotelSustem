@@ -1,16 +1,18 @@
-﻿a.asp-link {
+﻿a.asp-link 
+{
     border: 4px ridge #d4c281;
     transition: background-color 0.7s, color 0.7s , border 0.7s;
     text-decoration: none;
     background-color: wheat;
-    padding: 4px;
+    padding: 0px;
     color: black;
 }
 
-    a.asp-link:hover {
+a.asp-link:hover 
+{
         background-color: #c6a758;
         color: wheat !important;
         border: 4px ridge black;
-    }
+}
 
 

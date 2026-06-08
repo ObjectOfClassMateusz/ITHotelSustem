@@ -22,32 +22,32 @@ namespace HotelSystemIndustry.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("EventHallEventReservation", b =>
+            modelBuilder.Entity("EquipmentInstanceEventReservation", b =>
                 {
-                    b.Property<Guid>("EventHallsId")
+                    b.Property<Guid>("EquipmentId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("EventReservationsId")
+                    b.Property<Guid>("EventReservationId")
                         .HasColumnType("uuid");
 
-                    b.HasKey("EventHallsId", "EventReservationsId");
+                    b.HasKey("EquipmentId", "EventReservationId");
 
-                    b.HasIndex("EventReservationsId");
+                    b.HasIndex("EventReservationId");
 
                     b.ToTable("EventHallEventReservation", (string)null);
                 });
 
-            modelBuilder.Entity("EventReservationRoom", b =>
+            modelBuilder.Entity("EventHallEventReservation", b =>
                 {
                     b.Property<Guid>("EventReservationsId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("RoomsId")
+                    b.Property<Guid>("HallsId")
                         .HasColumnType("uuid");
 
-                    b.HasKey("EventReservationsId", "RoomsId");
+                    b.HasKey("EventReservationsId", "HallsId");
 
-                    b.HasIndex("RoomsId");
+                    b.HasIndex("HallsId");
 
                     b.ToTable("EventReservationRoom", (string)null);
                 });
@@ -227,9 +227,6 @@ namespace HotelSystemIndustry.Migrations
                     b.Property<Guid>("EventHallId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("EventReservationId")
-                        .HasColumnType("uuid");
-
                     b.Property<decimal>("ReservationPrice")
                         .HasColumnType("numeric");
 
@@ -278,6 +275,9 @@ namespace HotelSystemIndustry.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<Guid>("HotelId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(30)
@@ -300,17 +300,29 @@ namespace HotelSystemIndustry.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<string>("AgreementDocumentPath")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<DateTime>("EndTime")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("EventTypeId")
                         .HasColumnType("uuid");
 
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)");
+
                     b.Property<long>("NumGuests")
                         .HasColumnType("bigint");
 
                     b.Property<long>("NumRequiredStaff")
                         .HasColumnType("bigint");
+
+                    b.Property<Guid?>("RoomId")
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("StartTime")
                         .HasColumnType("timestamp with time zone");
@@ -321,6 +333,8 @@ namespace HotelSystemIndustry.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("EventTypeId");
+
+                    b.HasIndex("RoomId");
 
                     b.HasIndex("StatusId");
 
@@ -689,9 +703,6 @@ namespace HotelSystemIndustry.Migrations
                     b.Property<bool>("ContainsAlcohol")
                         .HasColumnType("boolean");
 
-                    b.Property<Guid?>("EventReservationId")
-                        .HasColumnType("uuid");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(30)
@@ -757,6 +768,9 @@ namespace HotelSystemIndustry.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
+                    b.Property<Guid>("HotelId")
+                        .HasColumnType("uuid");
+
                     b.Property<DateTime?>("RealisedTime")
                         .HasColumnType("timestamp with time zone");
 
@@ -767,6 +781,8 @@ namespace HotelSystemIndustry.Migrations
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("HotelId");
 
                     b.HasIndex("TypeId");
 
@@ -823,6 +839,9 @@ namespace HotelSystemIndustry.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("HotelId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Location")
@@ -1056,7 +1075,7 @@ namespace HotelSystemIndustry.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("ShopPointId")
+                    b.Property<Guid>("ShopPointId")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("TransactionDate")
@@ -1199,6 +1218,9 @@ namespace HotelSystemIndustry.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<Guid>("HotelId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("Location")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -1213,6 +1235,9 @@ namespace HotelSystemIndustry.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("HotelId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Location")
@@ -1381,33 +1406,33 @@ namespace HotelSystemIndustry.Migrations
                     b.ToTable("SupplyUsages", (string)null);
                 });
 
-            modelBuilder.Entity("EventHallEventReservation", b =>
+            modelBuilder.Entity("EquipmentInstanceEventReservation", b =>
                 {
-                    b.HasOne("HotelSystemIndustry.Models.Events.EventHall", null)
+                    b.HasOne("HotelSystemIndustry.Models.Events.EquipmentInstance", null)
                         .WithMany()
-                        .HasForeignKey("EventHallsId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasForeignKey("EquipmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("HotelSystemIndustry.Models.Events.EventReservation", null)
                         .WithMany()
-                        .HasForeignKey("EventReservationsId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasForeignKey("EventReservationId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("EventReservationRoom", b =>
+            modelBuilder.Entity("EventHallEventReservation", b =>
                 {
                     b.HasOne("HotelSystemIndustry.Models.Events.EventReservation", null)
                         .WithMany()
                         .HasForeignKey("EventReservationsId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("HotelSystemIndustry.Models.Room", null)
+                    b.HasOne("HotelSystemIndustry.Models.Events.EventHall", null)
                         .WithMany()
-                        .HasForeignKey("RoomsId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasForeignKey("HallsId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
@@ -1462,13 +1487,20 @@ namespace HotelSystemIndustry.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("HotelSystemIndustry.Models.Events.EventReservation", null)
-                        .WithMany("Equipment")
-                        .HasForeignKey("EventReservationId");
-
                     b.Navigation("Equipment");
 
                     b.Navigation("EventHall");
+                });
+
+            modelBuilder.Entity("HotelSystemIndustry.Models.Events.EventHall", b =>
+                {
+                    b.HasOne("HotelSystemIndustry.Models.Hotel", "Hotel")
+                        .WithMany()
+                        .HasForeignKey("HotelId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Hotel");
                 });
 
             modelBuilder.Entity("HotelSystemIndustry.Models.Events.EventReservation", b =>
@@ -1478,6 +1510,10 @@ namespace HotelSystemIndustry.Migrations
                         .HasForeignKey("EventTypeId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("HotelSystemIndustry.Models.Room", null)
+                        .WithMany("EventReservations")
+                        .HasForeignKey("RoomId");
 
                     b.HasOne("HotelSystemIndustry.Models.Events.EventReservationStatus", "Status")
                         .WithMany()
@@ -1600,13 +1636,6 @@ namespace HotelSystemIndustry.Migrations
                     b.Navigation("Type");
                 });
 
-            modelBuilder.Entity("HotelSystemIndustry.Models.Kitchen.KitchenProduct", b =>
-                {
-                    b.HasOne("HotelSystemIndustry.Models.Events.EventReservation", null)
-                        .WithMany("Food")
-                        .HasForeignKey("EventReservationId");
-                });
-
             modelBuilder.Entity("HotelSystemIndustry.Models.Kitchen.KitchenRecipe", b =>
                 {
                     b.HasOne("HotelSystemIndustry.Models.Kitchen.KitchenProduct", "OutcomeProduct")
@@ -1639,11 +1668,19 @@ namespace HotelSystemIndustry.Migrations
 
             modelBuilder.Entity("HotelSystemIndustry.Models.Kitchen.Order", b =>
                 {
+                    b.HasOne("HotelSystemIndustry.Models.Hotel", "Hotel")
+                        .WithMany()
+                        .HasForeignKey("HotelId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("HotelSystemIndustry.Models.Kitchen.OrderType", "Type")
                         .WithMany()
                         .HasForeignKey("TypeId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("Hotel");
 
                     b.Navigation("Type");
                 });
@@ -1665,6 +1702,17 @@ namespace HotelSystemIndustry.Migrations
                     b.Navigation("Order");
 
                     b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("HotelSystemIndustry.Models.Kitchen.Storage", b =>
+                {
+                    b.HasOne("HotelSystemIndustry.Models.Hotel", "Hotel")
+                        .WithMany()
+                        .HasForeignKey("HotelId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Hotel");
                 });
 
             modelBuilder.Entity("HotelSystemIndustry.Models.Payment", b =>
@@ -1808,6 +1856,28 @@ namespace HotelSystemIndustry.Migrations
                     b.Navigation("Magazine");
                 });
 
+            modelBuilder.Entity("HotelSystemIndustry.Models.Trading.ShopMagazine", b =>
+                {
+                    b.HasOne("HotelSystemIndustry.Models.Hotel", "Hotel")
+                        .WithMany()
+                        .HasForeignKey("HotelId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Hotel");
+                });
+
+            modelBuilder.Entity("HotelSystemIndustry.Models.Trading.ShopPoint", b =>
+                {
+                    b.HasOne("HotelSystemIndustry.Models.Hotel", "Hotel")
+                        .WithMany()
+                        .HasForeignKey("HotelId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Hotel");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -1883,13 +1953,6 @@ namespace HotelSystemIndustry.Migrations
                     b.Navigation("Equipment");
                 });
 
-            modelBuilder.Entity("HotelSystemIndustry.Models.Events.EventReservation", b =>
-                {
-                    b.Navigation("Equipment");
-
-                    b.Navigation("Food");
-                });
-
             modelBuilder.Entity("HotelSystemIndustry.Models.Guest", b =>
                 {
                     b.Navigation("RecreationBookings");
@@ -1951,6 +2014,8 @@ namespace HotelSystemIndustry.Migrations
             modelBuilder.Entity("HotelSystemIndustry.Models.Room", b =>
                 {
                     b.Navigation("Cleanings");
+
+                    b.Navigation("EventReservations");
 
                     b.Navigation("FoundItems");
 

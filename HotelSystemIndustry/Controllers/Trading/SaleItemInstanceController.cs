@@ -23,7 +23,12 @@ namespace HotelSystemIndustry.Controllers.Trading
         // GET: SaleItemInstance
         public async Task<IActionResult> Index()
         {
-            var hotelDbContext = _context.SaleItemInstances.Include(s => s.Item).Include(s => s.Magazine);
+            var hotelId = await GetCurrentHotelId();
+
+            var hotelDbContext = _context.SaleItemInstances
+                .Include(s => s.Item)
+                .Include(s => s.Magazine)
+                .Where(s => s.Magazine!.HotelId == hotelId);
             return View(await hotelDbContext.ToListAsync());
         }
 
@@ -185,6 +190,16 @@ namespace HotelSystemIndustry.Controllers.Trading
         private bool SaleItemInstanceExists(Guid id)
         {
             return _context.SaleItemInstances.Any(e => e.Id == id);
+        }
+
+
+        private async Task<Guid> GetCurrentHotelId()
+        {
+            HotelChangeController hotelChangeController = new HotelChangeController(_context)
+            {
+                ControllerContext = this.ControllerContext
+            };
+            return await hotelChangeController.GetCurrentHotel();
         }
     }
 }

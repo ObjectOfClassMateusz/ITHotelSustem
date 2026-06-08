@@ -22,7 +22,6 @@ body {
     color: var(--ink);
 }
 
-/* ── Page wrapper ──────────────────────── */
 .account-page {
     min-height: 80vh;
     display: flex;
@@ -54,7 +53,6 @@ body {
     }
 }
 
-/* ── Card header ───────────────────────── */
 .account-header {
     background: var(--dark);
     padding: 2.25rem 2.25rem 2rem;
@@ -72,7 +70,6 @@ body {
         background: repeating-linear-gradient( 135deg, transparent 0, transparent 20px, rgba(255,255,255,0.015) 20px, rgba(255,255,255,0.015) 21px );
     }
 
-/* Avatar circle */
 .avatar {
     width: 64px;
     height: 64px;

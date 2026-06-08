@@ -1,6 +1,9 @@
 ﻿@model HotelSystemIndustry.Models.Hotel
+@using HotelSystemIndustry.Models
 @{
     ViewData["Title"] = "Edytuj — " + Model.Name;
+    var rooms = Model.Rooms?.OrderBy(r => r.Floor).ThenBy(r => r.RoomNumber).ToList()
+                ?? new List<Room>();    
 }
 
 <style>
@@ -424,7 +427,6 @@
         font-style: italic;
     }
 
-    /* ─── ANIMATIONS ──────────────────────── */
     @@keyframes slideDown {
         from {
             opacity: 0;
@@ -450,7 +452,145 @@
             display: none;
         }
     }
+
+    /* Delete confirm modal */
+    .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 200;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s;
+    }
+
+        .modal-overlay.open {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+    .modal-box {
+        background: var(--surface);
+        border: 1px solid var(--rule);
+        border-radius: 4px;
+        padding: 2rem 2.25rem;
+        max-width: 380px;
+        width: 90%;
+        box-shadow: 0 16px 48px rgba(0,0,0,0.2);
+        transform: scale(0.95);
+        transition: transform 0.2s;
+    }
+
+    .modal-overlay.open .modal-box {
+        transform: scale(1);
+    }
+
+    .modal-title {
+        font-family: 'Libre Baskerville', serif;
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        color: var(--ink);
+    }
+
+    .modal-desc {
+        font-size: 0.85rem;
+        color: var(--muted);
+        margin-bottom: 1.5rem;
+        line-height: 1.6;
+    }
+
+    .modal-actions {
+        display: flex;
+        gap: 0.75rem;
+        justify-content: flex-end;
+    }
+
+    .btn-modal-cancel {
+        background: none;
+        border: 1px solid var(--rule);
+        color: var(--muted);
+        padding: 0.55rem 1.25rem;
+        border-radius: 2px;
+        cursor: pointer;
+        font-family: 'Outfit', sans-serif;
+        font-size: 0.78rem;
+        transition: color 0.15s, border-color 0.15s;
+    }
+
+        .btn-modal-cancel:hover {
+            color: var(--ink);
+            border-color: var(--ink);
+        }
+
+    .btn-modal-confirm {
+        background: var(--danger);
+        border: none;
+        color: #fff;
+        padding: 0.55rem 1.25rem;
+        border-radius: 2px;
+        cursor: pointer;
+        font-family: 'Outfit', sans-serif;
+        font-size: 0.78rem;
+        font-weight: 600;
+        transition: background 0.15s;
+    }
+
+        .btn-modal-confirm:hover {
+            background: #8f2020;
+        }
+
+    @@keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-12px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@media (max-width: 620px) {
+        .field-row {
+            grid-template-columns: 1fr;
+        }
+
+        .edit-card {
+            padding: 1.5rem 1.25rem;
+        }
+
+        .topbar-title {
+            display: none;
+        }
+
+        .rooms-table th:nth-child(3),
+        .rooms-table td:nth-child(3),
+        .rooms-table th:nth-child(4),
+        .rooms-table td:nth-child(4) {
+            display: none;
+        }
+    }
 </style>
+
+<div class="modal-overlay" id="deleteModal">
+    <div class="modal-box">
+        <div class="modal-title">Usuń pokój</div>
+        <p class="modal-desc">
+            Czy na pewno chcesz usunąć pokój <strong id="modalRoomNum"></strong>?
+            Tej operacji nie można cofnąć.
+        </p>
+        <div class="modal-actions">
+            <button type="button" class="btn-modal-cancel" onclick="closeModal()">Anuluj</button>
+            <button type="button" class="btn-modal-confirm" id="modalConfirmBtn">Usuń pokój</button>
+        </div>
+    </div>
+</div>
+
 
 <div class="edit-topbar">
     <div class="topbar-brand">Hotel System Industry</div>
@@ -470,6 +610,7 @@
     {
         @Html.AntiForgeryToken()
         @Html.HiddenFor(m => m.Id)
+
         <div class="tab-nav">
             <button type="button" class="tab-btn active" onclick="switchTab('hotel', this)">
                 🏨 Hotel
@@ -479,6 +620,9 @@
             </button>
             <button type="button" class="tab-btn" onclick="switchTab('phones', this)">
                 ☎ Telefony <span class="tab-count" id="phoneCount">@Model.PhoneNumbers.Count</span>
+            </button>
+            <button type="button" class="tab-btn" onclick="switchTab('rooms', this)">
+                🛏 Pokoje <span class="tab-count">@rooms.Count</span>
             </button>
         </div>
 
@@ -491,13 +635,11 @@
                     @Html.TextBoxFor(m => m.Name, new { @class = "form-control", placeholder = "np. Hotel Royal" })
                     @Html.ValidationMessageFor(m => m.Name)
                 </div>
-
                 <div class="field">
                     @Html.LabelFor(m => m.Email, "Adres e-mail")
                     @Html.TextBoxFor(m => m.Email, new { @class = "form-control", type = "email", placeholder = "kontakt@hotel.pl" })
                     @Html.ValidationMessageFor(m => m.Email)
                 </div>
-
                 <div class="field">
                     @Html.LabelFor(m => m.Description, "Opis hotelu")
                     @Html.TextAreaFor(m => m.Description, new { @class = "form-control", placeholder = "Opis oferty, udogodnień..." })
@@ -515,7 +657,6 @@
                     @Html.TextBoxFor(m => m.Address.Street, new { @class = "form-control", placeholder = "ul. Marszałkowska 10" })
                     @Html.ValidationMessageFor(m => m.Address.Street)
                 </div>
-
                 <div class="field-row">
                     <div class="field">
                         @Html.LabelFor(m => m.Address.City, "Miasto")
@@ -528,7 +669,6 @@
                         @Html.ValidationMessageFor(m => m.Address.PostalCode)
                     </div>
                 </div>
-
                 <div class="field">
                     @Html.LabelFor(m => m.Address.Country, "Kraj")
                     @Html.TextBoxFor(m => m.Address.Country, new { @class = "form-control", placeholder = "Polska" })
@@ -549,10 +689,8 @@
                     {
                         <div class="phone-entry">
                             <input type="hidden" name="PhoneNumbers[@pi].Id" value="@phone.Id" />
-                            <input type="text"
-                                   name="PhoneNumbers[@pi].PhoneNumber"
-                                   value="@phone.PhoneNumber"
-                                   placeholder="+48 22 000 00 00" />
+                            <input type="text" name="PhoneNumbers[@pi].PhoneNumber"
+                                   value="@phone.PhoneNumber" placeholder="+48 22 000 00 00" />
                             <button type="button" class="btn-rm" onclick="removePhone(this)" title="Usuń">&#215;</button>
                         </div>
                         pi++;
@@ -570,46 +708,106 @@
                 <p class="phone-hint">Istniejące numery zostaną zastąpione po zapisaniu.</p>
             </div>
         </div>
-
+        <!--###-->
+        <div class="tab-panel" id="panel-rooms">
+            <div class="edit-card">
+                <div class="card-section-title">
+                    <span>Pokoje hotelu (@rooms.Count)</span>
+                </div>
+                @if (!rooms.Any())
+                {
+                    <div class="rooms-empty">Brak pokoi. Kliknij „Dodaj pokój" aby dodać pierwszy.</div>
+                }
+                else
+                {
+                    <table class="rooms-table">
+                        <thead>
+                            <tr>
+                                <th style="padding:2px; margin: 0px 4px;">Nr</th>
+                                <th style="padding:2px; margin: 0px 4px;">Typ</th>
+                                <th style="padding:2px; margin: 0px 4px;">Piętro</th>
+                                <th style="padding:2px; margin: 0px 4px;">Pojemność</th>
+                                <th style="padding:2px; margin: 0px 4px;">Cena / noc</th>
+                                <th style="padding:2px; margin: 0px 4px;">Status</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <hr/>
+                        <tbody>
+                            @foreach (var room in rooms)
+                            {
+                                <tr>
+                                    <td><span class="room-num-badge">#@room.RoomNumber</span></td>
+                                    <td><span class="room-type-chip">@room.RoomType.ToString()</span></td>
+                                    <td>@room.Floor. piętro</td>
+                                    <td>@room.Capacity os.</td>
+                                    <td>@room.BasePricePerNight.ToString("C")</td>
+                                    <td>
+                                        @if (room.Renovation)
+                                        {
+                                            <span class="reno-chip">Remont</span>
+                                        }
+                                        else
+                                        {
+                                            <span style="font-size:0.75rem;color:var(--success);font-weight:600;">✓ Dostępny</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="room-actions">
+                                            <a asp-action="EditRoom"
+                                               asp-route-roomId="@room.Id"
+                                               asp-route-hotelId="@Model.Id"
+                                               class="btn-room-edit asp-link">✏ Edytuj</a>
+                                            <button type="button"
+                                                    class="btn-room-del asp-link"
+                                                    onclick="confirmDelete('@room.Id', '@Model.Id', '@room.RoomNumber')">
+                                                ✕ Usuń
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
+        </div>
+        <!--###-->
         <div class="form-actions">
             <button type="submit" class="btn-save">Zapisz zmiany</button>
             <a asp-action="Details" asp-route-id="@Model.Id" class="btn-cancel">&#8592; Anuluj</a>
             <span class="save-note">Zmiany dotyczą wszystkich zakładek</span>
         </div>
     }
+
+    <form id="deleteRoomForm" asp-action="DeleteRoom" asp-controller="Hotels" method="post" style="display:none;">
+        @Html.AntiForgeryToken()
+        <input type="hidden" id="deleteRoomId" name="roomId" />
+        <input type="hidden" id="deleteHotelId" name="hotelId" />
+    </form>
+
 </div>
 
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-
     <script>
-        // ── Tab switching ──────────────────────────────
-        function switchTab(name, btn) {
+        function switchTab(name, btn) 
+        {
             document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             document.getElementById('panel-' + name).classList.add('active');
             btn.classList.add('active');
         }
 
-        // ── Phone management ───────────────────────────
-        function currentPhoneCount() {
-            return document.querySelectorAll('#phoneList .phone-entry').length;
-        }
-
-        function updatePhoneCount() {
+        function updatePhoneCount() 
+        {
             const badge = document.getElementById('phoneCount');
-            const count = document.querySelectorAll(
-                '#phoneList .phone-entry input[type="text"]'
-            ).filter ? [...document.querySelectorAll(
-                '#phoneList .phone-entry input[type="text"]'
-            )].filter(i => i.value.trim() !== '').length
-              : document.querySelectorAll('#phoneList .phone-entry').length;
-
-            badge.textContent = document.querySelectorAll('#phoneList .phone-entry').length;
+            if (badge) badge.textContent = document.querySelectorAll('#phoneList .phone-entry').length;
         }
-        function reindex() {
+        function reindex() 
+        {
             document.querySelectorAll('#phoneList .phone-entry').forEach((entry, i) => {
                 const hidden = entry.querySelector('input[type="hidden"]');
                 const text   = entry.querySelector('input[type="text"]');
@@ -618,14 +816,14 @@
             });
             updatePhoneCount();
         }
-        function addPhone() {
+        function addPhone() 
+        {
             const list  = document.getElementById('phoneList');
             const idx   = list.querySelectorAll('.phone-entry').length;
             const entry = document.createElement('div');
             entry.className = 'phone-entry';
             entry.innerHTML = `
-                <input type="text"
-                       name="PhoneNumbers[${idx}].PhoneNumber"
+                <input type="text" name="PhoneNumbers[${idx}].PhoneNumber"
                        placeholder="+48 22 000 00 00" />
                 <button type="button" class="btn-rm" onclick="removePhone(this)" title="Usuń">&#215;</button>
             `;
@@ -633,7 +831,8 @@
             entry.querySelector('input').focus();
             reindex();
         }
-        function removePhone(btn) {
+        function removePhone(btn) 
+        {
             const list = document.getElementById('phoneList');
             if (list.querySelectorAll('.phone-entry').length === 1) {
                 btn.previousElementSibling.value = '';
@@ -642,7 +841,33 @@
             btn.closest('.phone-entry').remove();
             reindex();
         }
-        // Init counter
+
+        function confirmDelete(roomId, hotelId, roomNum) 
+        {
+            document.getElementById('deleteRoomId').value  = roomId;
+            document.getElementById('deleteHotelId').value = hotelId;
+            document.getElementById('modalRoomNum').textContent = '#' + roomNum;
+            const modal = document.getElementById('deleteModal');
+            console.log("c");
+            modal.classList.add('open');
+            document.getElementById('modalConfirmBtn').onclick = () => {
+                document.getElementById('deleteRoomForm').submit();
+            };
+        }
+
+        function closeModal() 
+        {
+            document.getElementById('deleteModal').classList.remove('open');
+        }
+        document.getElementById('deleteModal').addEventListener('click', function(e) 
+        {
+            if (e.target === this) closeModal();
+        });
+
+        document.addEventListener('keydown', e => 
+        {
+            if (e.key === 'Escape') closeModal();
+        });
         document.addEventListener('DOMContentLoaded', updatePhoneCount);
     </script>
 }

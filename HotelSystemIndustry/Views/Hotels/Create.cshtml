@@ -17,20 +17,17 @@
                 @Html.TextBoxFor(m => m.Name, new { @class = "form-control"})
                 @Html.ValidationMessageFor(m => m.Name)
             </div>
-
             <div class="form-group">
                 <label asp-for="Description" class="control-label"></label>
                 @Html.TextAreaFor(m => m.Description, 4, 0, new { @class = "form-control", placeholder = "Opis oferty i udogodnień hotelu..." })
                 @Html.ValidationMessageFor(m => m.Description)
             </div>
-
             <div class="form-group">
                 <label asp-for="Email" class="control-label"></label>
                 @Html.TextBoxFor(m => m.Email, new { @class = "form-control", type = "email", placeholder = "Adres e-mail" })
                 @Html.ValidationMessageFor(m => m.Email)
             </div>
         </div>
-
         <div class="form-section">
             <div class="section-title">Adres</div>
             <div class="form-group">
@@ -38,7 +35,6 @@
                 @Html.TextBoxFor(m => m.Street, new { @class = "form-control", placeholder = "ul. {nazwa} {numer}" })
                 @Html.ValidationMessageFor(m => m.Street)
             </div>
-
             <div class="form-row">
                 <div class="form-group">
                     <label asp-for="City" class="control-label"></label>
@@ -51,14 +47,12 @@
                     @Html.ValidationMessageFor(m => m.PostalCode)
                 </div>
             </div>
-
             <div class="form-group">
                 <label asp-for="Country" class="control-label"></label>
                 @Html.TextBoxFor(m => m.Country, new { @class = "form-control", placeholder = "Polska" })
                 @Html.ValidationMessageFor(m => m.Country)
             </div>
         </div>
-
         <div class="form-section">
             <div class="section-title">Numery telefonów</div>
 
@@ -73,14 +67,12 @@
             <p class="phone-hint">Możesz dodać wiele numerów telefonów.</p>
             <div class="nonvalid-field">@ViewBag.ErrorPhones</div>
         </div>
-
         <div class="form-actions">
             <button type="submit" class="btn-submit">Zarejestruj hotel</button>
             <a asp-action="Index" class="back-link">&#8592; Powrót do listy</a>
         </div>
     }
 </div>
-
 @section Scripts 
 {
     @{

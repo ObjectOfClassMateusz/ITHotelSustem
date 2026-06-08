@@ -83,20 +83,6 @@ namespace HotelSystemIndustry.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "EventHalls",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
-                    NumMaxGuests = table.Column<long>(type: "bigint", nullable: false),
-                    ReservationPrice = table.Column<decimal>(type: "numeric", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_EventHalls", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "EventReservationStatuses",
                 columns: table => new
                 {
@@ -187,16 +173,17 @@ namespace HotelSystemIndustry.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "KitchenStorages",
+                name: "KitchenProducts",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
-                    Location = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false)
+                    ContainsAlcohol = table.Column<bool>(type: "boolean", nullable: false),
+                    Price = table.Column<decimal>(type: "numeric", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_KitchenStorages", x => x.Id);
+                    table.PrimaryKey("PK_KitchenProducts", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -242,30 +229,6 @@ namespace HotelSystemIndustry.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_SaleItemTypes", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ShopMagazines",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Location = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ShopMagazines", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ShopPoints",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Location = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ShopPoints", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -414,35 +377,6 @@ namespace HotelSystemIndustry.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "EventReservations",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    StatusId = table.Column<Guid>(type: "uuid", nullable: false),
-                    EventTypeId = table.Column<Guid>(type: "uuid", nullable: false),
-                    StartTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    EndTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    NumRequiredStaff = table.Column<long>(type: "bigint", nullable: false),
-                    NumGuests = table.Column<long>(type: "bigint", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_EventReservations", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_EventReservations_EventReservationStatuses_StatusId",
-                        column: x => x.StatusId,
-                        principalTable: "EventReservationStatuses",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_EventReservations_EventTypes_EventTypeId",
-                        column: x => x.EventTypeId,
-                        principalTable: "EventTypes",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Addresses",
                 columns: table => new
                 {
@@ -465,6 +399,27 @@ namespace HotelSystemIndustry.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "EventHalls",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Name = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
+                    NumMaxGuests = table.Column<long>(type: "bigint", nullable: false),
+                    HotelId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ReservationPrice = table.Column<decimal>(type: "numeric", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_EventHalls", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_EventHalls_Hotels_HotelId",
+                        column: x => x.HotelId,
+                        principalTable: "Hotels",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Guests",
                 columns: table => new
                 {
@@ -480,6 +435,26 @@ namespace HotelSystemIndustry.Migrations
                     table.PrimaryKey("PK_Guests", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Guests_Hotels_HotelId",
+                        column: x => x.HotelId,
+                        principalTable: "Hotels",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "KitchenStorages",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Name = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
+                    Location = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    HotelId = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_KitchenStorages", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_KitchenStorages_Hotels_HotelId",
                         column: x => x.HotelId,
                         principalTable: "Hotels",
                         principalColumn: "Id",
@@ -530,6 +505,44 @@ namespace HotelSystemIndustry.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ShopMagazines",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Location = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    HotelId = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ShopMagazines", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ShopMagazines_Hotels_HotelId",
+                        column: x => x.HotelId,
+                        principalTable: "Hotels",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ShopPoints",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Location = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    HotelId = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ShopPoints", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ShopPoints_Hotels_HotelId",
+                        column: x => x.HotelId,
+                        principalTable: "Hotels",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "KitchenArticles",
                 columns: table => new
                 {
@@ -557,17 +570,43 @@ namespace HotelSystemIndustry.Migrations
                     SubmissionTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     RealisedTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     TypeId = table.Column<Guid>(type: "uuid", nullable: false),
+                    HotelId = table.Column<Guid>(type: "uuid", nullable: false),
                     DeliveryDestination = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_KitchenOrders", x => x.Id);
                     table.ForeignKey(
+                        name: "FK_KitchenOrders_Hotels_HotelId",
+                        column: x => x.HotelId,
+                        principalTable: "Hotels",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
                         name: "FK_KitchenOrders_KitchenOrderTypes_TypeId",
                         column: x => x.TypeId,
                         principalTable: "KitchenOrderTypes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "KitchenRecipes",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    OutcomeProductId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Content = table.Column<string>(type: "character varying(10000)", maxLength: 10000, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_KitchenRecipes", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_KitchenRecipes_KitchenProducts_OutcomeProductId",
+                        column: x => x.OutcomeProductId,
+                        principalTable: "KitchenProducts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -591,33 +630,13 @@ namespace HotelSystemIndustry.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Purchases",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    TransactionDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    ShopPointId = table.Column<Guid>(type: "uuid", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Purchases", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Purchases_ShopPoints_ShopPointId",
-                        column: x => x.ShopPointId,
-                        principalTable: "ShopPoints",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "EquipmentInstances",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     EquipmentId = table.Column<Guid>(type: "uuid", nullable: false),
                     EventHallId = table.Column<Guid>(type: "uuid", nullable: false),
-                    ReservationPrice = table.Column<decimal>(type: "numeric", nullable: false),
-                    EventReservationId = table.Column<Guid>(type: "uuid", nullable: true)
+                    ReservationPrice = table.Column<decimal>(type: "numeric", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -634,55 +653,6 @@ namespace HotelSystemIndustry.Migrations
                         principalTable: "EventHalls",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_EquipmentInstances_EventReservations_EventReservationId",
-                        column: x => x.EventReservationId,
-                        principalTable: "EventReservations",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "EventHallEventReservation",
-                columns: table => new
-                {
-                    EventHallsId = table.Column<Guid>(type: "uuid", nullable: false),
-                    EventReservationsId = table.Column<Guid>(type: "uuid", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_EventHallEventReservation", x => new { x.EventHallsId, x.EventReservationsId });
-                    table.ForeignKey(
-                        name: "FK_EventHallEventReservation_EventHalls_EventHallsId",
-                        column: x => x.EventHallsId,
-                        principalTable: "EventHalls",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_EventHallEventReservation_EventReservations_EventReservatio~",
-                        column: x => x.EventReservationsId,
-                        principalTable: "EventReservations",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "KitchenProducts",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
-                    ContainsAlcohol = table.Column<bool>(type: "boolean", nullable: false),
-                    Price = table.Column<decimal>(type: "numeric", nullable: false),
-                    EventReservationId = table.Column<Guid>(type: "uuid", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_KitchenProducts", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_KitchenProducts_EventReservations_EventReservationId",
-                        column: x => x.EventReservationId,
-                        principalTable: "EventReservations",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -714,27 +684,40 @@ namespace HotelSystemIndustry.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "EventReservationRoom",
+                name: "EventReservations",
                 columns: table => new
                 {
-                    EventReservationsId = table.Column<Guid>(type: "uuid", nullable: false),
-                    RoomsId = table.Column<Guid>(type: "uuid", nullable: false)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    StatusId = table.Column<Guid>(type: "uuid", nullable: false),
+                    EventTypeId = table.Column<Guid>(type: "uuid", nullable: false),
+                    StartTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    EndTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Name = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
+                    NumRequiredStaff = table.Column<long>(type: "bigint", nullable: false),
+                    NumGuests = table.Column<long>(type: "bigint", nullable: false),
+                    AgreementDocumentPath = table.Column<string>(type: "text", nullable: false),
+                    RoomId = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_EventReservationRoom", x => new { x.EventReservationsId, x.RoomsId });
+                    table.PrimaryKey("PK_EventReservations", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_EventReservationRoom_EventReservations_EventReservationsId",
-                        column: x => x.EventReservationsId,
-                        principalTable: "EventReservations",
+                        name: "FK_EventReservations_EventReservationStatuses_StatusId",
+                        column: x => x.StatusId,
+                        principalTable: "EventReservationStatuses",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_EventReservationRoom_Rooms_RoomsId",
-                        column: x => x.RoomsId,
+                        name: "FK_EventReservations_EventTypes_EventTypeId",
+                        column: x => x.EventTypeId,
+                        principalTable: "EventTypes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_EventReservations_Rooms_RoomId",
+                        column: x => x.RoomId,
                         principalTable: "Rooms",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -839,6 +822,25 @@ namespace HotelSystemIndustry.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Purchases",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    TransactionDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    ShopPointId = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Purchases", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Purchases_ShopPoints_ShopPointId",
+                        column: x => x.ShopPointId,
+                        principalTable: "ShopPoints",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "KitchenArticleInstances",
                 columns: table => new
                 {
@@ -862,6 +864,56 @@ namespace HotelSystemIndustry.Migrations
                         principalTable: "KitchenStorages",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "OrderProduct",
+                columns: table => new
+                {
+                    OrderId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ProductId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Count = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OrderProduct", x => new { x.OrderId, x.ProductId });
+                    table.ForeignKey(
+                        name: "FK_OrderProduct_KitchenOrders_OrderId",
+                        column: x => x.OrderId,
+                        principalTable: "KitchenOrders",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_OrderProduct_KitchenProducts_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "KitchenProducts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "KitchenRecipeIngredients",
+                columns: table => new
+                {
+                    RecipeId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ArticleId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Count = table.Column<decimal>(type: "numeric", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_KitchenRecipeIngredients", x => new { x.RecipeId, x.ArticleId });
+                    table.ForeignKey(
+                        name: "FK_KitchenRecipeIngredients_KitchenArticles_ArticleId",
+                        column: x => x.ArticleId,
+                        principalTable: "KitchenArticles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_KitchenRecipeIngredients_KitchenRecipes_RecipeId",
+                        column: x => x.RecipeId,
+                        principalTable: "KitchenRecipes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -894,76 +946,51 @@ namespace HotelSystemIndustry.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "PurchaseItems",
+                name: "EquipmentInstanceEventReservation",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    PurchaseId = table.Column<Guid>(type: "uuid", nullable: false),
-                    SaleItemId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Count = table.Column<long>(type: "bigint", nullable: false),
-                    UnitPrice = table.Column<decimal>(type: "numeric", nullable: false),
-                    Variant = table.Column<string>(type: "text", nullable: false),
-                    HasBeenReturned = table.Column<bool>(type: "boolean", nullable: false)
+                    EquipmentId = table.Column<Guid>(type: "uuid", nullable: false),
+                    EventReservationId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_PurchaseItems", x => x.Id);
+                    table.PrimaryKey("PK_EquipmentInstanceEventReservation", x => new { x.EquipmentId, x.EventReservationId });
                     table.ForeignKey(
-                        name: "FK_PurchaseItems_Purchases_PurchaseId",
-                        column: x => x.PurchaseId,
-                        principalTable: "Purchases",
+                        name: "FK_EquipmentInstanceEventReservation_EquipmentInstances_Equipm~",
+                        column: x => x.EquipmentId,
+                        principalTable: "EquipmentInstances",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_PurchaseItems_SaleItems_SaleItemId",
-                        column: x => x.SaleItemId,
-                        principalTable: "SaleItems",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "KitchenRecipes",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    OutcomeProductId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Content = table.Column<string>(type: "character varying(10000)", maxLength: 10000, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_KitchenRecipes", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_KitchenRecipes_KitchenProducts_OutcomeProductId",
-                        column: x => x.OutcomeProductId,
-                        principalTable: "KitchenProducts",
+                        name: "FK_EquipmentInstanceEventReservation_EventReservations_EventRe~",
+                        column: x => x.EventReservationId,
+                        principalTable: "EventReservations",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "OrderProduct",
+                name: "EventHallEventReservation",
                 columns: table => new
                 {
-                    OrderId = table.Column<Guid>(type: "uuid", nullable: false),
-                    ProductId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Count = table.Column<int>(type: "integer", nullable: false)
+                    EventReservationsId = table.Column<Guid>(type: "uuid", nullable: false),
+                    HallsId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_OrderProduct", x => new { x.OrderId, x.ProductId });
+                    table.PrimaryKey("PK_EventHallEventReservation", x => new { x.EventReservationsId, x.HallsId });
                     table.ForeignKey(
-                        name: "FK_OrderProduct_KitchenOrders_OrderId",
-                        column: x => x.OrderId,
-                        principalTable: "KitchenOrders",
+                        name: "FK_EventHallEventReservation_EventHalls_HallsId",
+                        column: x => x.HallsId,
+                        principalTable: "EventHalls",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_OrderProduct_KitchenProducts_ProductId",
-                        column: x => x.ProductId,
-                        principalTable: "KitchenProducts",
+                        name: "FK_EventHallEventReservation_EventReservations_EventReservatio~",
+                        column: x => x.EventReservationsId,
+                        principalTable: "EventReservations",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -1060,28 +1087,32 @@ namespace HotelSystemIndustry.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "KitchenRecipeIngredients",
+                name: "PurchaseItems",
                 columns: table => new
                 {
-                    RecipeId = table.Column<Guid>(type: "uuid", nullable: false),
-                    ArticleId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Count = table.Column<decimal>(type: "numeric", nullable: false)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    PurchaseId = table.Column<Guid>(type: "uuid", nullable: false),
+                    SaleItemId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Count = table.Column<long>(type: "bigint", nullable: false),
+                    UnitPrice = table.Column<decimal>(type: "numeric", nullable: false),
+                    Variant = table.Column<string>(type: "text", nullable: false),
+                    HasBeenReturned = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_KitchenRecipeIngredients", x => new { x.RecipeId, x.ArticleId });
+                    table.PrimaryKey("PK_PurchaseItems", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_KitchenRecipeIngredients_KitchenArticles_ArticleId",
-                        column: x => x.ArticleId,
-                        principalTable: "KitchenArticles",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_KitchenRecipeIngredients_KitchenRecipes_RecipeId",
-                        column: x => x.RecipeId,
-                        principalTable: "KitchenRecipes",
+                        name: "FK_PurchaseItems_Purchases_PurchaseId",
+                        column: x => x.PurchaseId,
+                        principalTable: "Purchases",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_PurchaseItems_SaleItems_SaleItemId",
+                        column: x => x.SaleItemId,
+                        principalTable: "SaleItems",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -1162,6 +1193,11 @@ namespace HotelSystemIndustry.Migrations
                 column: "TypeId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_EquipmentInstanceEventReservation_EventReservationId",
+                table: "EquipmentInstanceEventReservation",
+                column: "EventReservationId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_EquipmentInstances_EquipmentId",
                 table: "EquipmentInstances",
                 column: "EquipmentId");
@@ -1172,24 +1208,24 @@ namespace HotelSystemIndustry.Migrations
                 column: "EventHallId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_EquipmentInstances_EventReservationId",
-                table: "EquipmentInstances",
-                column: "EventReservationId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_EventHallEventReservation_EventReservationsId",
+                name: "IX_EventHallEventReservation_HallsId",
                 table: "EventHallEventReservation",
-                column: "EventReservationsId");
+                column: "HallsId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_EventReservationRoom_RoomsId",
-                table: "EventReservationRoom",
-                column: "RoomsId");
+                name: "IX_EventHalls_HotelId",
+                table: "EventHalls",
+                column: "HotelId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_EventReservations_EventTypeId",
                 table: "EventReservations",
                 column: "EventTypeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EventReservations_RoomId",
+                table: "EventReservations",
+                column: "RoomId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_EventReservations_StatusId",
@@ -1228,14 +1264,14 @@ namespace HotelSystemIndustry.Migrations
                 column: "TypeId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_KitchenOrders_HotelId",
+                table: "KitchenOrders",
+                column: "HotelId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_KitchenOrders_TypeId",
                 table: "KitchenOrders",
                 column: "TypeId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_KitchenProducts_EventReservationId",
-                table: "KitchenProducts",
-                column: "EventReservationId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_KitchenRecipeIngredients_ArticleId",
@@ -1246,6 +1282,11 @@ namespace HotelSystemIndustry.Migrations
                 name: "IX_KitchenRecipes_OutcomeProductId",
                 table: "KitchenRecipes",
                 column: "OutcomeProductId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_KitchenStorages_HotelId",
+                table: "KitchenStorages",
+                column: "HotelId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_LostAndFoundItems_FoundByEmployeeId",
@@ -1344,6 +1385,16 @@ namespace HotelSystemIndustry.Migrations
                 column: "TypeId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ShopMagazines_HotelId",
+                table: "ShopMagazines",
+                column: "HotelId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ShopPoints_HotelId",
+                table: "ShopPoints",
+                column: "HotelId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_SupplyUsages_RoomCleaningId",
                 table: "SupplyUsages",
                 column: "RoomCleaningId");
@@ -1379,13 +1430,10 @@ namespace HotelSystemIndustry.Migrations
                 name: "EmployeeShifts");
 
             migrationBuilder.DropTable(
-                name: "EquipmentInstances");
+                name: "EquipmentInstanceEventReservation");
 
             migrationBuilder.DropTable(
                 name: "EventHallEventReservation");
-
-            migrationBuilder.DropTable(
-                name: "EventReservationRoom");
 
             migrationBuilder.DropTable(
                 name: "GuestReservation");
@@ -1433,10 +1481,10 @@ namespace HotelSystemIndustry.Migrations
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
-                name: "Equipment");
+                name: "EquipmentInstances");
 
             migrationBuilder.DropTable(
-                name: "EventHalls");
+                name: "EventReservations");
 
             migrationBuilder.DropTable(
                 name: "KitchenStorages");
@@ -1478,7 +1526,16 @@ namespace HotelSystemIndustry.Migrations
                 name: "RoomCleanings");
 
             migrationBuilder.DropTable(
-                name: "EquipmentTypes");
+                name: "Equipment");
+
+            migrationBuilder.DropTable(
+                name: "EventHalls");
+
+            migrationBuilder.DropTable(
+                name: "EventReservationStatuses");
+
+            migrationBuilder.DropTable(
+                name: "EventTypes");
 
             migrationBuilder.DropTable(
                 name: "KitchenArticleTypes");
@@ -1502,16 +1559,10 @@ namespace HotelSystemIndustry.Migrations
                 name: "EmployeeProfiles");
 
             migrationBuilder.DropTable(
-                name: "EventReservations");
+                name: "EquipmentTypes");
 
             migrationBuilder.DropTable(
                 name: "Rooms");
-
-            migrationBuilder.DropTable(
-                name: "EventReservationStatuses");
-
-            migrationBuilder.DropTable(
-                name: "EventTypes");
 
             migrationBuilder.DropTable(
                 name: "Hotels");

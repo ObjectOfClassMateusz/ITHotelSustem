@@ -1,0 +1,453 @@
+﻿@model HotelSystemIndustry.Infrastructure.DTO.CreateInvoiceDTO
+@{
+    ViewData["Title"] = "Nowa faktura — " + Model.HotelName;
+}
+
+<style>
+    import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap');
+
+    :root {
+        --bg:        #0f0f12;
+        --surface:   #17171d;
+        --surface2:  #1e1e27;
+        --border:    #2a2a38;
+        --border2:   #353548;
+        --gold:      #d4a843;
+        --gold-dim:  #8a6c28;
+        --gold-pale: rgba(212,168,67,0.08);
+        --text:      #e8e6f0;
+        --muted:     #6b6880;
+        --danger:    #c15a4a;
+        --success:   #4ac18e;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: 'Syne', sans-serif;
+        min-height: 100vh;
+    }
+
+    /* ── TOPBAR ───────────────────────────── */
+    .topbar {
+        height: 56px;
+        background: var(--surface);
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        padding: 0 1.5rem;
+        gap: 1rem;
+        position: sticky;
+        top: 0;
+        z-index: 50;
+    }
+
+    .topbar-brand {
+        font-size: 0.7rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--gold);
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .topbar-brand::before {
+        content: '';
+        width: 6px; height: 6px;
+        background: var(--gold);
+        transform: rotate(45deg);
+    }
+
+    .topbar-sep { width: 1px; height: 28px; background: var(--border); }
+
+    .topbar-crumb {
+        font-family: 'DM Mono', monospace;
+        font-size: 0.7rem;
+        color: var(--muted);
+    }
+    .topbar-crumb em { color: var(--text); font-style: normal; font-weight: 600; }
+
+    .topbar-back {
+        margin-left: auto;
+        font-family: 'DM Mono', monospace;
+        font-size: 0.68rem;
+        color: var(--muted);
+        text-decoration: none;
+        padding: 0.38rem 0.85rem;
+        border: 1px solid var(--border);
+        border-radius: 3px;
+        background: var(--surface2);
+        transition: color 0.15s, border-color 0.15s;
+    }
+    .topbar-back:hover { color: var(--gold); border-color: var(--gold-dim); text-decoration: none; }
+
+    /* ── SHELL ────────────────────────────── */
+    .shell {
+        max-width: 680px;
+        margin: 2.5rem auto;
+        padding: 0 1.5rem 5rem;
+    }
+
+    .page-header {
+        margin-bottom: 2rem;
+        animation: fadeDown 0.4s ease both;
+    }
+
+    .page-kicker {
+        font-family: 'DM Mono', monospace;
+        font-size: 0.6rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--gold-dim);
+        margin-bottom: 0.3rem;
+    }
+
+    .page-h1 {
+        font-size: clamp(1.8rem, 4.5vw, 2.6rem);
+        font-weight: 800;
+        line-height: 1.1;
+    }
+    .page-h1 em { font-style: italic; color: var(--gold); font-weight: 400; }
+
+    /* ── INVOICE PREVIEW HEADER ───────────── */
+    .invoice-hero {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        padding: 1.75rem 2rem;
+        margin-bottom: 1.25rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        animation: fadeUp 0.4s ease both;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .invoice-hero::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, var(--gold), transparent);
+    }
+
+    .invoice-num-display {
+        font-family: 'DM Mono', monospace;
+        font-size: 1.5rem;
+        font-weight: 500;
+        color: var(--gold);
+        letter-spacing: 0.05em;
+    }
+
+    .invoice-meta {
+        text-align: right;
+        font-family: 'DM Mono', monospace;
+        font-size: 0.7rem;
+        color: var(--muted);
+        line-height: 1.6;
+    }
+
+    /* ── CARDS ────────────────────────────── */
+    .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        padding: 1.75rem;
+        margin-bottom: 1.25rem;
+        animation: fadeUp 0.4s ease both;
+    }
+    .card:nth-child(2) { animation-delay: 0.06s; }
+    .card:nth-child(3) { animation-delay: 0.12s; }
+    .card:nth-child(4) { animation-delay: 0.18s; }
+
+    .card-label {
+        font-size: 0.57rem;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--gold);
+        font-weight: 700;
+        padding-bottom: 0.65rem;
+        margin-bottom: 1.25rem;
+        border-bottom: 1px solid var(--border);
+    }
+
+    /* ── FIELDS ───────────────────────────── */
+    .field { margin-bottom: 1.15rem; }
+    .field:last-child { margin-bottom: 0; }
+
+    .field label {
+        display: block;
+        font-family: 'DM Mono', monospace;
+        font-size: 0.62rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 0.4rem;
+    }
+
+    .field input,
+    .field select {
+        width: 100%;
+        padding: 0.65rem 0.9rem;
+        background: var(--surface2);
+        border: 1px solid var(--border2);
+        border-radius: 3px;
+        color: var(--text);
+        font-family: 'DM Mono', monospace;
+        font-size: 0.88rem;
+        outline: none;
+        transition: border-color 0.2s, box-shadow 0.2s;
+        appearance: none;
+    }
+    .field input:focus,
+    .field select:focus {
+        border-color: var(--gold);
+        box-shadow: 0 0 0 3px rgba(212,168,67,0.12);
+    }
+    .field input.input-validation-error,
+    .field select.input-validation-error { border-color: var(--danger); }
+
+    .field-validation-error {
+        display: block;
+        font-size: 0.7rem;
+        color: var(--danger);
+        margin-top: 0.3rem;
+        font-family: 'DM Mono', monospace;
+    }
+
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+    /* Select wrapper */
+    .select-wrap { position: relative; }
+    .select-wrap::after {
+        content: '▾';
+        position: absolute;
+        right: 0.85rem; top: 50%;
+        transform: translateY(-50%);
+        color: var(--gold);
+        pointer-events: none;
+    }
+    .select-wrap select { padding-right: 2rem; cursor: pointer; }
+
+    /* ── AMOUNT DISPLAY ───────────────────── */
+    .amount-display {
+        background: var(--surface2);
+        border: 1px solid var(--border2);
+        border-radius: 3px;
+        padding: 1rem 1.25rem;
+        display: flex;
+        align-items: baseline;
+        gap: 0.5rem;
+        margin-top: 0.65rem;
+    }
+
+    .amount-val {
+        font-family: 'DM Mono', monospace;
+        font-size: 1.8rem;
+        font-weight: 500;
+        color: var(--gold);
+    }
+
+    .amount-currency {
+        font-family: 'DM Mono', monospace;
+        font-size: 0.85rem;
+        color: var(--muted);
+    }
+
+    /* ── RESERVATION INFO BOX ─────────────── */
+    .res-info-box {
+        background: var(--surface2);
+        border: 1px solid var(--border2);
+        border-radius: 3px;
+        padding: 0.85rem 1rem;
+        margin-top: 0.65rem;
+        font-family: 'DM Mono', monospace;
+        font-size: 0.72rem;
+        color: var(--muted);
+        line-height: 1.7;
+        display: none;
+    }
+    .res-info-box.visible { display: block; }
+    .res-info-box strong { color: var(--text); }
+
+    /* ── ACTIONS ──────────────────────────── */
+    .form-actions {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border);
+        flex-wrap: wrap;
+        animation: fadeUp 0.4s 0.24s ease both;
+    }
+
+    .btn-submit {
+        background: var(--gold);
+        color: #0f0f12;
+        border: none;
+        padding: 0.82rem 2.5rem;
+        font-family: 'Syne', sans-serif;
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        border-radius: 3px;
+        cursor: pointer;
+        transition: background 0.2s, transform 0.15s;
+    }
+    .btn-submit:hover { background: #e6ba55; transform: translateY(-1px); }
+
+    .btn-cancel-link {
+        font-family: 'DM Mono', monospace;
+        font-size: 0.72rem;
+        color: var(--muted);
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+    .btn-cancel-link:hover { color: var(--text); text-decoration: none; }
+
+    /* ── ANIMATIONS ───────────────────────── */
+    @@keyframes fadeDown {
+        from { opacity: 0; transform: translateY(-10px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+    @@keyframes fadeUp {
+        from { opacity: 0; transform: translateY(12px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @@media (max-width: 520px) {
+        .invoice-hero { flex-direction: column; align-items: flex-start; }
+        .invoice-meta { text-align: left; }
+        .field-row { grid-template-columns: 1fr; }
+    }
+</style>
+
+{{-- TOPBAR --}}
+<div class="topbar">
+    <div class="topbar-brand">Hotel System Industry</div>
+    <div class="topbar-sep"></div>
+    <div class="topbar-crumb">
+        Nowa faktura &rsaquo; <em>@Model.HotelName</em>
+    </div>
+    <a asp-action="Calendar" asp-route-id="@Model.HotelId" class="topbar-back">
+        &#8592; Kalendarz
+    </a>
+</div>
+
+<div class="shell">
+
+    <div class="page-header">
+        <p class="page-kicker">&#9670; Wystaw fakturę</p>
+        <h1 class="page-h1">Nowa <em>faktura</em></h1>
+    </div>
+
+    <div class="invoice-hero">
+        <div class="invoice-num-display" id="invoiceNumDisplay">@Model.InvoiceNumber</div>
+        <div class="invoice-meta">
+            <div>Data wystawienia: <strong id="issueDateDisplay">@Model.IssueDate.ToString("dd.MM.yyyy")</strong></div>
+            <div>Hotel: <strong>@Model.HotelName</strong></div>
+        </div>
+    </div>
+
+    @using (Html.BeginForm("CreateInvoice", "Hotels", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.HotelId)
+        @Html.HiddenFor(m => m.HotelName)
+
+        <div class="card">
+            <div class="card-label">📄 Dane faktury</div>
+
+            <div class="field-row">
+                <div class="field">
+                    @Html.LabelFor(m => m.InvoiceNumber, "Numer faktury")
+                    @Html.TextBoxFor(m => m.InvoiceNumber,
+                        new { placeholder = "FV/2026/0001", id = "invoiceNumInput" })
+                    @Html.ValidationMessageFor(m => m.InvoiceNumber)
+                </div>
+                <div class="field">
+                    @Html.LabelFor(m => m.IssueDate, "Data wystawienia")
+                    @Html.TextBoxFor(m => m.IssueDate,
+                        "{0:yyyy-MM-dd}",
+                        new { type = "date", id = "issueDateInput" })
+                    @Html.ValidationMessageFor(m => m.IssueDate)
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-label">🗓 Powiązana rezerwacja</div>
+
+            <div class="field">
+                <label>Wybierz rezerwację (bez faktury)</label>
+                <div class="select-wrap">
+                    @Html.DropDownListFor(m => m.ReservationId,
+                        Model.AvailableReservations,
+                        "— wybierz rezerwację —",
+                        new { id = "reservationSelect" })
+                </div>
+                @Html.ValidationMessageFor(m => m.ReservationId)
+            </div>
+
+            <div class="res-info-box" id="resInfoBox">
+                Wybierz rezerwację aby zobaczyć szczegóły.
+            </div>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn-submit">&#43; Wystaw fakturę</button>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script>
+        // Live invoice number preview
+        document.getElementById('invoiceNumInput').addEventListener('input', function() {
+            document.getElementById('invoiceNumDisplay').textContent = this.value || '—';
+        });
+
+        // Live date preview
+        document.getElementById('issueDateInput').addEventListener('change', function() {
+            if (!this.value) return;
+            const d = new Date(this.value);
+            document.getElementById('issueDateDisplay').textContent =
+                d.toLocaleDateString('pl-PL', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        });
+
+        // Live amount display
+        document.getElementById('totalAmount').addEventListener('input', function() {
+            const v = parseFloat(this.value) || 0;
+            document.getElementById('amountDisplay').textContent =
+                v.toLocaleString('pl-PL', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        });
+
+        // Reservation info display (basic — extend with AJAX if needed)
+        document.getElementById('reservationSelect').addEventListener('change', function() {
+            const box = document.getElementById('resInfoBox');
+            if (!this.value) {
+                box.classList.remove('visible');
+                return;
+            }
+            const text = this.options[this.selectedIndex].text;
+            box.innerHTML = '<strong>Wybrana rezerwacja:</strong><br>' + text;
+            box.classList.add('visible');
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const amt = document.getElementById('totalAmount').value;
+            if (amt) {
+                const v = parseFloat(amt) || 0;
+                document.getElementById('amountDisplay').textContent =
+                    v.toLocaleString('pl-PL', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            }
+        });
+    </script>
+}

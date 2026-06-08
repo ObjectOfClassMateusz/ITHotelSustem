@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using HotelSystemIndustry.Infrastructure;
 using HotelSystemIndustry.Models.Kitchen;
 using Microsoft.AspNetCore.Authorization;
+using HotelSystemIndustry.ViewModels.Kitchen;
+using System.Collections.ObjectModel;
 
 namespace HotelSystemIndustry.Controllers.Kitchen
 {
@@ -50,10 +52,57 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         }
 
         // GET: KitchenRecipe/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
             ViewData["OutcomeProductId"] = new SelectList(_context.KitchenProducts, "Id", "Name");
-            return View();
+            ViewBag.ArticleList = new SelectList(_context.KitchenArticles, "Id", "Name");
+            ViewBag.Articles = await _context.KitchenArticles.AsNoTracking().ToListAsync();
+            return View(new KitchenRecipeEditViewModel());
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateAddIngredient(KitchenRecipeEditViewModel model)
+        {
+            if (model.NewIngredient.ArticleId != Guid.Empty && model.NewIngredient.Count > 0.0m)
+            {
+                var ing = model.Ingredients.FirstOrDefault(i => i.ArticleId == model.NewIngredient.ArticleId);
+
+                if (ing != null)
+                {
+                    ing.Count += model.NewIngredient.Count;
+                }
+                else
+                {
+                    model.Ingredients.Add(model.NewIngredient);
+                }
+
+                model.NewIngredient = new KitchenIngredientEditViewModel();
+            }
+
+            ModelState.Clear();
+
+            ViewData["OutcomeProductId"] = new SelectList(_context.KitchenProducts, "Id", "Name", model.OutcomeProductId);
+            ViewBag.ArticleList = new SelectList(_context.KitchenArticles, "Id", "Name");
+            ViewBag.Articles = await _context.KitchenArticles.AsNoTracking().ToListAsync();
+            return View("Create", model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateRemoveIngredient(KitchenRecipeEditViewModel model, int index)
+        {
+            if (index >= 0 && index < model.Ingredients.Count)
+            {
+                model.Ingredients.RemoveAt(index);
+            }
+
+            ModelState.Clear();
+
+            ViewData["OutcomeProductId"] = new SelectList(_context.KitchenProducts, "Id", "Name", model.OutcomeProductId);
+            ViewBag.ArticleList = new SelectList(_context.KitchenArticles, "Id", "Name");
+            ViewBag.Articles = await _context.KitchenArticles.AsNoTracking().ToListAsync();
+            return View("Create", model);
         }
 
         // POST: KitchenRecipe/Create
@@ -61,19 +110,41 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,OutcomeProductId,Content")] KitchenRecipe kitchenRecipe)
+        public async Task<IActionResult> Create(KitchenRecipeEditViewModel model)
         {
-            if (ModelState.IsValid && kitchenRecipe.OutcomeProductId != Guid.Empty)
+            if (ModelState.IsValid && model.OutcomeProductId != Guid.Empty)
             {
-                kitchenRecipe.OutcomeProduct = _context.KitchenProducts.Where(kp => kp.Id == kitchenRecipe.OutcomeProductId).Single();
+                KitchenRecipe kitchenRecipe = new KitchenRecipe
+                {
+                    Id = Guid.NewGuid(),
+                    OutcomeProductId = model.OutcomeProductId,
+                    OutcomeProduct = _context.KitchenProducts.FirstOrDefault(kp => kp.Id == model.OutcomeProductId),
+                    Content = model.Content,
+                    Ingredients = new Collection<KitchenRecipeIngredient>()
+                };
 
-                kitchenRecipe.Id = Guid.NewGuid();
+                foreach (var ing in model.Ingredients)
+                {
+                    KitchenRecipeIngredient recipeIng = new KitchenRecipeIngredient
+                    {
+                        RecipeId = kitchenRecipe.Id,
+                        Recipe = kitchenRecipe,
+                        ArticleId = ing.ArticleId,
+                        Article = _context.KitchenArticles.FirstOrDefault(ka => ka.Id == ing.ArticleId),
+                        Count = ing.Count
+                    };
+                    kitchenRecipe.Ingredients.Add(recipeIng);
+                    _context.Add(recipeIng);
+                }
+
                 _context.Add(kitchenRecipe);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["OutcomeProductId"] = new SelectList(_context.KitchenProducts, "Id", "Name", kitchenRecipe.OutcomeProductId);
-            return View(kitchenRecipe);
+            ViewData["OutcomeProductId"] = new SelectList(_context.KitchenProducts, "Id", "Name", model.OutcomeProductId);
+            ViewBag.ArticleList = new SelectList(_context.KitchenArticles, "Id", "Name");
+            ViewBag.Articles = await _context.KitchenArticles.AsNoTracking().ToListAsync();
+            return View(model);
         }
 
         // GET: KitchenRecipe/Edit/5
@@ -84,13 +155,79 @@ namespace HotelSystemIndustry.Controllers.Kitchen
                 return NotFound();
             }
 
-            var kitchenRecipe = await _context.KitchenRecipes.FindAsync(id);
+            var kitchenRecipe = await _context.KitchenRecipes
+                .Include(kr => kr.Ingredients)
+                .FirstOrDefaultAsync(kr => kr.Id == id);
             if (kitchenRecipe == null)
             {
                 return NotFound();
             }
+
+            KitchenRecipeEditViewModel model = new KitchenRecipeEditViewModel
+            {
+                TargetRecipeId = kitchenRecipe.Id,
+                OutcomeProductId = kitchenRecipe.OutcomeProductId,
+                Content = kitchenRecipe.Content
+            };
+
+            foreach (var ing in kitchenRecipe.Ingredients!)
+            {
+                model.Ingredients.Add(new KitchenIngredientEditViewModel
+                {
+                    ArticleId = ing.ArticleId,
+                    Count = ing.Count
+                });
+            }
+
             ViewData["OutcomeProductId"] = new SelectList(_context.KitchenProducts, "Id", "Name", kitchenRecipe.OutcomeProductId);
-            return View(kitchenRecipe);
+            ViewBag.ArticleList = new SelectList(_context.KitchenArticles, "Id", "Name");
+            ViewBag.Articles = await _context.KitchenArticles.AsNoTracking().ToListAsync();
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditAddIngredient(KitchenRecipeEditViewModel model)
+        {
+            if (model.NewIngredient.ArticleId != Guid.Empty && model.NewIngredient.Count > 0.0m)
+            {
+                var ing = model.Ingredients.FirstOrDefault(i => i.ArticleId == model.NewIngredient.ArticleId);
+
+                if (ing != null)
+                {
+                    ing.Count += model.NewIngredient.Count;
+                }
+                else
+                {
+                    model.Ingredients.Add(model.NewIngredient);
+                }
+
+                model.NewIngredient = new KitchenIngredientEditViewModel();
+            }
+
+            ModelState.Clear();
+
+            ViewData["OutcomeProductId"] = new SelectList(_context.KitchenProducts, "Id", "Name", model.OutcomeProductId);
+            ViewBag.ArticleList = new SelectList(_context.KitchenArticles, "Id", "Name");
+            ViewBag.Articles = await _context.KitchenArticles.AsNoTracking().ToListAsync();
+            return View("Edit", model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditRemoveIngredient(KitchenRecipeEditViewModel model, int index)
+        {
+            if (index >= 0 && index < model.Ingredients.Count)
+            {
+                model.Ingredients.RemoveAt(index);
+            }
+
+            ModelState.Clear();
+
+            ViewData["OutcomeProductId"] = new SelectList(_context.KitchenProducts, "Id", "Name", model.OutcomeProductId);
+            ViewBag.ArticleList = new SelectList(_context.KitchenArticles, "Id", "Name");
+            ViewBag.Articles = await _context.KitchenArticles.AsNoTracking().ToListAsync();
+            return View("Edit", model);
         }
 
         // POST: KitchenRecipe/Edit/5
@@ -98,17 +235,45 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Id,OutcomeProductId,Content")] KitchenRecipe kitchenRecipe)
+        public async Task<IActionResult> Edit(KitchenRecipeEditViewModel model)
         {
-            if (id != kitchenRecipe.Id)
+            var kitchenRecipe = await _context.KitchenRecipes
+                .Include(kr => kr.Ingredients)
+                .FirstOrDefaultAsync(kr => kr.Id == model.TargetRecipeId);
+
+            if (kitchenRecipe == null)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
-                kitchenRecipe.OutcomeProduct = _context.KitchenProducts.Where(kp => kp.Id == kitchenRecipe.OutcomeProductId).Single();
-                
+                kitchenRecipe.OutcomeProductId = model.OutcomeProductId;
+                kitchenRecipe.OutcomeProduct = _context.KitchenProducts.FirstOrDefault(kp => kp.Id == model.OutcomeProductId);
+                kitchenRecipe.Content = model.Content;
+
+
+                foreach (var ing in kitchenRecipe.Ingredients!)
+                {
+                    _context.KitchenRecipeIngredients.Remove(ing);
+                }
+                kitchenRecipe.Ingredients.Clear();
+
+                foreach (var ing in model.Ingredients)
+                {
+                    KitchenRecipeIngredient recipeIng = new KitchenRecipeIngredient
+                    {
+                        RecipeId = kitchenRecipe.Id,
+                        Recipe = kitchenRecipe,
+                        ArticleId = ing.ArticleId,
+                        Article = _context.KitchenArticles.FirstOrDefault(ka => ka.Id == ing.ArticleId),
+                        Count = ing.Count
+                    };
+                    kitchenRecipe.Ingredients.Add(recipeIng);
+                    _context.Add(recipeIng);
+                }
+
+
                 try
                 {
                     _context.Update(kitchenRecipe);
@@ -127,8 +292,10 @@ namespace HotelSystemIndustry.Controllers.Kitchen
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["OutcomeProductId"] = new SelectList(_context.KitchenProducts, "Id", "Name", kitchenRecipe.OutcomeProductId);
-            return View(kitchenRecipe);
+            ViewData["OutcomeProductId"] = new SelectList(_context.KitchenProducts, "Id", "Name", model.OutcomeProductId);
+            ViewBag.ArticleList = new SelectList(_context.KitchenArticles, "Id", "Name");
+            ViewBag.Articles = await _context.KitchenArticles.AsNoTracking().ToListAsync();
+            return View(model);
         }
 
         // GET: KitchenRecipe/Delete/5

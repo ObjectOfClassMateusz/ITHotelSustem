@@ -62,7 +62,6 @@ namespace HotelSystemIndustry.Controllers
             return View(model);
         }
 
-
         [HttpGet]
         public async Task<IActionResult> Register()
         {
@@ -311,7 +310,6 @@ namespace HotelSystemIndustry.Controllers
                     rolesToAdd.Add(role.Name);
                 }
             }
-
 
             if (rolesToRemove.Count > 0)
             {

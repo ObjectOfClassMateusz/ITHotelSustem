@@ -449,12 +449,12 @@
             <div class="info-row">
                 <span class="info-key">Noce łącznie</span>
                 <span class="info-val">
-                    @*@{
+                    @{
                         int totalNights = Model.Reservations
-                        .Sum(r => (int)(r.CheckOut - r.CheckIn).TotalDays);
+                        .Sum(r => (int)(r.CheckOutDate - r.CheckInDate).TotalDays);
                     }
                     @totalNights
-                    *@
+                    
                 </span>
             </div>
 
@@ -481,9 +481,9 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @*@foreach (var res in Model.Reservations.OrderByDescending(r => r.CheckIn))
+                    @foreach (var res in Model.Reservations.OrderByDescending(r => r.CheckInDate))
                     {
-                        int nights = (int)(res.CheckOut - res.CheckIn).TotalDays;
+                        int nights = (int)(res.CheckOutDate - res.CheckInDate).TotalDays;
                         <tr>
                             <td>
                                 @if (res.Room != null)
@@ -495,12 +495,12 @@
                                     <span style="color:var(--muted);">—</span>
                                 }
                             </td>
-                            <td>@res.CheckIn.ToString("dd.MM.yyyy")</td>
-                            <td>@res.CheckOut.ToString("dd.MM.yyyy")</td>
+                            <td>@res.CheckInDate.ToString("dd.MM.yyyy")</td>
+                            <td>@res.CheckOutDate.ToString("dd.MM.yyyy")</td>
                             <td><span class="nights-tag">@nights n</span></td>
                             <td>@((res.Room?.BasePricePerNight * nights)?.ToString("C") ?? "—")</td>
                         </tr>
-                    }*@
+                    }
                 </tbody>
             </table>
         }

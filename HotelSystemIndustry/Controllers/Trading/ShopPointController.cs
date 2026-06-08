@@ -23,7 +23,11 @@ namespace HotelSystemIndustry.Controllers.Trading
         // GET: ShopPoint
         public async Task<IActionResult> Index()
         {
-            var hotelDbContext = _context.ShopPoints.Include(s => s.Hotel);
+            var hotelId = await GetCurrentHotelId();
+
+            var hotelDbContext = _context.ShopPoints
+                .Where(s => s.HotelId == hotelId)
+                .Include(s => s.Hotel);
             return View(await hotelDbContext.ToListAsync());
         }
 
@@ -50,7 +54,7 @@ namespace HotelSystemIndustry.Controllers.Trading
         [Authorize(Roles = "Admin,TradingEmployee,MaintenanceEmployee")]
         public IActionResult Create()
         {
-            ViewData["HotelId"] = new SelectList(_context.Hotels, "Id", "Description");
+            ViewData["HotelId"] = new SelectList(_context.Hotels, "Id", "Name");
             return View();
         }
 
@@ -167,6 +171,16 @@ namespace HotelSystemIndustry.Controllers.Trading
         private bool ShopPointExists(Guid id)
         {
             return _context.ShopPoints.Any(e => e.Id == id);
+        }
+
+
+        private async Task<Guid> GetCurrentHotelId()
+        {
+            HotelChangeController hotelChangeController = new HotelChangeController(_context)
+            {
+                ControllerContext = this.ControllerContext
+            };
+            return await hotelChangeController.GetCurrentHotel();
         }
     }
 }

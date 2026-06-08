@@ -24,7 +24,12 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         // GET: ArticleInstance
         public async Task<IActionResult> Index()
         {
-            var hotelDbContext = _context.KitchenArticleInstances.Include(a => a.Article).Include(a => a.Storage);
+            Guid hotelId = await GetCurrentHotelId();
+
+            var hotelDbContext = _context.KitchenArticleInstances
+                .Include(a => a.Article)
+                .Include(a => a.Storage)
+                .Where(a => a.Storage!.HotelId == hotelId);
             return View(await hotelDbContext.ToListAsync());
         }
 
@@ -201,6 +206,16 @@ namespace HotelSystemIndustry.Controllers.Kitchen
                 return new SelectList(articlesSelList, "Value", "Text", articleId);
             else
                 return new SelectList(articlesSelList, "Value", "Text");
+        }
+
+
+        private async Task<Guid> GetCurrentHotelId()
+        {
+            HotelChangeController hotelChangeController = new HotelChangeController(_context)
+            {
+                ControllerContext = this.ControllerContext
+            };
+            return await hotelChangeController.GetCurrentHotel();
         }
     }
 }
