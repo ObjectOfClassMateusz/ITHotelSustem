@@ -56,10 +56,12 @@ namespace HotelSystemIndustry.Controllers.Trading
 
         // GET: SaleItemInstance/Create
         [Authorize(Roles = "Admin,TradingEmployee")]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            var hotelId = await GetCurrentHotelId();
+
             ViewData["ItemId"] = new SelectList(_context.SaleItems, "Id", "Name");
-            ViewData["MagazineId"] = new SelectList(_context.ShopMagazines, "Id", "Location");
+            ViewData["MagazineId"] = await GetMagazinesSelectList(hotelId);
             return View();
         }
 
@@ -85,8 +87,11 @@ namespace HotelSystemIndustry.Controllers.Trading
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+
+            var hotelId = await GetCurrentHotelId();
+
             ViewData["ItemId"] = new SelectList(_context.SaleItems, "Id", "Name", saleItemInstance.ItemId);
-            ViewData["MagazineId"] = new SelectList(_context.ShopMagazines, "Id", "Location", saleItemInstance.MagazineId);
+            ViewData["MagazineId"] = await GetMagazinesSelectList(hotelId, saleItemInstance.MagazineId);
             return View(saleItemInstance);
         }
 
@@ -104,8 +109,11 @@ namespace HotelSystemIndustry.Controllers.Trading
             {
                 return NotFound();
             }
+
+            var hotelId = await GetCurrentHotelId();
+
             ViewData["ItemId"] = new SelectList(_context.SaleItems, "Id", "Name", saleItemInstance.ItemId);
-            ViewData["MagazineId"] = new SelectList(_context.ShopMagazines, "Id", "Location", saleItemInstance.MagazineId);
+            ViewData["MagazineId"] = await GetMagazinesSelectList(hotelId, saleItemInstance.MagazineId);
             return View(saleItemInstance);
         }
 
@@ -147,8 +155,11 @@ namespace HotelSystemIndustry.Controllers.Trading
                 }
                 return RedirectToAction(nameof(Index));
             }
+
+            var hotelId = await GetCurrentHotelId();
+
             ViewData["ItemId"] = new SelectList(_context.SaleItems, "Id", "Name", saleItemInstance.ItemId);
-            ViewData["MagazineId"] = new SelectList(_context.ShopMagazines, "Id", "Location", saleItemInstance.MagazineId);
+            ViewData["MagazineId"] = await GetMagazinesSelectList(hotelId, saleItemInstance.MagazineId);
             return View(saleItemInstance);
         }
 
@@ -192,6 +203,19 @@ namespace HotelSystemIndustry.Controllers.Trading
         private bool SaleItemInstanceExists(Guid id)
         {
             return _context.SaleItemInstances.Any(e => e.Id == id);
+        }
+
+
+        private async Task<SelectList> GetMagazinesSelectList(Guid hotelId, Guid? selectedMagazine = null)
+        {
+            var magazineList = await _context.ShopMagazines
+                .Where(ks => ks.HotelId == hotelId)
+                .ToListAsync();
+
+            if (selectedMagazine == null)
+                return new SelectList(magazineList, "Id", "Location");
+            else
+                return new SelectList(magazineList, "Id", "Location", selectedMagazine.Value);
         }
 
 

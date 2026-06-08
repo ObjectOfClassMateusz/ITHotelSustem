@@ -56,8 +56,10 @@ namespace HotelSystemIndustry.Controllers.Kitchen
         // GET: ArticleInstance/Create
         public async Task<IActionResult> Create()
         {
+            Guid hotelId = await GetCurrentHotelId();
+
             ViewData["ArticleId"] = await GetArticlesSelectList();
-            ViewData["StorageId"] = new SelectList(_context.KitchenStorages, "Id", "Name");
+            ViewData["StorageId"] = await GetStoragesSelectList(hotelId);
             return View();
         }
 
@@ -75,8 +77,11 @@ namespace HotelSystemIndustry.Controllers.Kitchen
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+
+            Guid hotelId = await GetCurrentHotelId();
+
             ViewData["ArticleId"] = await GetArticlesSelectList(articleInstance.ArticleId);
-            ViewData["StorageId"] = new SelectList(_context.KitchenStorages, "Id", "Name", articleInstance.StorageId);
+            ViewData["StorageId"] = await GetStoragesSelectList(articleInstance.StorageId);
             return View(articleInstance);
         }
 
@@ -93,8 +98,11 @@ namespace HotelSystemIndustry.Controllers.Kitchen
             {
                 return NotFound();
             }
+
+            Guid hotelId = await GetCurrentHotelId();
+
             ViewData["ArticleId"] = await GetArticlesSelectList(articleInstance.ArticleId);
-            ViewData["StorageId"] = new SelectList(_context.KitchenStorages, "Id", "Name", articleInstance.StorageId);
+            ViewData["StorageId"] = await GetStoragesSelectList(articleInstance.StorageId);
             return View(articleInstance);
         }
 
@@ -131,7 +139,7 @@ namespace HotelSystemIndustry.Controllers.Kitchen
                 return RedirectToAction(nameof(Index));
             }
             ViewData["ArticleId"] = await GetArticlesSelectList(articleInstance.ArticleId);
-            ViewData["StorageId"] = new SelectList(_context.KitchenStorages, "Id", "Name", articleInstance.StorageId);
+            ViewData["StorageId"] = await GetStoragesSelectList(articleInstance.StorageId);
             return View(articleInstance);
         }
 
@@ -206,6 +214,19 @@ namespace HotelSystemIndustry.Controllers.Kitchen
                 return new SelectList(articlesSelList, "Value", "Text", articleId);
             else
                 return new SelectList(articlesSelList, "Value", "Text");
+        }
+
+
+        private async Task<SelectList> GetStoragesSelectList(Guid hotelId, Guid? selectedStorage = null)
+        {
+            var storageList = await _context.KitchenStorages
+                .Where(ks => ks.HotelId == hotelId)
+                .ToListAsync();
+
+            if (selectedStorage == null)
+                return new SelectList(storageList, "Id", "Name");
+            else
+                return new SelectList(storageList, "Id", "Name", selectedStorage.Value);
         }
 
 
