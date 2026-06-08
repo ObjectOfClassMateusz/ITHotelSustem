@@ -11,6 +11,7 @@
             <hr />
             <form asp-action="EditSupply" method="post">
                 <input type="hidden" asp-for="Id" />
+                <input type="hidden" asp-for="HotelId" />
                 <div class="form-group mb-3">
                     <label class="control-label font-weight-bold">Nazwa</label>
                     <input asp-for="Name" class="form-control" />

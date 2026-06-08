@@ -248,6 +248,7 @@ namespace HotelSystemIndustry.Controllers.Maintenance
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditSupply(HousekeepingSupply supply)
         {
+            ModelState.Remove("Hotel");
             if (!ModelState.IsValid) return View(supply);
 
             _context.HousekeepingSupplies.Update(supply);
