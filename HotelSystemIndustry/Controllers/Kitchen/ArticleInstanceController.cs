@@ -81,7 +81,7 @@ namespace HotelSystemIndustry.Controllers.Kitchen
             Guid hotelId = await GetCurrentHotelId();
 
             ViewData["ArticleId"] = await GetArticlesSelectList(articleInstance.ArticleId);
-            ViewData["StorageId"] = await GetStoragesSelectList(articleInstance.StorageId);
+            ViewData["StorageId"] = await GetStoragesSelectList(hotelId, articleInstance.StorageId);
             return View(articleInstance);
         }
 
@@ -102,7 +102,7 @@ namespace HotelSystemIndustry.Controllers.Kitchen
             Guid hotelId = await GetCurrentHotelId();
 
             ViewData["ArticleId"] = await GetArticlesSelectList(articleInstance.ArticleId);
-            ViewData["StorageId"] = await GetStoragesSelectList(articleInstance.StorageId);
+            ViewData["StorageId"] = await GetStoragesSelectList(hotelId, articleInstance.StorageId);
             return View(articleInstance);
         }
 
@@ -138,8 +138,11 @@ namespace HotelSystemIndustry.Controllers.Kitchen
                 }
                 return RedirectToAction(nameof(Index));
             }
+
+            Guid hotelId = await GetCurrentHotelId();
+
             ViewData["ArticleId"] = await GetArticlesSelectList(articleInstance.ArticleId);
-            ViewData["StorageId"] = await GetStoragesSelectList(articleInstance.StorageId);
+            ViewData["StorageId"] = await GetStoragesSelectList(hotelId, articleInstance.StorageId);
             return View(articleInstance);
         }
 
