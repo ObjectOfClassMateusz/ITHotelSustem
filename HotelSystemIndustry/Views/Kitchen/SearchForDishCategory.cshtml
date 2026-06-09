@@ -4,13 +4,13 @@
 @model IList<ExternalMealCategory>
 
 @{
-    ViewData["Title"] = "Special dish inspirations";
+    ViewData["Title"] = "Specjalne przepisy zewnętrzne";
     ViewBag.LowerNavPartial = "_KitchenNavPartial";
 }
 
 
-<h1 class="fs-2">Special dish inspirations</h1>
-<h2 class="fs-1">Search for dish by category</h2>
+<h1 class="fs-2">Specjalne przepisy zewnętrzne</h1>
+<h2 class="fs-1">Kategorie przepisów</h2>
 <hr />
 
 
@@ -30,7 +30,7 @@
             </div>
 
             <div class="my-4">
-                <a class="btn btn-primary" asp-action="SpecialDishesOfCategory" asp-route-category="@category.StrCategory">Show</a>
+                <a class="btn btn-primary" asp-action="SpecialDishesOfCategory" asp-route-category="@category.StrCategory">Pokaż</a>
             </div>
 
             <hr />
@@ -39,6 +39,6 @@
 </div>
 
 <div class="my-4">
-    <a asp-action="SpecialDishInspiration" asp-controller="Kitchen" class="btn btn-primary">Back</a>
+    <a asp-action="SpecialDishInspiration" asp-controller="Kitchen" class="btn btn-primary">Wróć</a>
 </div>
 

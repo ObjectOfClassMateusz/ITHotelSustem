@@ -8,20 +8,20 @@
 
 
 @{
-    ViewData["Title"] = "Manage user roles";
+    ViewData["Title"] = "Zarządzaj rolami użytkownika";
 
     var user = await UserManager.FindByIdAsync(Model.Id);
 }
 
 <div>
-    <h2>Manage user roles</h2>
+    <h2>Zarządzaj rolami użytkownika</h2>
     <hr />
 
 
     <dl>
         <div class="row">
             <dt class="col-md-2">
-                Full name:
+                Pełna nazwa:
             </dt>
             <dd class="col-md-4">
                 @Html.DisplayFor(m => user!.FullName)
@@ -30,7 +30,7 @@
 
         <div class="row">
             <dt class="col-md-2">
-                Email: 
+                E-mail: 
             </dt>
             <dd class="col-md-4">
                 @Html.DisplayFor(m => user!.Email)
@@ -39,7 +39,7 @@
             
         <div class="row">
             <dt class="col-md-2">
-                Email verified:
+                E-mail zweryfikowany:
             </dt>
             <dd class="col-md-4">
                 @Html.DisplayFor(m => user!.EmailConfirmed)
@@ -49,7 +49,7 @@
 
     <hr />
 
-    <h3>Roles</h3>
+    <h3>Role</h3>
 
     <form method="post" asp-controller="Account" asp-action="ChangeUserRoles">
         @Html.AntiForgeryToken()
@@ -65,9 +65,9 @@
             }
         </ul>
 
-        <button type="submit" class="btn btn-success">Save</button>
+        <button type="submit" class="btn btn-success">Zapisz</button>
 
-        <a asp-controller="Account" asp-action="ManageUsers">Back</a>
+        <a asp-controller="Account" asp-action="ManageUsers">Wróć</a>
 
     </form>
 

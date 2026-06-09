@@ -402,9 +402,9 @@ namespace HotelSystemIndustry.Controllers.Kitchen
                 ControllerContext = this.ControllerContext
             };
             if (await apiController.TakeArticleInstances(model.ArticleInstanceId, model.Count))
-                ViewBag.ResultMessage = "Successfully taken article from storage!";
+                ViewBag.ResultMessage = "Pomyślnie zabrano artykuł z miejsca przechowywania!";
             else
-                ViewBag.ResultMessage = "Not enough article in storage!";
+                ViewBag.ResultMessage = "Za mała ilość artykułu w tym miejscu!";
 
 
             Guid currentHotel = await GetCurrentHotelId();

@@ -4,26 +4,26 @@
 @model UserManagementModel
 
 @{
-    ViewData["Title"] = "Manage users";
+    ViewData["Title"] = "Zarządzaj użytkownikami";
     var queryModel = (UserQueryModel)ViewBag.UserQueryModel;
 }
 
 
 <div>
-    <h2>Manage users</h2>
+    <h2>Zarządzaj użytkownikami</h2>
     <hr />
 
     <form method="get" class="row">
         <div class="col-md-4">
-            <input name="FullNameFilter" value="@queryModel.FullNameFilter" class="form-control" placeholder="Filter full name" />
+            <input name="FullNameFilter" value="@queryModel.FullNameFilter" class="form-control" placeholder="Filtruj po pełnej nazwie użytkownika…" />
         </div>
 
         <div class="col-md-4">
-            <input name="EmailFilter" value="@queryModel.EmailFilter" class="form-control" placeholder="Filter email" />
+            <input name="EmailFilter" value="@queryModel.EmailFilter" class="form-control" placeholder="Filtruj po e-mailu…" />
         </div>
 
         <div class="col-md-2">
-            <button class="btn btn-primary" type="submit">Apply</button>
+            <button class="btn btn-primary" type="submit">Filtruj</button>
         </div>
     </form>
 
@@ -31,16 +31,16 @@
         <thead>
             <tr>
                 <th>
-                    Full name
+                    Pełna nazwa
                 </th>
                 <th>
-                    Email
+                    E-mail
                 </th>
                 <th>
-                    Email verified
+                    E-mail zweryfikowany
                 </th>
                 <th>
-                    Roles
+                    Role
                 </th>
                 <th></th>
                 <th></th>
@@ -66,20 +66,20 @@
                             </li>
                         }
                         @if (user.Roles.Count == 0) {
-                            <li>Normal customer user</li>
+                            <li>Zwyczajne konto użytkownika</li>
                         }
                     </ul>
                 </td>
                 <td>
                     <form method="post" asp-controller="Account" asp-action="ManageRoles" asp-route-id="@user.Id" class="col-sm-6">
                         @Html.AntiForgeryToken()
-                        <input type="submit" value="Manage roles" class="btn btn-primary" />
+                        <input type="submit" value="Zarządzaj rolami" class="btn btn-primary" />
                     </form>
                 </td>
                 <td>
                     <form method="post" asp-controller="Account" asp-action="ConfirmUserDeleteByAdmin" asp-route-id="@user.Id">
                         @Html.AntiForgeryToken()
-                        <input type="submit" value="Delete" class="btn btn-danger"/>
+                        <input type="submit" value="Usuń" class="btn btn-danger"/>
                     </form>
                 </td>
             </tr>

@@ -21,6 +21,7 @@ namespace HotelSystemIndustry.Controllers.Trading
         }
 
         // GET: ShopPoint
+        [Authorize(Roles = "Admin,TradingEmployee")]
         public async Task<IActionResult> Index()
         {
             var hotelId = await GetCurrentHotelId();
@@ -32,6 +33,7 @@ namespace HotelSystemIndustry.Controllers.Trading
         }
 
         // GET: ShopPoint/Details/5
+        [Authorize(Roles = "Admin,TradingEmployee")]
         public async Task<IActionResult> Details(Guid? id)
         {
             if (id == null)
@@ -51,7 +53,7 @@ namespace HotelSystemIndustry.Controllers.Trading
         }
 
         // GET: ShopPoint/Create
-        [Authorize(Roles = "Admin,TradingEmployee,MaintenanceEmployee")]
+        [Authorize(Roles = "Admin,TradingEmployee")]
         public IActionResult Create()
         {
             ViewData["HotelId"] = new SelectList(_context.Hotels, "Id", "Name");
@@ -63,7 +65,7 @@ namespace HotelSystemIndustry.Controllers.Trading
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin,TradingEmployee,MaintenanceEmployee")]
+        [Authorize(Roles = "Admin,TradingEmployee")]
         public async Task<IActionResult> Create([Bind("Id,Location,HotelId")] ShopPoint shopPoint)
         {
             if (ModelState.IsValid)
@@ -78,7 +80,7 @@ namespace HotelSystemIndustry.Controllers.Trading
         }
 
         // GET: ShopPoint/Edit/5
-        [Authorize(Roles = "Admin,TradingEmployee,MaintenanceEmployee")]
+        [Authorize(Roles = "Admin,TradingEmployee")]
         public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null)
@@ -100,7 +102,7 @@ namespace HotelSystemIndustry.Controllers.Trading
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin,TradingEmployee,MaintenanceEmployee")]
+        [Authorize(Roles = "Admin,TradingEmployee")]
         public async Task<IActionResult> Edit(Guid id, [Bind("Id,Location,HotelId")] ShopPoint shopPoint)
         {
             if (id != shopPoint.Id)
@@ -133,7 +135,7 @@ namespace HotelSystemIndustry.Controllers.Trading
         }
 
         // GET: ShopPoint/Delete/5
-        [Authorize(Roles = "Admin,TradingEmployee,MaintenanceEmployee")]
+        [Authorize(Roles = "Admin,TradingEmployee")]
         public async Task<IActionResult> Delete(Guid? id)
         {
             if (id == null)
@@ -155,7 +157,7 @@ namespace HotelSystemIndustry.Controllers.Trading
         // POST: ShopPoint/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin,TradingEmployee,MaintenanceEmployee")]
+        [Authorize(Roles = "Admin,TradingEmployee")]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
             var shopPoint = await _context.ShopPoints.FindAsync(id);

@@ -4,13 +4,13 @@ namespace HotelSystemIndustry.ViewModels.Kitchen
 {
     public class KitchenArticleDelivery
     {
-        [Required, Display(Name="Delivered article")]
+        [Required, Display(Name="Dostarczony artykuł")]
         public Guid ArticleId { get; set; }
 
-        [Required, Display(Name="To storage")]
+        [Required, Display(Name="Do miejsca przechowywania")]
         public Guid ToStorageId { get; set; }
 
-        [Range(typeof(decimal), "0", "79228162514264337593543950335"), Display(Name="Count to add")]
+        [Range(typeof(decimal), "0", "79228162514264337593543950335"), Display(Name="Ilość do dodania")]
         public decimal AddCount { get; set; } = 1;
     }
 

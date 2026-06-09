@@ -3,13 +3,13 @@
 @model SellOrRentItemsViewModel
 
 @{
-    ViewData["Title"] = "Sell/rent Items";
+    ViewData["Title"] = "Sprzedaj/wypożycz przedmioty";
     ViewBag.LowerNavPartial = "_TradingNavPartial";
 
     var Items = (IList<SaleItemInstance>)ViewBag.SaleItemInstances;
 }
 
-<h1>Sell/rent Items</h1>
+<h1>Sprzedaj/wypożycz przedmioty</h1>
 <hr />
 
 <form method="post">
@@ -18,19 +18,19 @@
 
     <div class="form-group row">
         <div class="col-md-4">
-            @Html.LabelFor(m => m.Items.MagazineId, "Magazine: ", new {@class = "control-label"})
+            @Html.LabelFor(m => m.Items.MagazineId, "Magazyn: ", new {@class = "control-label"})
         </div>
         <div class="col-md-4">
             @Html.DropDownListFor(m => m.Items.MagazineId, (IEnumerable<SelectListItem>)ViewBag.MagazineList, new {@class = "form-control"})
         </div>
         <div class="col-md-1">
-            <input type="submit" asp-action="RefreshSaleOrRentItemsView" class="btn btn-primary text-end" value="Change" />
+            <input type="submit" asp-action="RefreshSaleOrRentItemsView" class="btn btn-primary text-end" value="Odśwież listę" />
         </div>
         <span asp-validation-for="Items.MagazineId" class="text-danger"></span>
     </div>
     <div class="form-group row">
         <div class="col-md-4">
-            @Html.LabelFor(m => m.Items.ShopPointId, "Shop point: ", new {@class = "control-label"})
+            @Html.LabelFor(m => m.Items.ShopPointId, "Punkt sprzedażowy: ", new {@class = "control-label"})
         </div>
         <div class="col-md-5">
             @Html.DropDownListFor(m => m.Items.ShopPointId, (IEnumerable<SelectListItem>)ViewBag.ShopPointList, new {@class = "form-control"})
@@ -104,7 +104,7 @@
 
                 <hr />
                 <div class="row mx-2">
-                    <div class="col-md-8 text-start">Total: </div> <div class="col-md-3 text-end">@totalPrice.ToString("C2")</div>
+                    <div class="col-md-8 text-start">Razem: </div> <div class="col-md-3 text-end">@totalPrice.ToString("C2")</div>
                 </div>
             }
         </div>
@@ -116,18 +116,18 @@
         </div>
 
         <div class="col-md-1">
-            <input type="submit" asp-action="AddSaleItem" class="btn btn-primary" value="Add Item" />
+            <input type="submit" asp-action="AddSaleItem" class="btn btn-primary" value="Dodaj przedmiot" />
         </div>
 
         <span asp-validation-for="NewItemCount" class="text-danger"></span>
     </div>
 
-    <input type="submit" class="btn btn-success my-4" value="Finish" asp-action="VerifyPurchase" />
+    <input type="submit" class="btn btn-success my-4" value="Zatwierdź" asp-action="VerifyPurchase" />
 
 </form>
 
 <div class="my-4">
-    <a asp-action="Index">Back</a>
+    <a asp-action="Index">Wróć</a>
 </div>
 
 

@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using HotelSystemIndustry.Infrastructure;
 using HotelSystemIndustry.Models.Events;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HotelSystemIndustry.Controllers.Events
 {
+    [Authorize(Roles="HotelEmployee,Admin")]
     public class EventReservationController : Controller
     {
         private readonly HotelDbContext _context;
@@ -46,93 +48,6 @@ namespace HotelSystemIndustry.Controllers.Events
             return View(eventReservation);
         }
 
-        // GET: EventReservation/Create
-        public IActionResult Create()
-        {
-            ViewData["EventTypeId"] = new SelectList(_context.EventTypes, "Id", "Name");
-            ViewData["StatusId"] = new SelectList(_context.EventReservationStatuses, "Id", "Name");
-            return View();
-        }
-
-        // POST: EventReservation/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,StatusId,EventTypeId,StartTime,EndTime,Name,NumRequiredStaff,NumGuests,AgreementDocumentPath")] EventReservation eventReservation)
-        {
-            if (ModelState.IsValid)
-            {
-                eventReservation.StartTime = eventReservation.StartTime.ToUniversalTime();
-                eventReservation.EndTime = eventReservation.EndTime.ToUniversalTime();
-
-                eventReservation.Id = Guid.NewGuid();
-                _context.Add(eventReservation);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["EventTypeId"] = new SelectList(_context.EventTypes, "Id", "Name", eventReservation.EventTypeId);
-            ViewData["StatusId"] = new SelectList(_context.EventReservationStatuses, "Id", "Name", eventReservation.StatusId);
-            return View(eventReservation);
-        }
-
-        // GET: EventReservation/Edit/5
-        public async Task<IActionResult> Edit(Guid? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var eventReservation = await _context.EventReservations.FindAsync(id);
-            if (eventReservation == null)
-            {
-                return NotFound();
-            }
-            ViewData["EventTypeId"] = new SelectList(_context.EventTypes, "Id", "Name", eventReservation.EventTypeId);
-            ViewData["StatusId"] = new SelectList(_context.EventReservationStatuses, "Id", "Name", eventReservation.StatusId);
-            return View(eventReservation);
-        }
-
-        // POST: EventReservation/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Id,StatusId,EventTypeId,StartTime,EndTime,Name,NumRequiredStaff,NumGuests,AgreementDocumentPath")] EventReservation eventReservation)
-        {
-            if (id != eventReservation.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                eventReservation.StartTime = eventReservation.StartTime.ToUniversalTime();
-                eventReservation.EndTime = eventReservation.EndTime.ToUniversalTime();
-
-                try
-                {
-                    _context.Update(eventReservation);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!EventReservationExists(eventReservation.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["EventTypeId"] = new SelectList(_context.EventTypes, "Id", "Name", eventReservation.EventTypeId);
-            ViewData["StatusId"] = new SelectList(_context.EventReservationStatuses, "Id", "Name", eventReservation.StatusId);
-            return View(eventReservation);
-        }
 
         // GET: EventReservation/Delete/5
         public async Task<IActionResult> Delete(Guid? id)
@@ -167,11 +82,6 @@ namespace HotelSystemIndustry.Controllers.Events
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool EventReservationExists(Guid id)
-        {
-            return _context.EventReservations.Any(e => e.Id == id);
         }
     }
 }

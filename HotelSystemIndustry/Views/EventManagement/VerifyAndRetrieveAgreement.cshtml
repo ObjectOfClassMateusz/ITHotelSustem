@@ -3,19 +3,14 @@
 @model BookingEventViewModel
 
 @{
-    ViewData["Title"] = "Organize an event - verify and submit agreement";
-    @if (User.IsInRole("HotelEmployee"))
-    {
-        ViewBag.LowerNavPartial = "_HotelManagementNavPartial";
-    } else {
-        ViewBag.LowerNavPartial = "_CustomerNavPartial";
-    }
+    ViewData["Title"] = "Organizuj wydarzenie – zweryfikuj informacje i prześlij umowę";
+    ViewBag.LowerNavPartial = "_EventsNavPartial";
 
     var eventHalls = (IList<EventHall>)ViewBag.EventHalls;
 }
 
 
-<h1>Verify data and submit agreement</h1>
+<h1>Zweryfikuj informacje i prześlij umowę</h1>
 <hr />
 
 <form method="post" enctype="multipart/form-data" asp-action="SubmitReservation">
@@ -31,28 +26,28 @@
 
     <dl class="fs-5">
         <div class="row my-2">
-            <dt class="col-md-3">Type of event:</dt>
+            <dt class="col-md-3">Typ wydarzenia:</dt>
             <dd class="col-md-2">@ViewBag.TypeName</dd>
         </div>
         <div class="row my-2">
-            <dt class="col-md-3">Start time:</dt>
+            <dt class="col-md-3">Czas rozpoczęcia:</dt>
             <dd class="col-md-2">@Model.StartTime.ToLocalTime()</dd>
         </div>
         <div class="row my-2">
-            <dt class="col-md-3">End time:</dt>
+            <dt class="col-md-3">Czas zakończenia:</dt>
             <dd class="col-md-2">@Model.EndTime.ToLocalTime()</dd>
         </div>
         <div class="row my-2">
-            <dt class="col-md-3">Number of guests:</dt>
+            <dt class="col-md-3">Liczba gości:</dt>
             <dd class="col-md-2">@Model.NumGuests</dd>
         </div>
         <div class="row my-2">
-            <dt class="col-md-3">Number of additional servants:</dt>
+            <dt class="col-md-3">Ilość personelu usługującego:</dt>
             <dd class="col-md-2">@Model.NumServantStuff</dd>
         </div>
     </dl>
 
-    <h2>Halls</h2>
+    <h2>Sale</h2>
 
     @{
         int numDays = (Model.EndTime.Date - Model.StartTime.Date).Days + 1;
@@ -96,18 +91,18 @@
     }
 
     <div class="my-4 row fw-bold fs-2">
-        <span class="col-md-4">Total price:</span>
+        <span class="col-md-4">Razem:</span>
         <span class="col-md-4">@totalPrice.ToString("C2")</span>
     </div>
 
     <div class="my-4 row fs-5">
-        <label asp-for="AgreementFile" class="control-label col-md-4">Submit agreement document (PDF):</label>
-        <span class="col-md-4"><input asp-for="AgreementFile" type="file" accept="application/pdf" class="btn" onchange="AJAXSubmitAgreementDocument(this)" /></span>
+        <label asp-for="AgreementFile" class="control-label col-md-4">Prześlij plik z umową (PDF):</label>
+        <span class="col-md-4"><input asp-for="AgreementFile" type="file" accept="application/pdf" class="btn" onchange="OnSubmitAgreementDocument(this)" /></span>
         <span asp-validation-for="AgreementFile" class="text-danger fs-5"></span>
     </div>
 
     <div class="my-4">
-        <input type="submit" class="btn btn-success" id="submit-button" value="Submit" disabled />
+        <input type="submit" class="btn btn-success" id="submit-button" value="Zatwierdź" disabled />
     </div>
 
 </form>
@@ -119,7 +114,7 @@
     }
     
     <script type="text/javascript">
-        function AJAXSubmitAgreementDocument(postedFile){
+        function OnSubmitAgreementDocument(postedFile){
             if (postedFile.value != "")
                 document.getElementById("submit-button").disabled = false;
         }
