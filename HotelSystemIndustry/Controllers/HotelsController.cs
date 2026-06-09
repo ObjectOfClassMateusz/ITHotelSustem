@@ -90,10 +90,16 @@ namespace HotelSystemIndustry.Controllers
 
             // Rezerwacje w zakresie widoku
             var reservations = await _context.Reservations
+                .AsNoTracking()                    // ← dodaj
                 .Include(r => r.Room)
-                .Where(r => r.Room.HotelId == id
-                         && r.CheckOutDate.ToUniversalTime() > startDate
-                         && r.CheckInDate.ToUniversalTime() < endDate)
+                .Include(r => r.Guests)
+                .Where(r => r.RoomId != null      // filtruj po RoomId bezpośrednio
+                         && _context.Rooms
+                                .Where(rm => rm.HotelId == id)
+                                .Select(rm => rm.Id)
+                                .Contains(r.RoomId))
+                .Where(r => r.CheckOutDate > startDate
+                         && r.CheckInDate < endDate)
                 .ToListAsync();
 
             ViewBag.Hotel = hotel;
@@ -101,6 +107,12 @@ namespace HotelSystemIndustry.Controllers
             ViewBag.EndDate = endDate.ToUniversalTime();
             ViewBag.Reservations = reservations;
             ViewBag.Today = today;
+
+            // DEBUG — usuń po naprawie
+            foreach (var r in reservations)
+            {
+                Console.WriteLine($"Res {r.Id}: RoomId={r.RoomId}, Room={r.Room?.Id}, Room.Number={r.Room?.RoomNumber}");
+            }
 
             return View();
         }
@@ -515,17 +527,17 @@ namespace HotelSystemIndustry.Controllers
         public async Task<IActionResult> CreateInvoice(Guid hotelId)
         {
             var hotel = await _context.Hotels.FindAsync(hotelId);
-            if (hotel == null) return NotFound();
-
+            if (hotel == null) 
+            { 
+                return NotFound(); 
+            }
             var reservations = await _context.Reservations
                 .Include(r => r.Room)
                 .Include(r => r.Guests)
                 .Where(r => r.Room.HotelId == hotelId && r.Invoice == null)
                 .OrderByDescending(r => r.CheckInDate)
                 .ToListAsync();
-
             var lastNum = await _context.Invoices.CountAsync() + 1;
-
             var dto = new CreateInvoiceDTO
             {
                 HotelId = hotelId,
@@ -539,7 +551,6 @@ namespace HotelSystemIndustry.Controllers
                     $"{string.Join(", ", r.Guests.Select(g => g.LastName))}",
                     r.Id.ToString())).ToList()
             };
-
             return View(dto);
         }
 
@@ -582,7 +593,6 @@ namespace HotelSystemIndustry.Controllers
                 await ReloadInvoiceDTO(dto);
                 return View(dto);
             }
-
             bool duplicate = await _context.Invoices
                 .AnyAsync(i => i.InvoiceNumber == dto.InvoiceNumber);
             if (duplicate)
@@ -592,7 +602,6 @@ namespace HotelSystemIndustry.Controllers
                 await ReloadInvoiceDTO(dto);
                 return View(dto);
             }
-
             var invoice = new Invoice
             {
                 Id = Guid.NewGuid(),
@@ -601,10 +610,8 @@ namespace HotelSystemIndustry.Controllers
                 ReservationId = dto.ReservationId,
                 TotalAmount = dto.TotalAmount
             };
-
             await _context.Invoices.AddAsync(invoice);
             await _context.SaveChangesAsync();
-
             // Załaduj dane potrzebne do PDF
             var fullInvoice = await _context.Invoices
                 .Include(i => i.Reservation)
@@ -612,9 +619,7 @@ namespace HotelSystemIndustry.Controllers
                 .Include(i => i.Reservation)
                     .ThenInclude(r => r.Guests)
                 .FirstAsync(i => i.Id == invoice.Id);
-
             var pdfBytes = _pdfService.GenerateInvoicePdf(fullInvoice);
-
             return File(pdfBytes,
                         "application/pdf",
                         $"Faktura_{invoice.InvoiceNumber.Replace("/", "-")}.pdf");
@@ -719,12 +724,52 @@ namespace HotelSystemIndustry.Controllers
                 AvgStayLength = rows.Count > 0 ? (decimal)rows.Average(r => r.Nights) : 0,
                 Reservations = rows
             };
-
             var pdfBytes = _pdfService.GenerateMonthlySummaryPdf(vm);
-            string name = $"Sprawozdanie_{vm.HotelName}_{vm.MonthName}_{year}.pdf"
-                            .Replace(" ", "_");
-
+            string name = $"Sprawozdanie_{vm.HotelName}_{vm.MonthName}_{year}.pdf".Replace(" ", "_");
             return File(pdfBytes, "application/pdf", name);
+        }
+
+        // GET: Hotels/CancelReservation/{id} — widok potwierdzenia
+        [HttpGet]
+        [Authorize(Roles = "HotelEmployee")]
+        public async Task<IActionResult> CancelReservation(Guid id, Guid hotelId)
+        {
+            var reservation = await _context.Reservations
+                .Include(r => r.Room)
+                .Include(r => r.Guests)
+                .Include(r => r.Payment)
+                .FirstOrDefaultAsync(r => r.Id == id);
+
+            if (reservation == null)
+            {
+                return NotFound();
+            }
+            ViewBag.HotelId = hotelId;
+            return View(reservation);
+        }
+
+        // POST: Hotels/CancelReservation
+        [HttpPost, ActionName("CancelReservation")]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "HotelEmployee")]
+        public async Task<IActionResult> CancelReservationConfirmed(Guid id, Guid hotelId)
+        {
+            var reservation = await _context.Reservations
+                .Include(r => r.Payment)
+                .FirstOrDefaultAsync(r => r.Id == id);
+
+            if (reservation == null) 
+            {
+                return NotFound();
+            } 
+            if (reservation.Payment != null)
+            {
+                _context.Payments.Remove(reservation.Payment);
+            }
+                
+            _context.Reservations.Remove(reservation);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Calendar), new { id = hotelId });
         }
     }
 }

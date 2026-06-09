@@ -19,8 +19,8 @@
         cur = wEnd;
     }
 
-    DateTime prevDate = startDate.AddDays(-30);
-    DateTime nextDate = startDate.AddDays(30);
+    DateTime prevDate = startDate.AddDays(-7);
+    DateTime nextDate = startDate.AddDays(7);
     string RouteDate(DateTime dt) =>
         $"?id={hotel.Id}&day={dt.Day}&month={dt.Month}&year={dt.Year}";
 
@@ -575,11 +575,7 @@
 
 <div class="toolbar">
     <div class="toolbar-brand">&#9670; @hotel.Name</div>
-
-    <div class="toolbar-sep"></div>
-
     <div style="display:flex;flex-direction:column;">
-        <span class="tb-label-group">Goście</span>
         <div class="tb-group">
             <a asp-controller="Guests" asp-action="Create" asp-route-hotelId="@hotel.Id" class="tb-btn">
                 <span class="tb-icon">👨</span>Dodaj
@@ -587,25 +583,23 @@
             <a asp-controller="Guests" asp-action="Index" asp-route-hotelId="@hotel.Id" class="tb-btn">
                 <span class="tb-icon">🛠️</span>Zarządzaj
             </a>
+            <a asp-action="CreateInvoice"
+               asp-controller="Hotels"
+               asp-route-hotelId="@hotel.Id"
+               class="tb-btn">
+                <span class="tb-icon">📜</span>Faktury
+            </a>
         </div>
     </div>
 
     <div class="toolbar-sep"></div>
-
     <div style="display:flex;flex-direction:column;">
-        <span class="tb-label-group">Widok</span>
         <div class="tb-group">
             <a asp-action="CreateReservation"
                asp-controller="Hotels"
                asp-route-hotelId="@hotel.Id"
                class="tb-btn">
                 <span class="tb-icon">📤</span>Rezerwacje
-            </a>
-            <a asp-action="CreateInvoice"
-               asp-controller="Hotels"
-               asp-route-hotelId="@hotel.Id"
-               class="tb-btn">
-                <span class="tb-icon">📜</span>Faktury
             </a>
             <a asp-action="MonthlySummary"
                asp-route-hotelId="@hotel.Id"
@@ -614,7 +608,7 @@
             </a>
         </div>
     </div>
-
+    <div class="toolbar-sep"></div>
     <div class="nav-cluster">
         <a href="@(RouteDate(prevDate))" class="nav-btn" title="Poprzednie 30 dni">&#8592; Wstecz</a>
         <a href="@TodayRoute()" class="nav-btn nav-today">Dziś</a>
@@ -626,20 +620,17 @@
 </div>
 
 <div class="cal-shell">
-
     <div class="cal-head">
         <div class="cal-head-rooms" style="display:flex;flex-direction:column;border-bottom:1px solid var(--border2);">
             <div style="height:22px;display:flex;align-items:center;padding:0 0.85rem;border-bottom:1px solid var(--border);font-size:0.55rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);">Tygodnie</div>
             <div style="height:30px;display:flex;align-items:center;padding:0 0.85rem;font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);">Pokój / Piętro</div>
         </div>
-
         <div style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
             <div class="week-band">
                 @{
                     DateTime wCur = startDate;
                     while (wCur < endDate)
                     {
-                        // find end of this week (next Monday or endDate)
                         DateTime wEnd = wCur.AddDays(1);
                         while (wEnd < endDate && wEnd.DayOfWeek != DayOfWeek.Monday)
                             wEnd = wEnd.AddDays(1);
@@ -670,7 +661,6 @@
     </div>
 
     <div class="cal-body">
-
         @if (!hotel.Rooms.Any())
         {
             <div class="cal-empty">
@@ -683,15 +673,17 @@
             <div class="room-labels">
                 @foreach (var room in hotel.Rooms.OrderBy(r => r.Floor).ThenBy(r => r.RoomNumber))
                 {
-                    <div class="room-label">
-                        <div class="room-label-num">@room.RoomNumber</div>
+                    <div class="room-label" data-room-id="@room.Id">
+                        <div class="room-label-num">
+                            @room.RoomNumber
+                            @if (room.Renovation)
+                            {
+                                @: (Remont)
+                            }
+                        </div>
                         <div class="room-label-type">
                             @room.RoomType.ToString() &middot; p.@room.Floor &middot; @room.Capacity os.
                         </div>
-                        @if (room.Renovation)
-                        {
-                            <span class="room-label-reno">remont</span>
-                        }
                     </div>
                 }
             </div>
@@ -712,8 +704,9 @@
                 <div class="grid-rows">
                     @foreach (var room in hotel.Rooms.OrderBy(r => r.Floor).ThenBy(r => r.RoomNumber))
                     {
-                        var roomRes = reservations.Where(r => r.Room?.Id == room.Id).ToList();
-                        <div class="grid-row">
+                        var roomRes = reservations.Where(r => r.RoomId == room.Id).ToList();
+                        <div class="grid-row" data-room-id="@room.Id">
+                        :
                             @foreach (var res in roomRes)
                             {
                                 string left = ColLeft(res.CheckInDate);
@@ -721,12 +714,12 @@
                                 string bg = resColors.ContainsKey(res.Id) ? resColors[res.Id] : "#4a7fc1";
                                 string nights = ((res.CheckOutDate - res.CheckInDate).TotalDays).ToString("0") + "n";
                                 string tip = $"{res.CheckInDate:dd.MM} → {res.CheckOutDate:dd.MM} ({nights})";
-
-                                <div class="res-block"
-                                     style="left:@left;width:@width;background:@bg;"
-                                     data-tip="@tip">
+                                <a class="res-block"
+                                   href="@Url.Action("CancelReservation", "Hotels", new { id = res.Id, hotelId = hotel.Id })"
+                                   style="left:@left;width:@width;background:@bg;"
+                                   data-tip="@tip  •  kliknij aby anulować">
                                     @nights
-                                </div>
+                                </a>
                             }
                         </div>
                     }
@@ -748,9 +741,11 @@
 
 @section Scripts {
     <script>
-        // ── Row highlight on hover ─────────────────────────────
-        document.querySelectorAll('.grid-row').forEach((row, i) => {
-            const label = document.querySelectorAll('.room-label')[i];
+        // ── Row highlight — match by data-room-id ──────────────
+        document.querySelectorAll('.grid-row').forEach(row => {
+            const roomId = row.dataset.roomId;
+            const label  = document.querySelector(`.room-label[data-room-id="${roomId}"]`);
+
             row.addEventListener('mouseenter', () => {
                 row.style.background = 'rgba(212,168,67,0.04)';
                 if (label) label.style.background = 'rgba(212,168,67,0.08)';
@@ -761,20 +756,19 @@
             });
         });
 
-        // ── Lane layout algorithm ──────────────────────────────
-        // Każdy wiersz (.grid-row) może mieć kilka .res-block,
-        // które mogą się nakładać. Układamy je w "lanes" pionowo.
+        // ── Lane layout — match by data-room-id ───────────────
+        const LANE_H   = 30;
+        const LANE_GAP = 4;
+        const LANE_TOP = 4;
+        const ROW_PAD  = 6;
 
-        const LANE_H    = 30;   // px wysokość jednego pasa
-        const LANE_GAP  = 4;    // px przerwa między pasami
-        const LANE_TOP  = 4;    // px od góry wiersza do pierwszego pasa
-        const ROW_PAD_B = 6;    // px padding na dole wiersza
-
-        document.querySelectorAll('.grid-row').forEach((row, rowIdx) => {
+        document.querySelectorAll('.grid-row').forEach(row => {
+            const roomId = row.dataset.roomId;
+            const label  = document.querySelector(`.room-label[data-room-id="${roomId}"]`);
             const blocks = Array.from(row.querySelectorAll('.res-block'));
+
             if (blocks.length === 0) return;
 
-            // Pobierz pozycję (left%) i szerokość(%) każdego bloku
             const items = blocks.map(b => ({
                 el:    b,
                 left:  parseFloat(b.style.left),
@@ -782,19 +776,14 @@
                 lane:  -1
             }));
 
-            // Sortuj wg. left (wcześniejszy check-in pierwszy)
             items.sort((a, b) => a.left - b.left);
 
-            // Zachłanny algorytm przydzielania pasów
-            // lanes[i] = koniec (right%) ostatniego bloku na pasie i
             const lanes = [];
-
             for (const item of items) {
                 const right = item.left + item.width;
                 let placed  = false;
 
                 for (let li = 0; li < lanes.length; li++) {
-                    // Zostaw 0.5% margines żeby sąsiadujące nie wyglądały na nakładające
                     if (lanes[li] <= item.left + 0.3) {
                         item.lane = li;
                         lanes[li] = right;
@@ -812,17 +801,13 @@
             const numLanes  = lanes.length;
             const rowHeight = LANE_TOP + numLanes * LANE_H
                             + (numLanes - 1) * LANE_GAP
-                            + ROW_PAD_B;
+                            + ROW_PAD;
 
-            // Ustaw wysokość wiersza i etykiety pokoju
             row.style.height = rowHeight + 'px';
-
-            const label = document.querySelectorAll('.room-label')[rowIdx];
             if (label) label.style.height = rowHeight + 'px';
 
-            // Ustaw pozycję każdego bloku
             for (const item of items) {
-                const topPx = LANE_TOP + item.lane * (LANE_H + LANE_GAP);
+                const topPx   = LANE_TOP + item.lane * (LANE_H + LANE_GAP);
                 item.el.style.top    = topPx + 'px';
                 item.el.style.height = LANE_H + 'px';
             }

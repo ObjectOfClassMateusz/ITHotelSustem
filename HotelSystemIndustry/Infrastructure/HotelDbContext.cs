@@ -6,7 +6,6 @@ using HotelSystemIndustry.Models.Kitchen;
 using HotelSystemIndustry.Models.Trading;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using System.Reflection.Emit;
 
 namespace HotelSystemIndustry.Infrastructure
 {
@@ -21,7 +20,6 @@ namespace HotelSystemIndustry.Infrastructure
         {
             base.OnConfiguring(optionsBuilder);
             optionsBuilder.UseNpgsql(_configuration.GetConnectionString("HotelConnection"));
-
             //Add-Migration InitialCreate
             //Update-Database
         }
@@ -262,7 +260,7 @@ namespace HotelSystemIndustry.Infrastructure
                 .HasOne(r => r.Invoice)
                 .WithOne(i => i.Reservation)
                 .HasForeignKey<Invoice>(i => i.ReservationId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.NoAction);
             modelBuilder.Entity<Reservation>()
                 .HasOne(r => r.Payment)
                 .WithOne(p => (Reservation?)p.Service)

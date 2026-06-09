@@ -1,0 +1,682 @@
+﻿@model HotelSystemIndustry.Models.Reservation
+@using HotelSystemIndustry.Models
+@{
+    ViewData["Title"] = "Anuluj rezerwację";
+    Guid hotelId = (Guid)ViewBag.HotelId;
+    int nights = (int)(Model.CheckOutDate - Model.CheckInDate).TotalDays;
+    decimal total = (Model.Room?.BasePricePerNight ?? 0) * nights;
+
+    string StatusColor(ReservationStatus s) => s switch
+    {
+        ReservationStatus.Confirmed => "#4ac18e",
+        ReservationStatus.Pending => "#e6923a",
+        ReservationStatus.Cancelled => "#c15a4a",
+        ReservationStatus.Completed => "#6b6880",
+        _ => "#6b6880"
+    };
+
+    string StatusLabel(ReservationStatus s) => s switch
+    {
+        ReservationStatus.Confirmed => "Potwierdzona",
+        ReservationStatus.Pending => "Oczekująca",
+        ReservationStatus.Cancelled => "Anulowana",
+        ReservationStatus.Completed => "Zakończona",
+        _ => s.ToString()
+    };
+}
+
+<style>
+    import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap');
+
+    :root {
+        --bg: #0f0f12;
+        --surface: #17171d;
+        --surface2: #1e1e27;
+        --border: #2a2a38;
+        --border2: #353548;
+        --gold: #d4a843;
+        --gold-dim: #8a6c28;
+        --text: #e8e6f0;
+        --muted: #6b6880;
+        --danger: #c15a4a;
+        --danger-bg: #2a1515;
+        --success: #4ac18e;
+    }
+
+    *, *::before, *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: 'Syne', sans-serif;
+        min-height: 100vh;
+    }
+
+    /* ── TOPBAR ───────────────────────────── */
+    .topbar {
+        height: 56px;
+        background: var(--surface);
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        padding: 0 1.5rem;
+        gap: 1rem;
+        position: sticky;
+        top: 0;
+        z-index: 50;
+    }
+
+    .topbar-brand {
+        font-size: 0.7rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--gold);
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        white-space: nowrap;
+    }
+
+        .topbar-brand::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: var(--gold);
+            transform: rotate(45deg);
+            flex-shrink: 0;
+        }
+
+    .topbar-sep {
+        width: 1px;
+        height: 28px;
+        background: var(--border);
+        flex-shrink: 0;
+    }
+
+    .topbar-crumb {
+        font-family: 'DM Mono', monospace;
+        font-size: 0.7rem;
+        color: var(--muted);
+    }
+
+        .topbar-crumb em {
+            color: var(--text);
+            font-style: normal;
+            font-weight: 600;
+        }
+
+    .topbar-back {
+        margin-left: auto;
+        font-family: 'DM Mono', monospace;
+        font-size: 0.68rem;
+        color: var(--muted);
+        text-decoration: none;
+        padding: 0.38rem 0.85rem;
+        border: 1px solid var(--border);
+        border-radius: 3px;
+        background: var(--surface2);
+        transition: color 0.15s, border-color 0.15s;
+        white-space: nowrap;
+    }
+
+        .topbar-back:hover {
+            color: var(--gold);
+            border-color: var(--gold-dim);
+            text-decoration: none;
+        }
+
+    /* ── SHELL ────────────────────────────── */
+    .shell {
+        max-width: 620px;
+        margin: 3rem auto;
+        padding: 0 1.5rem 5rem;
+    }
+
+    /* ── WARNING BANNER ───────────────────── */
+    .warn-banner {
+        background: var(--danger-bg);
+        border: 1px solid rgba(193,90,74,0.4);
+        border-radius: 4px;
+        padding: 1.25rem 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.75rem;
+        animation: fadeDown 0.4s ease both;
+    }
+
+    .warn-icon {
+        font-size: 2rem;
+        flex-shrink: 0;
+        line-height: 1;
+    }
+
+    .warn-text-title {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--danger);
+        margin-bottom: 0.2rem;
+    }
+
+    .warn-text-sub {
+        font-family: 'DM Mono', monospace;
+        font-size: 0.72rem;
+        color: var(--muted);
+        line-height: 1.5;
+    }
+
+    /* ── RESERVATION CARD ─────────────────── */
+    .res-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        overflow: hidden;
+        margin-bottom: 1.5rem;
+        animation: fadeUp 0.4s 0.06s ease both;
+    }
+
+    .res-card-header {
+        background: var(--surface2);
+        border-bottom: 1px solid var(--border);
+        padding: 1rem 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+    }
+
+    .res-id {
+        font-family: 'DM Mono', monospace;
+        font-size: 0.65rem;
+        color: var(--muted);
+        letter-spacing: 0.08em;
+    }
+
+        .res-id strong {
+            color: var(--gold);
+            font-size: 0.72rem;
+        }
+
+    .status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.25rem 0.7rem;
+        border-radius: 20px;
+        font-family: 'DM Mono', monospace;
+        font-size: 0.62rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        border: 1px solid;
+    }
+
+    .status-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+
+    /* ── INFO ROWS ────────────────────────── */
+    .info-section {
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid var(--border);
+    }
+
+        .info-section:last-child {
+            border-bottom: none;
+        }
+
+    .info-section-label {
+        font-size: 0.55rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--gold);
+        font-weight: 700;
+        margin-bottom: 0.85rem;
+    }
+
+    .info-row {
+        display: flex;
+        align-items: baseline;
+        gap: 0.75rem;
+        padding: 0.4rem 0;
+        border-bottom: 1px solid var(--border2);
+    }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+    .info-key {
+        font-family: 'DM Mono', monospace;
+        font-size: 0.6rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--muted);
+        flex-shrink: 0;
+        width: 100px;
+    }
+
+    .info-val {
+        font-size: 0.88rem;
+        color: var(--text);
+        font-family: 'DM Mono', monospace;
+    }
+
+        .info-val.highlight {
+            color: var(--gold);
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+    /* ── GUEST CHIPS ──────────────────────── */
+    .guest-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+        margin-top: 0.5rem;
+    }
+
+    .guest-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        background: var(--surface2);
+        border: 1px solid var(--border2);
+        border-radius: 20px;
+        padding: 0.25rem 0.7rem;
+        font-family: 'DM Mono', monospace;
+        font-size: 0.65rem;
+        color: var(--text);
+    }
+
+    .guest-chip-avatar {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: var(--gold);
+        color: #0f0f12;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.5rem;
+        font-weight: 800;
+        flex-shrink: 0;
+    }
+
+    /* ── STAY TIMELINE ────────────────────── */
+    .stay-timeline {
+        display: flex;
+        align-items: center;
+        gap: 0;
+        margin: 0.75rem 0 0.25rem;
+    }
+
+    .timeline-date {
+        text-align: center;
+    }
+
+    .timeline-date-label {
+        font-family: 'DM Mono', monospace;
+        font-size: 0.55rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 0.2rem;
+    }
+
+    .timeline-date-val {
+        font-family: 'DM Mono', monospace;
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: var(--text);
+    }
+
+    .timeline-bar {
+        flex: 1;
+        height: 3px;
+        background: linear-gradient(90deg, var(--gold-dim), var(--gold));
+        margin: 0 0.75rem;
+        position: relative;
+        top: 8px;
+    }
+
+    .timeline-nights {
+        position: absolute;
+        top: -18px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-family: 'DM Mono', monospace;
+        font-size: 0.6rem;
+        color: var(--gold);
+        white-space: nowrap;
+        font-weight: 700;
+    }
+
+    /* ── ACTION BUTTONS ───────────────────── */
+    .action-section {
+        animation: fadeUp 0.4s 0.14s ease both;
+    }
+
+    .action-card {
+        background: var(--danger-bg);
+        border: 1px solid rgba(193,90,74,0.35);
+        border-radius: 4px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .action-card-title {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--danger);
+        margin-bottom: 0.4rem;
+    }
+
+    .action-card-desc {
+        font-family: 'DM Mono', monospace;
+        font-size: 0.7rem;
+        color: var(--muted);
+        line-height: 1.6;
+        margin-bottom: 1.25rem;
+    }
+
+    .btn-row {
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .btn-confirm-delete {
+        background: var(--danger);
+        color: #fff;
+        border: none;
+        padding: 0.78rem 2rem;
+        font-family: 'Syne', sans-serif;
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        border-radius: 3px;
+        cursor: pointer;
+        transition: background 0.2s, transform 0.15s;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+        .btn-confirm-delete:hover {
+            background: #a03828;
+            transform: translateY(-1px);
+        }
+
+    /* Typewriter confirm */
+    .confirm-gate {
+        margin-bottom: 1rem;
+    }
+
+    .confirm-gate-label {
+        font-family: 'DM Mono', monospace;
+        font-size: 0.65rem;
+        color: var(--muted);
+        margin-bottom: 0.4rem;
+        letter-spacing: 0.08em;
+    }
+
+        .confirm-gate-label span {
+            color: var(--danger);
+            font-weight: 700;
+        }
+
+    .confirm-input {
+        width: 100%;
+        background: var(--surface2);
+        border: 1px solid var(--border2);
+        border-radius: 3px;
+        color: var(--text);
+        font-family: 'DM Mono', monospace;
+        font-size: 0.9rem;
+        padding: 0.65rem 0.9rem;
+        outline: none;
+        transition: border-color 0.2s;
+    }
+
+        .confirm-input:focus {
+            border-color: var(--danger);
+        }
+
+        .confirm-input.valid {
+            border-color: var(--success);
+        }
+
+    .btn-cancel-link {
+        font-family: 'DM Mono', monospace;
+        font-size: 0.72rem;
+        color: var(--muted);
+        text-decoration: none;
+        transition: color 0.2s;
+        letter-spacing: 0.05em;
+    }
+
+        .btn-cancel-link:hover {
+            color: var(--text);
+            text-decoration: none;
+        }
+
+    /* ── ANIMATIONS ───────────────────────── */
+    @@keyframes fadeDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@keyframes fadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(12px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@media (max-width: 500px) {
+        .info-key {
+            width: 75px;
+        }
+
+        .topbar-crumb {
+            display: none;
+        }
+    }
+</style>
+
+<div class="topbar">
+    <div class="topbar-brand">Hotel System Industry</div>
+    <div class="topbar-sep"></div>
+    <div class="topbar-crumb">
+        Anulowanie rezerwacji &rsaquo; <em>ID: @Model.Id.ToString()[..8]…</em>
+    </div>
+    <a asp-action="Calendar"
+       asp-controller="Hotels"
+       asp-route-id="@hotelId"
+       class="topbar-back">&#8592; Kalendarz</a>
+</div>
+
+<div class="shell">
+    <div class="warn-banner">
+        <div class="warn-icon">⚠️</div>
+        <div>
+            <div class="warn-text-title">Operacja nieodwracalna</div>
+            <div class="warn-text-sub">
+                Usunięcie rezerwacji spowoduje trwałe usunięcie rekordu z bazy danych.<br>
+                Powiązana płatność również zostanie usunięta.
+            </div>
+        </div>
+    </div>
+    <div class="res-card">
+        <div class="res-card-header">
+            <div class="res-id">
+                Rezerwacja &nbsp;<strong>#@Model.Id.ToString()[..8].ToUpper()</strong>
+            </div>
+            @{
+                string sColor = StatusColor(Model.Status);
+                string sLabel = StatusLabel(Model.Status);
+            }
+            <span class="status-pill"
+                  style="color:@sColor;border-color:@sColor;background:@(sColor)18;">
+                <span class="status-dot" style="background:@sColor;"></span>
+                @sLabel
+            </span>
+        </div>
+        <div class="info-section">
+            <div class="info-section-label">Pobyt</div>
+            <div class="stay-timeline">
+                <div class="timeline-date">
+                    <div class="timeline-date-label">Check-in</div>
+                    <div class="timeline-date-val">@Model.CheckInDate.ToString("dd.MM.yyyy")</div>
+                </div>
+                <div class="timeline-bar">
+                    <span class="timeline-nights">@nights @(nights == 1 ? "noc" : nights < 5 ? "noce" : "nocy")</span>
+                </div>
+                <div class="timeline-date">
+                    <div class="timeline-date-label">Check-out</div>
+                    <div class="timeline-date-val">@Model.CheckOutDate.ToString("dd.MM.yyyy")</div>
+                </div>
+            </div>
+        </div>
+        @if (Model.Room != null)
+        {
+            <div class="info-section">
+                <div class="info-section-label">Pokój</div>
+                <div class="info-row">
+                    <span class="info-key">Numer</span>
+                    <span class="info-val">#@Model.Room.RoomNumber</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-key">Typ</span>
+                    <span class="info-val">@Model.Room.RoomType.ToString()</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-key">Cena / noc</span>
+                    <span class="info-val">@Model.Room.BasePricePerNight.ToString("C")</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-key">Łącznie</span>
+                    <span class="info-val highlight">@total.ToString("C")</span>
+                </div>
+            </div>
+        }
+        <div class="info-section">
+            <div class="info-section-label">Dane</div>
+            <div class="info-row">
+                <span class="info-key">NIP</span>
+                <span class="info-val">@Model.NIP</span>
+            </div>
+            <div class="info-row">
+                <span class="info-key">Nocy</span>
+                <span class="info-val">@Model.NumberOfOvernightStays</span>
+            </div>
+            @if (!string.IsNullOrEmpty(Model.SpecialWishes))
+            {
+                <div class="info-row">
+                    <span class="info-key">Życzenia</span>
+                    <span class="info-val">@Model.SpecialWishes</span>
+                </div>
+            }
+        </div>
+        @if (Model.Guests?.Any() == true)
+        {
+            <div class="info-section">
+                <div class="info-section-label">Goście (@Model.Guests.Count)</div>
+                <div class="guest-chips">
+                    @foreach (var g in Model.Guests)
+                    {
+                        string ini = (g.FirstName.Length > 0 ? g.FirstName[0].ToString() : "")
+                        + (g.LastName.Length > 0 ? g.LastName[0].ToString() : "");
+                        <div class="guest-chip">
+                            <div class="guest-chip-avatar">@ini.ToUpper()</div>
+                            @g.FirstName @g.LastName
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+    <div class="action-section">
+        <div class="action-card">
+            <div class="action-card-title">🗑 Usuń tę rezerwację</div>
+            <div class="action-card-desc">
+                Aby potwierdzić usunięcie, wpisz <span style="color:var(--danger);font-weight:700;">USUŃ</span> w polu poniżej.
+            </div>
+            <div class="confirm-gate">
+                <div class="confirm-gate-label">
+                    Wpisz <span>USUŃ</span> aby odblokować przycisk
+                </div>
+                <input type="text"
+                       class="confirm-input"
+                       id="confirmInput"
+                       placeholder="USUŃ"
+                       autocomplete="off" />
+            </div>
+
+            @using (Html.BeginForm("CancelReservation", "Hotels",
+                        FormMethod.Post, new { id = "deleteForm" }))
+            {
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" value="@Model.Id" />
+                <input type="hidden" name="hotelId" value="@hotelId" />
+
+                <div class="btn-row">
+                    <button type="submit"
+                            id="deleteBtn"
+                            class="btn-confirm-delete"
+                            disabled>
+                        🗑 Potwierdź usunięcie
+                    </button>
+                    <a asp-action="Calendar"
+                       asp-controller="Hotels"
+                       asp-route-id="@hotelId"
+                       class="btn-cancel-link">&#8592; Anuluj, wróć do kalendarza</a>
+                </div>
+            }
+        </div>
+    </div>
+
+</div>
+
+@section Scripts {
+    <script>
+        const input  = document.getElementById('confirmInput');
+        const btn    = document.getElementById('deleteBtn');
+        const PHRASE = 'USUŃ';
+
+        input.addEventListener('input', () => {
+            const match = input.value.trim().toUpperCase() === PHRASE;
+            btn.disabled = !match;
+            input.classList.toggle('valid', match);
+        });
+
+        // Extra: prevent accidental form submit on Enter unless confirmed
+        document.getElementById('deleteForm').addEventListener('submit', e => {
+            if (btn.disabled) {
+                e.preventDefault();
+            }
+        });
+    </script>
+}
